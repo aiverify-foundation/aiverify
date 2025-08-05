@@ -12,11 +12,12 @@ jest.mock('next/image', () => {
 
 // Mock Button component
 jest.mock('@/lib/components/button', () => ({
-  Button: ({ text, onClick, disabled, ...props }: any) => (
+  Button: ({ text, onClick, disabled, pill, textColor, variant, size, className, ...props }: any) => (
     <button
       data-testid={`button-${text?.toLowerCase()}`}
       onClick={onClick}
       disabled={disabled}
+      className={className}
       {...props}
     >
       {text}

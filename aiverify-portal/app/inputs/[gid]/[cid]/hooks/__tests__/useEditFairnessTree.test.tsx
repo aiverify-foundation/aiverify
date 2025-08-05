@@ -53,7 +53,7 @@ describe('useFairnessTreeEdit', () => {
   });
 
   describe('Initial state', () => {
-    it('should initialize with correct default values', () => {
+    it('should initialize with correct default values', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -67,7 +67,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData).toEqual(mockTree.data);
     });
 
-    it('should initialize with empty data when tree has no data', () => {
+    it('should initialize with empty data when tree has no data', async () => {
       const treeWithoutData: FairnessTree = {
         ...mockTree,
         data: undefined as any,
@@ -90,7 +90,7 @@ describe('useFairnessTreeEdit', () => {
   });
 
   describe('State management', () => {
-    it('should toggle editing state', () => {
+    it('should toggle editing state', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -111,7 +111,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.isEditing).toBe(false);
     });
 
-    it('should update tree name', () => {
+    it('should update tree name', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -124,7 +124,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeName).toBe('New Tree Name');
     });
 
-    it('should detect changes when tree name is modified', () => {
+    it('should detect changes when tree name is modified', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -139,7 +139,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.hasChanges).toBe(true);
     });
 
-    it('should detect changes when tree data is modified', () => {
+    it('should detect changes when tree data is modified', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -156,7 +156,7 @@ describe('useFairnessTreeEdit', () => {
   });
 
   describe('Data change handling', () => {
-    it('should handle selectedOutcomes changes correctly', () => {
+    it('should handle selectedOutcomes changes correctly', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -170,7 +170,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData.selectedOutcomes).toEqual(['outcome3', 'outcome4']);
     });
 
-    it('should handle metrics changes correctly', () => {
+    it('should handle metrics changes correctly', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -184,7 +184,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData.metrics).toEqual(['metric3', 'metric4']);
     });
 
-    it('should handle other data changes correctly', () => {
+    it('should handle other data changes correctly', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -197,7 +197,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData.sensitiveFeature).toEqual(['gender']);
     });
 
-    it('should clean up ans-* properties when selectedOutcomes change', () => {
+    it('should clean up ans-* properties when selectedOutcomes change', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -216,7 +216,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData['ans-outcome2']).toBeUndefined();
     });
 
-    it('should preserve ans-* properties for remaining selected outcomes', () => {
+    it('should preserve ans-* properties for remaining selected outcomes', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -252,7 +252,10 @@ describe('useFairnessTreeEdit', () => {
         result.current.setTreeName('Updated Tree Name');
       });
 
-      const saveResult = await result.current.handleSaveChanges();
+      let saveResult;
+      await act(async () => {
+        saveResult = await result.current.handleSaveChanges();
+      });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/input_block_data/1', {
         method: 'PUT',
@@ -289,7 +292,10 @@ describe('useFairnessTreeEdit', () => {
         { wrapper: createWrapper() }
       );
 
-      const saveResult = await result.current.handleSaveChanges();
+      let saveResult;
+      await act(async () => {
+        saveResult = await result.current.handleSaveChanges();
+      });
 
       expect(saveResult.success).toBe(false);
       expect(saveResult.message).toContain('Error updating tree');
@@ -306,7 +312,10 @@ describe('useFairnessTreeEdit', () => {
         { wrapper: createWrapper() }
       );
 
-      const saveResult = await result.current.handleSaveChanges();
+      let saveResult;
+      await act(async () => {
+        saveResult = await result.current.handleSaveChanges();
+      });
 
       expect(saveResult.success).toBe(false);
       expect(saveResult.message).toContain('Error updating tree');
@@ -327,7 +336,10 @@ describe('useFairnessTreeEdit', () => {
         { wrapper: createWrapper() }
       );
 
-      const saveResult = await result.current.handleSaveChanges();
+      let saveResult;
+      await act(async () => {
+        saveResult = await result.current.handleSaveChanges();
+      });
 
       expect(saveResult.success).toBe(false);
       expect(saveResult.message).toContain('Error updating tree');
@@ -355,7 +367,9 @@ describe('useFairnessTreeEdit', () => {
         result.current.handleChangeData('sensitiveFeature', ['gender']);
       });
 
-      await result.current.handleSaveChanges();
+      await act(async () => {
+        await result.current.handleSaveChanges();
+      });
 
       expect(mockFetch).toHaveBeenCalledWith('/api/input_block_data/1', {
         method: 'PUT',
@@ -382,7 +396,7 @@ describe('useFairnessTreeEdit', () => {
   });
 
   describe('Change detection', () => {
-    it('should detect changes when tree name differs from original', () => {
+    it('should detect changes when tree name differs from original', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -395,7 +409,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.hasChanges).toBe(true);
     });
 
-    it('should detect changes when tree data differs from original', () => {
+    it('should detect changes when tree data differs from original', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -408,7 +422,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.hasChanges).toBe(true);
     });
 
-    it('should not detect changes when data is reverted to original', () => {
+    it('should not detect changes when data is reverted to original', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -427,7 +441,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.hasChanges).toBe(false);
     });
 
-    it('should detect changes when selectedOutcomes differ from original', () => {
+    it('should detect changes when selectedOutcomes differ from original', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -440,7 +454,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.hasChanges).toBe(true);
     });
 
-    it('should detect changes when metrics differ from original', () => {
+    it('should detect changes when metrics differ from original', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -455,7 +469,7 @@ describe('useFairnessTreeEdit', () => {
   });
 
   describe('Mutation state', () => {
-    it('should provide mutation state', () => {
+    it('should provide mutation state', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -480,30 +494,37 @@ describe('useFairnessTreeEdit', () => {
         { wrapper: createWrapper() }
       );
 
-      const savePromise = result.current.handleSaveChanges();
+      let savePromise;
+      await act(async () => {
+        savePromise = result.current.handleSaveChanges();
+      });
 
       // The mutation state is not immediately available, so we need to wait
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       expect(result.current.mutation.isPending).toBe(true);
 
-      resolvePromise!({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true }),
-      } as Response);
+      await act(async () => {
+        resolvePromise!({
+          ok: true,
+          status: 200,
+          json: async () => ({ success: true }),
+        } as Response);
 
-      await savePromise;
+        await savePromise;
 
-      // Wait for the mutation state to update
-      await new Promise(resolve => setTimeout(resolve, 0));
+        // Wait for the mutation state to update
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       expect(result.current.mutation.isPending).toBe(false);
     });
   });
 
   describe('Edge cases', () => {
-    it('should handle tree with minimal data', () => {
+    it('should handle tree with minimal data', async () => {
       const minimalTree: FairnessTree = {
         gid: 'test-gid',
         cid: 'test-cid',
@@ -531,7 +552,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.metrics).toEqual([]);
     });
 
-    it('should handle tree with complex data structure', () => {
+    it('should handle tree with complex data structure', async () => {
       const complexTree: FairnessTree = {
         ...mockTree,
         data: {
@@ -558,7 +579,7 @@ describe('useFairnessTreeEdit', () => {
       });
     });
 
-    it('should handle empty string values', () => {
+    it('should handle empty string values', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }
@@ -571,7 +592,7 @@ describe('useFairnessTreeEdit', () => {
       expect(result.current.treeData.sensitiveFeature).toEqual(['']);
     });
 
-    it('should handle null and undefined values', () => {
+    it('should handle null and undefined values', async () => {
       const { result } = renderHook(
         () => useFairnessTreeEdit({ tree: mockTree, onClose: mockOnClose }),
         { wrapper: createWrapper() }

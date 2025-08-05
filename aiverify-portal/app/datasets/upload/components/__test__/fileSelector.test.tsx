@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { FileSelector, FileSelectorHandle } from '../fileSelector';
 import { FileUpload } from '@/app/datasets/upload/types';
 
@@ -92,23 +92,27 @@ describe('FileSelector', () => {
   });
 
   describe('Rendering', () => {
-    it('renders file selector with correct structure', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('renders file selector with correct structure', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       expect(screen.getByTestId('file-select')).toBeInTheDocument();
       expect(screen.getByTestId('file-select-input')).toBeInTheDocument();
       expect(screen.getByTestId('file-select-dropzone')).toBeInTheDocument();
     });
 
-    it('renders with custom className', () => {
+    it('renders with custom className', async () => {
       const { container } = render(<FileSelector ref={React.createRef()} className="custom-class" />);
       
       const outerDiv = container.firstChild?.firstChild as HTMLElement;
       expect(outerDiv).toHaveClass('custom-class');
     });
 
-    it('renders empty state initially', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('renders empty state initially', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       expect(screen.getByText('Selected Files')).toBeInTheDocument();
       expect(screen.getByText('Before uploading...')).toBeInTheDocument();
@@ -116,13 +120,17 @@ describe('FileSelector', () => {
   });
 
   describe('File Selection', () => {
-    it('handles single file selection', () => {
+    it('handles single file selection', async () => {
       const mockOnFilesUpdated = jest.fn();
-      render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      });
       
       // Simulate file selection by calling the handler directly
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       expect(mockOnFilesUpdated).toHaveBeenCalledWith(expect.arrayContaining([
@@ -130,9 +138,11 @@ describe('FileSelector', () => {
       ]));
     });
 
-    it('handles multiple file selection', () => {
+    it('handles multiple file selection', async () => {
       const mockOnFilesUpdated = jest.fn();
-      render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      });
       
       const files = [
         new File(['content1'], 'file1.csv', { type: 'text/csv' }),
@@ -141,7 +151,9 @@ describe('FileSelector', () => {
       
       // Simulate file selection by calling the handler directly
       if (mockOnFilesSelected) {
-        mockOnFilesSelected(files);
+        await act(async () => {
+          mockOnFilesSelected(files);
+        });
       }
       
       expect(mockOnFilesUpdated).toHaveBeenCalledWith(expect.arrayContaining([
@@ -152,13 +164,17 @@ describe('FileSelector', () => {
   });
 
   describe('File Removal', () => {
-    it('removes file when remove button is clicked', () => {
+    it('removes file when remove button is clicked', async () => {
       const mockOnFilesUpdated = jest.fn();
-      render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} onFilesUpdated={mockOnFilesUpdated} />);
+      });
       
       // First add a file
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       // The close icon should be available after file selection
@@ -171,11 +187,15 @@ describe('FileSelector', () => {
 
   describe('Upload Functionality', () => {
     it('uploads files when upload function is called', async () => {
-      render(<FileSelector ref={React.createRef()} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       // The component should handle uploads internally
@@ -184,8 +204,10 @@ describe('FileSelector', () => {
       });
     });
 
-    it('disables upload when no files are selected', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('disables upload when no files are selected', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       // No upload button is shown by default
       expect(screen.queryByTestId('button-upload-selected-files')).not.toBeInTheDocument();
@@ -196,11 +218,17 @@ describe('FileSelector', () => {
     it('shows uploading state during upload', async () => {
       mockUploadDatasetFile.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
       
-      render(<FileSelector ref={React.createRef()} />);
+      await act(async () => {
+      
+        render(<FileSelector ref={React.createRef()} />);
+      
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       // Component should handle upload state internally
@@ -210,11 +238,15 @@ describe('FileSelector', () => {
     });
 
     it('shows file status after upload attempt', async () => {
-      render(<FileSelector ref={React.createRef()} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       await waitFor(() => {
@@ -227,11 +259,17 @@ describe('FileSelector', () => {
     it('handles upload errors gracefully', async () => {
       mockUploadDatasetFile.mockRejectedValue(new Error('Network error'));
       
-      render(<FileSelector ref={React.createRef()} />);
+      await act(async () => {
+      
+        render(<FileSelector ref={React.createRef()} />);
+      
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       await waitFor(() => {
@@ -239,8 +277,10 @@ describe('FileSelector', () => {
       });
     });
 
-    it('handles empty file selection', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('handles empty file selection', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       // Should not crash and should not show any files
       expect(screen.getByTestId('file-select-input')).toBeInTheDocument();
@@ -248,13 +288,17 @@ describe('FileSelector', () => {
   });
 
   describe('Imperative Handle', () => {
-    it('exposes getFiles method', () => {
+    it('exposes getFiles method', async () => {
       const ref = React.createRef<FileSelectorHandle>();
-      render(<FileSelector ref={ref} />);
+      await act(async () => {
+        render(<FileSelector ref={ref} />);
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       // Since the mock doesn't actually track files internally, we'll test that the method exists
@@ -262,13 +306,17 @@ describe('FileSelector', () => {
       expect(typeof ref.current?.getFiles).toBe('function');
     });
 
-    it('exposes clearFiles method', () => {
+    it('exposes clearFiles method', async () => {
       const ref = React.createRef<FileSelectorHandle>();
-      render(<FileSelector ref={ref} />);
+      await act(async () => {
+        render(<FileSelector ref={ref} />);
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       
       // Since the mock doesn't actually track files internally, we'll test that the method exists
@@ -278,15 +326,19 @@ describe('FileSelector', () => {
   });
 
   describe('Accessibility', () => {
-    it('has proper ARIA labels and roles', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('has proper ARIA labels and roles', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       const fileInput = screen.getByTestId('file-select-input');
       expect(fileInput).toHaveAttribute('type', 'file');
     });
 
-    it('supports keyboard navigation', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('supports keyboard navigation', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       const viewDatasetsButton = screen.getByTestId('button-view-datasets');
       viewDatasetsButton.focus();
@@ -296,28 +348,36 @@ describe('FileSelector', () => {
   });
 
   describe('Edge Cases', () => {
-    it('handles files with special characters in names', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('handles files with special characters in names', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       const specialFile = new File(['content'], 'test@#$%^&*().csv', { type: 'text/csv' });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([specialFile]);
+        await act(async () => {
+          mockOnFilesSelected([specialFile]);
+        });
       }
       
       // Should handle the file without crashing
       expect(screen.getByTestId('file-select-input')).toBeInTheDocument();
     });
 
-    it('handles very large files', () => {
-      render(<FileSelector ref={React.createRef()} />);
+    it('handles very large files', async () => {
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       const largeFile = new File(['x'.repeat(1000000)], 'large.csv', { type: 'text/csv' });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([largeFile]);
+        await act(async () => {
+          mockOnFilesSelected([largeFile]);
+        });
       }
       
       // Should handle the file without crashing
@@ -325,17 +385,23 @@ describe('FileSelector', () => {
     });
 
     it('handles multiple file selections', async () => {
-      render(<FileSelector ref={React.createRef()} />);
+      await act(async () => {
+        render(<FileSelector ref={React.createRef()} />);
+      });
       
       // Add a file first
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       expect(screen.getByTestId('file-select-input')).toBeInTheDocument();
       
       // Second selection
       if (mockOnFilesSelected) {
-        mockOnFilesSelected([mockFile]);
+        await act(async () => {
+          mockOnFilesSelected([mockFile]);
+        });
       }
       expect(screen.getByTestId('file-select-input')).toBeInTheDocument();
     });

@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDeleteModel } from '../useDeleteModel';
 import { TestModel } from '../../utils/types';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 // Mock the fetch function
 global.fetch = jest.fn();

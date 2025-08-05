@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import useUploadAPI from '../useUploadAPI';
 
@@ -99,7 +99,7 @@ describe('useUploadAPI', () => {
     });
   });
 
-  it('provides mutation state information', () => {
+  it('provides mutation state information', async () => {
     const { result } = renderHook(() => useUploadAPI(), {
       wrapper: createWrapper(),
     });
@@ -196,7 +196,9 @@ describe('useUploadAPI', () => {
     const formData = new FormData();
     formData.append('api_config', new File(['{"url": "https://api.example.com"}'], 'config.json'));
 
-    await expect(result.current.mutateAsync(formData)).rejects.toThrow('Request timeout');
+    await act(async () => {
+      await expect(result.current.mutateAsync(formData)).rejects.toThrow('Request timeout');
+    });
   });
 
   it('handles successful response with different data structures', async () => {

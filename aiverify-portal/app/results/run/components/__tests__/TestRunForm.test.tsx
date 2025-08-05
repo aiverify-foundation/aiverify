@@ -82,9 +82,9 @@ jest.mock('@rjsf/core', () => {
     className, 
     liveValidate, 
     showErrorList, 
-    key, 
     templates,
-    validator 
+    validator,
+    ...rest
   }: any) {
     const handleSubmit = (e: any) => {
       e.preventDefault();

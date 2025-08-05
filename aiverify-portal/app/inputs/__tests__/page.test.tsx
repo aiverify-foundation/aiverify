@@ -34,7 +34,22 @@ jest.mock('@/lib/components/IconSVG', () => ({
 
 // Mock Card component
 jest.mock('@/lib/components/card/card', () => ({
-  Card: ({ children, className, ...props }: any) => (
+  Card: ({ 
+    children, 
+    className, 
+    enableTiltEffect,
+    tiltSpeed,
+    tiltRotation,
+    enableTiltGlare,
+    tiltMaxGlare,
+    size,
+    cardColor,
+    width,
+    height,
+    style,
+    onClick,
+    ...props 
+  }: any) => (
     <div data-testid="card" className={className} {...props}>
       {children}
     </div>

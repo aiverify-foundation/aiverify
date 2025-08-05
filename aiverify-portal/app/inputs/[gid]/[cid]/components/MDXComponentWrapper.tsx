@@ -4,6 +4,8 @@ import React from 'react';
 interface HTMLAttributes {
   class?: string;
   for?: string;
+  tabindex?: string | number;
+  readonly?: boolean | string;
   accesskey?: string;
   autocomplete?: string;
   contenteditable?: string | boolean;
@@ -19,14 +21,29 @@ const convertAttributes = (props: HTMLAttributes): Record<string, unknown> => {
   const convertedProps: Record<string, unknown> = { ...props };
 
   // Convert common HTML attributes to their corresponding DOM properties
-  if (props.class) {
+  if (props.class !== undefined) {
     convertedProps.className = props.class;
     delete convertedProps.class;
   }
 
-  if (props.for) {
+  if (props.for !== undefined) {
     convertedProps.htmlFor = props.for;
     delete convertedProps.for;
+  }
+
+  if (props.tabindex) {
+    convertedProps.tabIndex = props.tabindex;
+    delete convertedProps.tabindex;
+  }
+
+  if (props.readonly !== undefined) {
+    // Convert string "true"/"false" to boolean
+    if (typeof props.readonly === 'string') {
+      convertedProps.readOnly = props.readonly === 'true';
+    } else {
+      convertedProps.readOnly = props.readonly;
+    }
+    delete convertedProps.readonly;
   }
 
   // Add more conversions as necessary. These are less common, but good to handle.
@@ -79,6 +96,9 @@ const MDXComponentWrapper: React.FC<MDXComponentWrapperProps> = ({
   component: Component,
   ...props
 }) => {
+  if (!Component) {
+    throw new Error('MDXComponentWrapper: component prop is required');
+  }
   const convertedProps = convertAttributes(props);
   return <Component {...convertedProps} />;
 };

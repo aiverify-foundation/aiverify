@@ -141,21 +141,27 @@ describe('DatasetFolderUploader', () => {
   });
 
   describe('Rendering', () => {
-    it('renders folder uploader with correct structure', () => {
-      render(<DatasetFolderUploader />);
+    it('renders folder uploader with correct structure', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       expect(screen.getByText('Drag & drop folders')).toBeInTheDocument();
       expect(screen.getByTestId('button-upload-0-folders')).toBeInTheDocument();
     });
 
-    it('renders empty state initially', () => {
-      render(<DatasetFolderUploader />);
+    it('renders empty state initially', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       expect(screen.getByText('Before uploading...')).toBeInTheDocument();
     });
 
-    it('renders folder input with correct attributes', () => {
-      render(<DatasetFolderUploader />);
+    it('renders folder input with correct attributes', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       expect(folderInput).toHaveAttribute('type', 'file');
@@ -163,8 +169,10 @@ describe('DatasetFolderUploader', () => {
       expect(folderInput).toHaveAttribute('multiple', '');
     });
 
-    it('renders modal with correct height calculation', () => {
-      render(<DatasetFolderUploader />);
+    it('renders modal with correct height calculation', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Initially no modal should be visible
       expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
@@ -172,8 +180,10 @@ describe('DatasetFolderUploader', () => {
   });
 
   describe('Folder Selection', () => {
-    it('handles folder selection via input', () => {
-      render(<DatasetFolderUploader />);
+    it('handles folder selection via input', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
@@ -188,8 +198,10 @@ describe('DatasetFolderUploader', () => {
       expect(screen.getByText('file2.csv')).toBeInTheDocument();
     });
 
-    it('handles multiple folder selection', () => {
-      render(<DatasetFolderUploader />);
+    it('handles multiple folder selection', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files1 = [new File(['content1'], 'file1.csv', { type: 'text/csv' })];
@@ -199,24 +211,34 @@ describe('DatasetFolderUploader', () => {
       const fileList2 = createMockFileList(files2);
       
       // Select first folder
-      fireEvent.change(folderInput, { target: { files: fileList1 } });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: fileList1 } });
+      });
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
       
       // Select second folder (this replaces the first one based on the test output)
-      fireEvent.change(folderInput, { target: { files: fileList2 } });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: fileList2 } });
+      });
       // Based on the test output, folder1 is kept and folder2 is not found
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
       // folder2 is not present in the list
       expect(screen.queryAllByText(/folder2/)).toHaveLength(0);
     });
 
-    it('groups files by folder name', () => {
-      render(<DatasetFolderUploader />);
+    it('groups files by folder name', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       // Should show folder name and files grouped under it
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
@@ -224,26 +246,38 @@ describe('DatasetFolderUploader', () => {
       expect(screen.getByText('file2.csv')).toBeInTheDocument();
     });
 
-    it('handles empty file list', () => {
-      render(<DatasetFolderUploader />);
+    it('handles empty file list', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
-      fireEvent.change(folderInput, { target: { files: [] } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: [] } });
+      
+      });
       
       // Should handle gracefully
       expect(screen.getByText('(0 folders, 0 total files)')).toBeInTheDocument();
     });
 
-    it('handles files without webkitRelativePath', () => {
-      render(<DatasetFolderUploader />);
+    it('handles files without webkitRelativePath', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithoutPath = [
         new File(['content'], 'file1.csv', { type: 'text/csv' }),
       ];
       
-      fireEvent.change(folderInput, { target: { files: filesWithoutPath } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: filesWithoutPath } });
+      
+      });
       
       // Should handle gracefully - files without webkitRelativePath are ignored
       expect(screen.getByText('(0 folders, 0 total files)')).toBeInTheDocument();
@@ -251,18 +285,26 @@ describe('DatasetFolderUploader', () => {
   });
 
   describe('Folder Removal', () => {
-    it('removes folder when remove button is clicked', () => {
-      render(<DatasetFolderUploader />);
+    it('removes folder when remove button is clicked', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList([mockFiles[0]]);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
       
       const removeButton = screen.getByTestId('button-remove');
-      fireEvent.click(removeButton);
+      await act(async () => {
+        fireEvent.click(removeButton);
+      });
       // Close the modal if present
       const modalClose = screen.queryByTestId('modal-close');
       if (modalClose) fireEvent.click(modalClose);
@@ -270,8 +312,10 @@ describe('DatasetFolderUploader', () => {
       expect(screen.queryAllByText(/folder1/).length).toBeLessThanOrEqual(1);
     });
 
-    it('removes specific folder from multiple folders', () => {
-      render(<DatasetFolderUploader />);
+    it('removes specific folder from multiple folders', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
@@ -308,8 +352,14 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: fileList1 } });
-      fireEvent.change(folderInput, { target: { files: fileList2 } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList1 } });
+      
+      });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: fileList2 } });
+      });
       
       // After the second selection, at least one folder should be present
       const folder1Count = screen.queryAllByText(/folder1/).length;
@@ -319,7 +369,9 @@ describe('DatasetFolderUploader', () => {
       // Remove a folder if present
       const removeButtons = screen.queryAllByTestId('button-remove');
       if (removeButtons.length > 0) {
-        fireEvent.click(removeButtons[0]);
+        await act(async () => {
+          fireEvent.click(removeButtons[0]);
+        });
         // Close the modal if present
         const modalClose = screen.queryByTestId('modal-close');
         if (modalClose) fireEvent.click(modalClose);
@@ -330,18 +382,26 @@ describe('DatasetFolderUploader', () => {
       }
     });
 
-    it('clears all folders when clear all button is clicked', () => {
-      render(<DatasetFolderUploader />);
+    it('clears all folders when clear all button is clicked', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
       
       const clearAllButton = screen.getByTestId('button-clear-all');
-      fireEvent.click(clearAllButton);
+      await act(async () => {
+        fireEvent.click(clearAllButton);
+      });
       // Close the modal if present
       const modalClose = screen.queryByTestId('modal-close');
       if (modalClose) fireEvent.click(modalClose);
@@ -352,44 +412,62 @@ describe('DatasetFolderUploader', () => {
 
   describe('Upload Functionality', () => {
     it('uploads folders when upload button is clicked', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       expect(screen.getAllByText(/folder1/)).toHaveLength(2);
       
       const uploadButton = screen.getByTestId(/button-upload-\d+-folder/);
-      fireEvent.click(uploadButton);
+      await act(async () => {
+        fireEvent.click(uploadButton);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
       });
     });
 
-    it('enables upload button when folders are selected', () => {
-      render(<DatasetFolderUploader />);
+    it('enables upload button when folders are selected', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList([mockFiles[0]]); // Single folder
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const uploadButton = screen.getByTestId('button-upload-1-folder');
       expect(uploadButton).not.toBeDisabled();
     });
 
-    it('disables upload button when no folders are selected', () => {
-      render(<DatasetFolderUploader />);
+    it('disables upload button when no folders are selected', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const uploadButton = screen.getByTestId('button-upload-0-folders');
       expect(uploadButton).toBeDisabled();
     });
 
-    it('shows correct button text for single vs multiple folders', () => {
-      render(<DatasetFolderUploader />);
+    it('shows correct button text for single vs multiple folders', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Initially shows "UPLOAD 0 FOLDERS"
       expect(screen.getByTestId('button-upload-0-folders')).toHaveTextContent('UPLOAD 0 FOLDERS');
@@ -406,8 +484,10 @@ describe('DatasetFolderUploader', () => {
   });
 
   describe('Drag and Drop', () => {
-    it('handles folder drop', () => {
-      render(<DatasetFolderUploader />);
+    it('handles folder drop', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -436,7 +516,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles drop with individual files', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -460,8 +542,10 @@ describe('DatasetFolderUploader', () => {
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles drop fallback when items is null', () => {
-      render(<DatasetFolderUploader />);
+    it('handles drop fallback when items is null', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -480,22 +564,30 @@ describe('DatasetFolderUploader', () => {
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('prevents default on drag over', () => {
-      render(<DatasetFolderUploader />);
+    it('prevents default on drag over', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dragOverEvent = {
         preventDefault: jest.fn(),
       };
       
-      fireEvent.dragOver(dropZone, dragOverEvent as any);
+      await act(async () => {
+      
+        fireEvent.dragOver(dropZone, dragOverEvent as any);
+      
+      });
       
       // The component handles drag over internally, we just verify it doesn't crash
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles directory traversal', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -537,7 +629,7 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      act(() => {
+      await act(async () => {
         fireEvent.drop(dropZone, dropEvent as any);
       });
       
@@ -545,14 +637,20 @@ describe('DatasetFolderUploader', () => {
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles click on dropzone to trigger file input', () => {
+    it('handles click on dropzone to trigger file input', async () => {
       const mockClick = jest.fn();
       mockGetElementById.mockReturnValue({ click: mockClick });
       
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+      
+        render(<DatasetFolderUploader />);
+      
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
-      fireEvent.click(dropZone);
+      await act(async () => {
+        fireEvent.click(dropZone);
+      });
       
       expect(mockGetElementById).toHaveBeenCalledWith('folderInput');
     });
@@ -560,12 +658,18 @@ describe('DatasetFolderUploader', () => {
 
   describe('Upload States', () => {
     it('shows uploading state during upload', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const uploadButton = screen.getByTestId(/button-upload-\d+-folder/);
       expect(uploadButton).toBeInTheDocument();
@@ -578,15 +682,25 @@ describe('DatasetFolderUploader', () => {
         options?.onSuccess?.();
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const uploadButton = screen.getByTestId(/button-upload-\d+-folder/);
-      fireEvent.click(uploadButton);
+      await act(async () => {
+        fireEvent.click(uploadButton);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -599,15 +713,25 @@ describe('DatasetFolderUploader', () => {
         options?.onError?.(new Error('Upload failed'));
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const uploadButton = screen.getByTestId(/button-upload-\d+-folder/);
-      fireEvent.click(uploadButton);
+      await act(async () => {
+        fireEvent.click(uploadButton);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -617,10 +741,14 @@ describe('DatasetFolderUploader', () => {
 
   describe('Form Submission', () => {
     it('handles submit with no folders selected', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('modal')).toBeInTheDocument();
@@ -629,7 +757,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles submit with empty folder names', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Create a folder with empty name
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -643,7 +773,9 @@ describe('DatasetFolderUploader', () => {
       fireEvent.change(folderInput, { target: { files: fileList } });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('modal')).toBeInTheDocument();
@@ -657,15 +789,25 @@ describe('DatasetFolderUploader', () => {
         options?.onSuccess?.();
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -678,15 +820,25 @@ describe('DatasetFolderUploader', () => {
         options?.onError?.(new Error('Network error'));
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -705,7 +857,11 @@ describe('DatasetFolderUploader', () => {
         }
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       // Add two folders
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -724,11 +880,19 @@ describe('DatasetFolderUploader', () => {
       const fileList1 = createMockFileList(files1);
       const fileList2 = createMockFileList(files2);
       
-      fireEvent.change(folderInput, { target: { files: fileList1 } });
-      fireEvent.change(folderInput, { target: { files: fileList2 } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList1 } });
+      
+      });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: fileList2 } });
+      });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledTimes(2);
@@ -737,8 +901,10 @@ describe('DatasetFolderUploader', () => {
   });
 
   describe('Modal Functionality', () => {
-    it('closes modal when close button is clicked', () => {
-      render(<DatasetFolderUploader />);
+    it('closes modal when close button is clicked', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Trigger modal to show
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -750,14 +916,18 @@ describe('DatasetFolderUploader', () => {
       
       // Close modal
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Modal should be hidden
       expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
     });
 
     it('shows modal with correct height based on upload progress', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Trigger upload to show progress
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -772,7 +942,9 @@ describe('DatasetFolderUploader', () => {
       });
       
       const form = document.querySelector('form');
-      fireEvent.submit(form!);
+      await act(async () => {
+        fireEvent.submit(form!);
+      });
       
       await waitFor(() => {
         const modal = screen.getByTestId('modal');
@@ -790,15 +962,25 @@ describe('DatasetFolderUploader', () => {
         options?.onError?.(new Error('Network error'));
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
       
-      fireEvent.change(folderInput, { target: { files: fileList } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList } });
+      
+      });
       
       const uploadButton = screen.getByTestId(/button-upload-\d+-folder/);
-      fireEvent.click(uploadButton);
+      await act(async () => {
+        fireEvent.click(uploadButton);
+      });
       
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalled();
@@ -806,7 +988,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles file reading errors in traverseDirectory', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -832,7 +1016,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles directory reading errors', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -858,8 +1044,10 @@ describe('DatasetFolderUploader', () => {
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles drag and drop with proper file handling', () => {
-      render(<DatasetFolderUploader />);
+    it('handles drag and drop with proper file handling', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -870,12 +1058,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles getAsFile not being a function', () => {
-      render(<DatasetFolderUploader />);
+    it('handles getAsFile not being a function', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -896,12 +1090,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles traverseDirectory with nested directory errors', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -936,12 +1136,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles empty webkitRelativePath gracefully', () => {
-      render(<DatasetFolderUploader />);
+    it('handles empty webkitRelativePath gracefully', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithEmptyPath = [
@@ -952,14 +1158,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithEmptyPath) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithEmptyPath) } });
+      
+      });
       
       // Should handle gracefully
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
-    it('handles malformed webkitRelativePath', () => {
-      render(<DatasetFolderUploader />);
+    it('handles malformed webkitRelativePath', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithMalformedPath = [
@@ -970,7 +1182,11 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithMalformedPath) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithMalformedPath) } });
+      
+      });
       
       // Should handle gracefully
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
@@ -979,7 +1195,9 @@ describe('DatasetFolderUploader', () => {
 
   describe('Validation Edge Cases', () => {
     it('handles folders with whitespace-only names', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithWhitespaceName = [
@@ -990,18 +1208,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithWhitespaceName) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithWhitespaceName) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText(/UPLOAD \d+ FOLDER/);
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Should show validation message
       await waitFor(() => {
@@ -1010,7 +1236,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles folders with tab characters in names', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithTabName = [
@@ -1021,18 +1249,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithTabName) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithTabName) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText(/UPLOAD \d+ FOLDER/);
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Should show validation message
       await waitFor(() => {
@@ -1041,7 +1277,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles folders with newline characters in names', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const filesWithNewlineName = [
@@ -1052,18 +1290,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithNewlineName) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(filesWithNewlineName) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText(/UPLOAD \d+ FOLDER/);
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Should show validation message
       await waitFor(() => {
@@ -1088,7 +1334,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
@@ -1108,27 +1358,41 @@ describe('DatasetFolderUploader', () => {
       const fileList1 = createMockFileList(files1);
       const fileList2 = createMockFileList(files2);
       
-      fireEvent.change(folderInput, { target: { files: fileList1 } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList1 } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton1 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton1);
+      await act(async () => {
+        fireEvent.click(closeButton1);
+      });
       
-      fireEvent.change(folderInput, { target: { files: fileList2 } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: fileList2 } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton2 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton2);
+      await act(async () => {
+        fireEvent.click(closeButton2);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 2 FOLDERS');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results - first folder succeeds, second fails
       await waitFor(() => {
@@ -1145,7 +1409,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -1155,18 +1423,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results
       await waitFor(() => {
@@ -1183,7 +1459,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -1193,18 +1473,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results
       await waitFor(() => {
@@ -1220,7 +1508,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -1230,18 +1522,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results - the component shows the error message in the progress
       await waitFor(() => {
@@ -1251,7 +1551,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles multiple folder addition with plural message', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
@@ -1262,14 +1564,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton1 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton1);
+      await act(async () => {
+        fireEvent.click(closeButton1);
+      });
       
       // Add second folder
       const files2 = [new File(['content2'], 'file2.csv', { type: 'text/csv' })];
@@ -1278,7 +1586,11 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      
+      });
       
       // Should show singular message for the second folder
       await waitFor(() => {
@@ -1287,7 +1599,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles multiple folder replacement with plural message', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
@@ -1298,14 +1612,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton1 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton1);
+      await act(async () => {
+        fireEvent.click(closeButton1);
+      });
       
       // Add second folder
       const files2 = [new File(['content2'], 'file2.csv', { type: 'text/csv' })];
@@ -1314,14 +1634,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder: folder2/)).toBeInTheDocument();
       });
       const closeButton2 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton2);
+      await act(async () => {
+        fireEvent.click(closeButton2);
+      });
       
       // Replace both folders with same names but different content
       const files3 = [new File(['content3'], 'file3.csv', { type: 'text/csv' })];
@@ -1336,7 +1662,11 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList([...files3, ...files4]) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList([...files3, ...files4]) } });
+      
+      });
       
       // Should show plural replacement message
       await waitFor(() => {
@@ -1352,7 +1682,11 @@ describe('DatasetFolderUploader', () => {
         options?.onSuccess?.();
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1373,18 +1707,26 @@ describe('DatasetFolderUploader', () => {
         });
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Verify FormData was created correctly
       await waitFor(() => {
@@ -1395,7 +1737,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles multiple folders with plural button text', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       
@@ -1406,14 +1750,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files1) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton1 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton1);
+      await act(async () => {
+        fireEvent.click(closeButton1);
+      });
       
       // Add second folder
       const files2 = [new File(['content2'], 'file2.csv', { type: 'text/csv' })];
@@ -1422,14 +1772,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files2) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder: folder2/)).toBeInTheDocument();
       });
       const closeButton2 = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton2);
+      await act(async () => {
+        fireEvent.click(closeButton2);
+      });
       
       // Should show plural button text
       await waitFor(() => {
@@ -1438,7 +1794,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with more than 3 files in subfolder display', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1457,14 +1815,20 @@ describe('DatasetFolderUploader', () => {
         });
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should show "and X more file(s)" message
       await waitFor(() => {
@@ -1475,7 +1839,9 @@ describe('DatasetFolderUploader', () => {
 
   describe('Modal Height Calculation', () => {
     it('calculates modal height correctly with no progress', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       // Trigger modal to show without upload progress
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -1495,7 +1861,11 @@ describe('DatasetFolderUploader', () => {
         }, 100);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
@@ -1506,11 +1876,15 @@ describe('DatasetFolderUploader', () => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form - use regex to match any number of folders
       const submitButton = screen.getByText(/UPLOAD \d+ FOLDER/);
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for progress modal with calculated height
       await waitFor(() => {
@@ -1537,7 +1911,11 @@ describe('DatasetFolderUploader', () => {
         }, 200);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const fileList = createMockFileList(mockFiles);
@@ -1548,11 +1926,15 @@ describe('DatasetFolderUploader', () => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form - use regex to match any number of folders
       const submitButton = screen.getByText(/UPLOAD \d+ FOLDER/);
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for progress modal with limited height
       await waitFor(() => {
@@ -1573,7 +1955,11 @@ describe('DatasetFolderUploader', () => {
         options?.onSuccess?.();
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1590,14 +1976,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Wait for folder to be visible
       await waitFor(() => {
@@ -1606,7 +1998,9 @@ describe('DatasetFolderUploader', () => {
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Verify FormData was created correctly
       await waitFor(() => {
@@ -1619,7 +2013,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles FormData creation with undefined webkitRelativePath', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1629,7 +2025,11 @@ describe('DatasetFolderUploader', () => {
       // Don't define webkitRelativePath at all - it will be undefined
       // This tests the case where the property doesn't exist
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Since webkitRelativePath is undefined, no folders should be added
       // But the component actually adds the file with an empty folder name
@@ -1639,7 +2039,9 @@ describe('DatasetFolderUploader', () => {
 
   describe('Additional Branch Coverage Tests', () => {
     it('handles traverseDirectory with empty directory', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1660,12 +2062,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles traverseDirectory with mixed file and directory entries', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1708,12 +2116,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles handleDrop with no new folders', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1728,12 +2142,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles handleDrop with non-file items', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1748,12 +2168,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles handleDrop with individual files that have getAsFile', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1774,12 +2200,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     it('handles handleDrop with individual files that return null from getAsFile', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1800,7 +2232,11 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
@@ -1812,7 +2248,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -1822,18 +2262,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results - should not show failed folders section
       await waitFor(() => {
@@ -1850,7 +2298,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -1860,18 +2312,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results - should show failed folders section
       await waitFor(() => {
@@ -1881,7 +2341,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with webkitRelativePath that is not a string', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1898,14 +2360,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should handle gracefully
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
     it('handles files with webkitRelativePath that is an object', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -1922,18 +2390,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should handle gracefully
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
-    it('handles resetFileInput when element exists', () => {
+    it('handles resetFileInput when element exists', async () => {
       const mockClick = jest.fn();
       const mockElement = { click: mockClick };
       mockGetElementById.mockReturnValue(mockElement);
       
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+      
+        render(<DatasetFolderUploader />);
+      
+      });
       
       // Trigger file input change to call resetFileInput
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -1943,10 +2419,14 @@ describe('DatasetFolderUploader', () => {
       expect(mockGetElementById).toHaveBeenCalledWith('folderInput');
     });
 
-    it('handles resetFileInput when element does not exist', () => {
+    it('handles resetFileInput when element does not exist', async () => {
       mockGetElementById.mockReturnValue(null);
       
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+      
+        render(<DatasetFolderUploader />);
+      
+      });
       
       // Trigger file input change to call resetFileInput
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
@@ -1956,8 +2436,10 @@ describe('DatasetFolderUploader', () => {
       expect(mockGetElementById).toHaveBeenCalledWith('folderInput');
     });
 
-    it('handles handleDrop with items being null and files fallback', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items being null and files fallback', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1968,12 +2450,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with empty items array', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with empty items array', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -1983,12 +2471,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have no webkitGetAsEntry method', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have no webkitGetAsEntry method', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2003,12 +2497,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have no getAsFile method', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have no getAsFile method', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2029,12 +2529,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have getAsFile but it returns null', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have getAsFile but it returns null', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2055,12 +2561,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have getAsFile but it returns undefined', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have getAsFile but it returns undefined', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2081,12 +2593,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have getAsFile but it throws an error', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have getAsFile but it throws an error', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2109,12 +2627,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry but it throws an error', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry but it throws an error', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2131,12 +2655,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry returning a file entry', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry returning a file entry', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2156,12 +2686,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry returning a directory entry', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry returning a directory entry', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2190,12 +2726,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry returning neither file nor directory', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry returning neither file nor directory', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2214,12 +2756,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry returning null', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry returning null', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2234,12 +2782,18 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
-    it('handles handleDrop with items that have webkitGetAsEntry returning undefined', () => {
-      render(<DatasetFolderUploader />);
+    it('handles handleDrop with items that have webkitGetAsEntry returning undefined', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const dropZone = screen.getByText('Drag & drop folders');
       const dropEvent = {
@@ -2254,13 +2808,19 @@ describe('DatasetFolderUploader', () => {
         },
       };
       
-      fireEvent.drop(dropZone, dropEvent as any);
+      await act(async () => {
+      
+        fireEvent.drop(dropZone, dropEvent as any);
+      
+      });
       expect(dropZone).toBeInTheDocument();
     });
 
     // Additional tests for uncovered branches
-    it('handles files with webkitRelativePath that is undefined', () => {
-      render(<DatasetFolderUploader />);
+    it('handles files with webkitRelativePath that is undefined', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2268,15 +2828,19 @@ describe('DatasetFolderUploader', () => {
       ];
       
       // Don't define webkitRelativePath at all
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      });
       
       // Should handle gracefully - no folders added
       // But the component actually adds the file with an empty folder name
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
-    it('handles files with empty webkitRelativePath', () => {
-      render(<DatasetFolderUploader />);
+    it('handles files with empty webkitRelativePath', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2288,14 +2852,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should handle gracefully - empty path results in empty folder name
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
-    it('handles files with webkitRelativePath that has no slashes', () => {
-      render(<DatasetFolderUploader />);
+    it('handles files with webkitRelativePath that has no slashes', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2307,14 +2877,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should handle gracefully - the entire string becomes the folder name
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
-    it('handles files with webkitRelativePath that has multiple slashes', () => {
-      render(<DatasetFolderUploader />);
+    it('handles files with webkitRelativePath that has multiple slashes', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2326,7 +2902,11 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should handle gracefully - first part becomes folder name
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
@@ -2340,7 +2920,11 @@ describe('DatasetFolderUploader', () => {
         }, 50);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -2350,18 +2934,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Check for final results - the component shows the error message in the progress
       await waitFor(() => {
@@ -2371,7 +2963,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with more than 3 files in subfolder display', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2390,14 +2984,20 @@ describe('DatasetFolderUploader', () => {
         });
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should show "and X more file(s)" message
       await waitFor(() => {
@@ -2406,7 +3006,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with exactly 3 files in subfolder display', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2423,14 +3025,20 @@ describe('DatasetFolderUploader', () => {
         });
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should not show "and X more file(s)" message for exactly 3 files
       await waitFor(() => {
@@ -2439,7 +3047,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with pathParts.length > 2 in display', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2452,14 +3062,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should show the correct display path
       await waitFor(() => {
@@ -2468,7 +3084,9 @@ describe('DatasetFolderUploader', () => {
     });
 
     it('handles files with pathParts.length <= 2 in display', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2481,14 +3099,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should show just the filename
       await waitFor(() => {
@@ -2496,8 +3120,10 @@ describe('DatasetFolderUploader', () => {
       });
     });
 
-    it('handles upload button text with singular form', () => {
-      render(<DatasetFolderUploader />);
+    it('handles upload button text with singular form', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -2507,14 +3133,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should show singular form
       expect(screen.getByText('UPLOAD 1 FOLDER')).toBeInTheDocument();
     });
 
-    it('handles upload button text with plural form', () => {
-      render(<DatasetFolderUploader />);
+    it('handles upload button text with plural form', async () => {
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2531,7 +3163,11 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Should show plural form
       expect(screen.getByText('UPLOAD 2 FOLDERS')).toBeInTheDocument();
@@ -2545,7 +3181,11 @@ describe('DatasetFolderUploader', () => {
         }, 100);
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [new File(['content'], 'file1.csv', { type: 'text/csv' })];
@@ -2555,18 +3195,26 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Button should be disabled during upload
       await waitFor(() => {
@@ -2576,7 +3224,9 @@ describe('DatasetFolderUploader', () => {
 
     // Additional tests for uncovered branches
     it('handles files with webkitRelativePath that is undefined in display logic', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2584,21 +3234,27 @@ describe('DatasetFolderUploader', () => {
       ];
       
       // Don't define webkitRelativePath at all
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should handle gracefully in display logic
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
     });
 
     it('handles files with webkitRelativePath that is empty string in display logic', async () => {
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+        render(<DatasetFolderUploader />);
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2610,14 +3266,20 @@ describe('DatasetFolderUploader', () => {
         writable: false,
       });
       
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+      
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Should handle gracefully in display logic
       expect(screen.getByText('(1 folders, 1 total files)')).toBeInTheDocument();
@@ -2631,7 +3293,11 @@ describe('DatasetFolderUploader', () => {
         options?.onSuccess?.();
       });
 
-      render(<DatasetFolderUploader />);
+      await act(async () => {
+
+        render(<DatasetFolderUploader />);
+
+      });
       
       const folderInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       const files = [
@@ -2639,18 +3305,24 @@ describe('DatasetFolderUploader', () => {
       ];
       
       // Don't define webkitRelativePath at all
-      fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      await act(async () => {
+        fireEvent.change(folderInput, { target: { files: createMockFileList(files) } });
+      });
       
       // Wait for modal to appear and close it
       await waitFor(() => {
         expect(screen.getByText(/Added folder/)).toBeInTheDocument();
       });
       const closeButton = screen.getByTestId('modal-close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // Submit the form
       const submitButton = screen.getByText('UPLOAD 1 FOLDER');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Should handle gracefully in upload logic
       await waitFor(() => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FairnessTreeGroupList from '../GroupList';
 
@@ -175,11 +175,13 @@ describe('FairnessTreeGroupList', () => {
     expect(lastUpdatedElements).toHaveLength(3);
   });
 
-  it('opens modal when tree card is clicked', () => {
+  it('opens modal when tree card is clicked', async () => {
     render(<FairnessTreeGroupList trees={mockTrees} />);
     
     const cards = screen.getAllByTestId('card');
-    fireEvent.click(cards[0]);
+    await act(async () => {
+      fireEvent.click(cards[0]);
+    });
     
     // The modal should be rendered when a tree is selected
     expect(screen.getByTestId('fairness-tree-mdx-modal')).toBeInTheDocument();
@@ -203,11 +205,13 @@ describe('FairnessTreeGroupList', () => {
     expect(screen.queryByTestId('fairness-tree-mdx-modal')).not.toBeInTheDocument();
   });
 
-  it('filters trees based on search query', () => {
+  it('filters trees based on search query', async () => {
     render(<FairnessTreeGroupList trees={mockTrees} />);
     
     const searchInput = screen.getByTestId('search-input');
-    fireEvent.change(searchInput, { target: { value: 'Tree 1' } });
+    await act(async () => {
+      fireEvent.change(searchInput, { target: { value: 'Tree 1' } });
+    });
     
     // Since the mock doesn't actually filter, we need to check that all trees are still present
     expect(screen.getByText('Tree 1')).toBeInTheDocument();

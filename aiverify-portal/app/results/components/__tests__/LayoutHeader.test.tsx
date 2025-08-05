@@ -20,14 +20,14 @@ jest.mock('next/link', () => {
 // Mock Icon component
 jest.mock('@/lib/components/IconSVG', () => ({
   Icon: ({ name, size, color, svgClassName, onClick }: any) => (
-    <button
+    <div
       data-testid={`icon-${name}`}
       onClick={onClick}
       style={{ fontSize: size, color }}
       className={svgClassName}
     >
       {name}
-    </button>
+    </div>
   ),
   IconName: {
     ArrowLeft: 'ArrowLeft',
@@ -250,7 +250,8 @@ describe('LayoutHeader', () => {
   it('applies correct styling to bell icon container', () => {
     render(<LayoutHeader />);
     
-    const bellContainer = screen.getByTestId('icon-Bell').closest('div');
+    const bellContainer = screen.getByTestId('icon-Bell').parentElement;
+    // The bell icon container should have the flex items-center classes
     expect(bellContainer).toHaveClass('flex', 'items-center');
   });
 

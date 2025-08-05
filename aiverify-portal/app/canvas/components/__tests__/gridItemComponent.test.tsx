@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { GridItemComponent } from '../gridItemComponent';
 import { WidgetOnGridLayout } from '@/app/canvas/types';
 import { TestModel } from '@/app/models/utils/types';
@@ -270,7 +270,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Rendering', () => {
-    it('renders widget with basic props', () => {
+    it('renders widget with basic props', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -303,7 +303,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-id')).toHaveTextContent('test-widget-id');
     });
 
-    it('renders widget without MDX code', () => {
+    it('renders widget without MDX code', async () => {
       const widgetWithoutMdx = {
         ...mockWidget,
         mdx: null,
@@ -340,7 +340,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByText('Test Widget - test-widget : Missing mdx')).toBeInTheDocument();
     });
 
-    it('renders widget in disabled mode', () => {
+    it('renders widget in disabled mode', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -372,7 +372,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('mdx-component')).toBeInTheDocument();
     });
 
-    it('renders widget without properties', () => {
+    it('renders widget without properties', async () => {
       const widgetWithoutProperties = {
         ...mockWidget,
         properties: [],
@@ -409,7 +409,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('mdx-component')).toBeInTheDocument();
     });
 
-    it('renders widget with placeholder during dragging', () => {
+    it('renders widget with placeholder during dragging', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -449,7 +449,7 @@ describe('GridItemComponent', () => {
       expect(placeholderDiv).toBeInTheDocument();
     });
 
-    it('renders widget with placeholder during resizing', () => {
+    it('renders widget with placeholder during resizing', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -488,7 +488,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('User Interactions', () => {
-    it('shows context menu on mouse enter', () => {
+    it('shows context menu on mouse enter', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -517,7 +517,9 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
     });
@@ -553,11 +555,18 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
 
-      fireEvent.mouseLeave(widgetContainer!);
-      jest.advanceTimersByTime(300);
+      await act(async () => {
+        fireEvent.mouseLeave(widgetContainer!);
+      });
+      
+      await act(async () => {
+        jest.advanceTimersByTime(300);
+      });
 
       await waitFor(() => {
         expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
@@ -566,7 +575,7 @@ describe('GridItemComponent', () => {
       jest.useRealTimers();
     });
 
-    it('handles delete click from context menu', () => {
+    it('handles delete click from context menu', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -595,15 +604,19 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const deleteButton = screen.getByText('Delete');
-      fireEvent.click(deleteButton);
+      await act(async () => {
+        fireEvent.click(deleteButton);
+      });
 
       expect(mockOnDeleteClick).toHaveBeenCalled();
     });
 
-    it('handles edit click from context menu', () => {
+    it('handles edit click from context menu', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -632,15 +645,19 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const editButton = screen.getByText('Edit');
-      fireEvent.click(editButton);
+      await act(async () => {
+        fireEvent.click(editButton);
+      });
 
       expect(mockOnEditClick).toHaveBeenCalledWith('test-widget-id', expect.any(HTMLDivElement), mockWidget);
     });
 
-    it('handles info click from context menu', () => {
+    it('handles info click from context menu', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -669,16 +686,20 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const infoButton = screen.getByText('Info');
-      fireEvent.click(infoButton);
+      await act(async () => {
+        fireEvent.click(infoButton);
+      });
 
       expect(mockOnInfoClick).toHaveBeenCalled();
       expect(screen.getByTestId('widget-properties-drawer')).toBeInTheDocument();
     });
 
-    it('handles widget properties drawer close', () => {
+    it('handles widget properties drawer close', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -707,18 +728,24 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const infoButton = screen.getByText('Info');
-      fireEvent.click(infoButton);
+      await act(async () => {
+        fireEvent.click(infoButton);
+      });
 
       const closeButton = screen.getByText('Close Drawer');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       expect(mockOnWidgetPropertiesClose).toHaveBeenCalled();
     });
 
-    it('handles delete from properties drawer', () => {
+    it('handles delete from properties drawer', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -747,20 +774,26 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const infoButton = screen.getByText('Info');
-      fireEvent.click(infoButton);
+      await act(async () => {
+        fireEvent.click(infoButton);
+      });
 
       const deleteButton = screen.getByText('Delete Widget');
-      fireEvent.click(deleteButton);
+      await act(async () => {
+        fireEvent.click(deleteButton);
+      });
 
       expect(mockOnDeleteClick).toHaveBeenCalled();
     });
   });
 
   describe('Data Handling', () => {
-    it('passes correct properties to MDX component', () => {
+    it('passes correct properties to MDX component', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -797,7 +830,7 @@ describe('GridItemComponent', () => {
       });
     });
 
-    it('handles getIBData function', () => {
+    it('handles getIBData function', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -826,13 +859,15 @@ describe('GridItemComponent', () => {
       );
 
       const getIBDataButton = screen.getByText('Get IB Data');
-      fireEvent.click(getIBDataButton);
+      await act(async () => {
+        fireEvent.click(getIBDataButton);
+      });
 
       // The function should be callable without errors
       expect(getIBDataButton).toBeInTheDocument();
     });
 
-    it('handles getResults function', () => {
+    it('handles getResults function', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -861,13 +896,15 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       // The function should be callable without errors
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifacts function', () => {
+    it('handles getArtifacts function', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -896,13 +933,15 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactsButton = screen.getByText('Get Artifacts');
-      fireEvent.click(getArtifactsButton);
+      await act(async () => {
+        fireEvent.click(getArtifactsButton);
+      });
 
       // The function should be callable without errors
       expect(getArtifactsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifactURL function', () => {
+    it('handles getArtifactURL function', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -931,13 +970,15 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactURLButton = screen.getByText('Get Artifact URL');
-      fireEvent.click(getArtifactURLButton);
+      await act(async () => {
+        fireEvent.click(getArtifactURLButton);
+      });
 
       // The function should be callable without errors
       expect(getArtifactURLButton).toBeInTheDocument();
     });
 
-    it('handles getResults with hasVisitedDataSelection and no matching test result', () => {
+    it('handles getResults with hasVisitedDataSelection and no matching test result', async () => {
       const testResultsUsedWithoutMatch = [
         {
           gid: 'non-existent-algo',
@@ -974,12 +1015,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getResults with hasVisitedDataSelection and no testResultsUsed', () => {
+    it('handles getResults with hasVisitedDataSelection and no testResultsUsed', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1008,12 +1051,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifacts with non-array urls', () => {
+    it('handles getArtifacts with non-array urls', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1042,12 +1087,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactsButton = screen.getByText('Get Artifacts');
-      fireEvent.click(getArtifactsButton);
+      await act(async () => {
+        fireEvent.click(getArtifactsButton);
+      });
 
       expect(getArtifactsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifactURL with non-array urls', () => {
+    it('handles getArtifactURL with non-array urls', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1076,12 +1123,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactURLButton = screen.getByText('Get Artifact URL');
-      fireEvent.click(getArtifactURLButton);
+      await act(async () => {
+        fireEvent.click(getArtifactURLButton);
+      });
 
       expect(getArtifactURLButton).toBeInTheDocument();
     });
 
-    it('handles getArtifactURL with no matching pathname', () => {
+    it('handles getArtifactURL with no matching pathname', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1110,12 +1159,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactURLButton = screen.getByText('Get Artifact URL');
-      fireEvent.click(getArtifactURLButton);
+      await act(async () => {
+        fireEvent.click(getArtifactURLButton);
+      });
 
       expect(getArtifactURLButton).toBeInTheDocument();
     });
 
-    it('handles properties with null values', () => {
+    it('handles properties with null values', async () => {
       const widgetWithNullProperties = {
         ...mockWidget,
         properties: [
@@ -1164,7 +1215,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without data property', () => {
+    it('handles mock data without data property', async () => {
       const widgetWithoutData = {
         ...mockWidget,
         mockdata: [
@@ -1210,7 +1261,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Edge Cases', () => {
-    it('handles widget without gridItemId', () => {
+    it('handles widget without gridItemId', async () => {
       const widgetWithoutId = {
         ...mockWidget,
         gridItemId: undefined,
@@ -1246,7 +1297,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles empty test results used', () => {
+    it('handles empty test results used', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1277,7 +1328,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles empty input block datas used', () => {
+    it('handles empty input block datas used', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1308,7 +1359,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles null model', () => {
+    it('handles null model', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1340,7 +1391,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-model')).toHaveTextContent('null');
     });
 
-    it('handles widget with visited data selection', () => {
+    it('handles widget with visited data selection', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1371,7 +1422,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles useRealData false', () => {
+    it('handles useRealData false', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1402,7 +1453,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with invalid JSON output', () => {
+    it('handles test result with invalid JSON output', async () => {
       const testResultWithInvalidJson = {
         ...mockTestResults[0],
         output: 'invalid json string',
@@ -1438,7 +1489,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with non-object output', () => {
+    it('handles test result with non-object output', async () => {
       const testResultWithNonObjectOutput = {
         ...mockTestResults[0],
         output: 'simple string output',
@@ -1474,7 +1525,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with null output', () => {
+    it('handles test result with null output', async () => {
       const testResultWithNullOutput = {
         ...mockTestResults[0],
         output: null,
@@ -1510,7 +1561,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result without testResultId', () => {
+    it('handles test result without testResultId', async () => {
       const testResultWithoutId = {
         ...mockTestResultsUsed[0],
         testResultId: undefined,
@@ -1546,7 +1597,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data without inputBlockDataId', () => {
+    it('handles input block data without inputBlockDataId', async () => {
       const inputBlockDataWithoutId = {
         ...mockInputBlockDatasUsed[0],
         inputBlockDataId: undefined,
@@ -1582,7 +1633,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data without gid and cid', () => {
+    it('handles input block data without gid and cid', async () => {
       const inputBlockDataWithoutGidCid = {
         ...mockInputBlockDatasUsed[0],
         gid: undefined,
@@ -1619,7 +1670,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result without artifacts', () => {
+    it('handles test result without artifacts', async () => {
       const testResultWithoutArtifacts = {
         ...mockTestResults[0],
         artifacts: undefined,
@@ -1655,7 +1706,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without artifacts', () => {
+    it('handles mock data without artifacts', async () => {
       const widgetWithoutArtifacts = {
         ...mockWidget,
         mockdata: [
@@ -1699,7 +1750,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without data property', () => {
+    it('handles mock data without data property', async () => {
       const widgetWithoutData = {
         ...mockWidget,
         mockdata: [
@@ -1745,7 +1796,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Context Menu Behavior and Positioning', () => {
-    it('prevents context menu from showing in disabled mode', () => {
+    it('prevents context menu from showing in disabled mode', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1774,12 +1825,14 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
     });
 
-    it('hides context menu during dragging', () => {
+    it('hides context menu during dragging', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1809,12 +1862,14 @@ describe('GridItemComponent', () => {
 
       // When dragging, context menu should not be shown even on mouse enter
       const widgetContainer = document.querySelector('.grid-item-root');
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
     });
 
-    it('handles context menu hover events', () => {
+    it('handles context menu hover events', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1843,17 +1898,23 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const hoverButton = screen.getByText('Hover');
-      fireEvent.mouseEnter(hoverButton);
-      fireEvent.mouseLeave(hoverButton);
+      await act(async () => {
+        fireEvent.mouseEnter(hoverButton);
+      });
+      await act(async () => {
+        fireEvent.mouseLeave(hoverButton);
+      });
 
       // Should not throw any errors
       expect(hoverButton).toBeInTheDocument();
     });
 
-    it('handles click outside with editor input class', () => {
+    it('handles click outside with editor input class', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1882,7 +1943,9 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Wait for context menu to appear
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
@@ -1893,14 +1956,16 @@ describe('GridItemComponent', () => {
       document.body.appendChild(editorElement);
 
       // Click on editor element should not close context menu
-      fireEvent.mouseDown(editorElement);
+      await act(async () => {
+        fireEvent.mouseDown(editorElement);
+      });
 
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
 
       document.body.removeChild(editorElement);
     });
 
-    it('handles click outside without editor input class', () => {
+    it('handles click outside without editor input class', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -1929,7 +1994,9 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Create an element without editor input class
       const outsideElement = document.createElement('div');
@@ -1937,14 +2004,16 @@ describe('GridItemComponent', () => {
       document.body.appendChild(outsideElement);
 
       // Click outside should close context menu
-      fireEvent.mouseDown(outsideElement);
+      await act(async () => {
+        fireEvent.mouseDown(outsideElement);
+      });
 
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
 
       document.body.removeChild(outsideElement);
     });
 
-    it('handles ResizeObserver functionality', () => {
+    it('handles ResizeObserver functionality', async () => {
       // Mock ResizeObserver
       const mockResizeObserver = jest.fn();
       mockResizeObserver.mockImplementation((callback) => ({
@@ -1983,7 +2052,7 @@ describe('GridItemComponent', () => {
       expect(mockResizeObserver).toHaveBeenCalled();
     });
 
-    it('handles window scroll and resize events', () => {
+    it('handles window scroll and resize events', async () => {
       const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
       const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
@@ -2015,7 +2084,9 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Context menu should be visible
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
@@ -2025,7 +2096,7 @@ describe('GridItemComponent', () => {
       removeEventListenerSpy.mockRestore();
     });
 
-    it('handles document mousedown events', () => {
+    it('handles document mousedown events', async () => {
       const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
       const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
 
@@ -2057,7 +2128,9 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Context menu should be visible
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
@@ -2067,7 +2140,7 @@ describe('GridItemComponent', () => {
       removeEventListenerSpy.mockRestore();
     });
 
-    it('handles widget properties drawer close effect', () => {
+    it('handles widget properties drawer close effect', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2096,22 +2169,28 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const infoButton = screen.getByText('Info');
-      fireEvent.click(infoButton);
+      await act(async () => {
+        fireEvent.click(infoButton);
+      });
 
       // Properties drawer should be open
       expect(screen.getByTestId('widget-properties-drawer')).toBeInTheDocument();
 
       const closeButton = screen.getByText('Close Drawer');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       // onWidgetPropertiesClose should be called
       expect(mockOnWidgetPropertiesClose).toHaveBeenCalled();
     });
 
-    it('handles edit click with null gridItemRef', () => {
+    it('handles edit click with null gridItemRef', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2140,15 +2219,19 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       const editButton = screen.getByText('Edit');
-      fireEvent.click(editButton);
+      await act(async () => {
+        fireEvent.click(editButton);
+      });
 
       expect(mockOnEditClick).toHaveBeenCalledWith('test-widget-id', expect.any(HTMLDivElement), mockWidget);
     });
 
-    it('handles timeout cleanup on unmount', () => {
+    it('handles timeout cleanup on unmount', async () => {
       const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
 
       const { unmount } = render(
@@ -2183,7 +2266,7 @@ describe('GridItemComponent', () => {
       clearTimeoutSpy.mockRestore();
     });
 
-    it('handles dragging state changes', () => {
+    it('handles dragging state changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2213,7 +2296,9 @@ describe('GridItemComponent', () => {
 
       // Show context menu first
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
 
       // Change to dragging state
@@ -2248,7 +2333,7 @@ describe('GridItemComponent', () => {
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
     });
 
-    it('handles context menu position updates', () => {
+    it('handles context menu position updates', async () => {
       const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
 
       render(
@@ -2279,18 +2364,22 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Context menu should be visible
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
 
       // Trigger scroll event to test position update
-      fireEvent.scroll(window);
+      await act(async () => {
+        fireEvent.scroll(window);
+      });
 
       addEventListenerSpy.mockRestore();
     });
 
-    it('handles context menu without showContextMenu', () => {
+    it('handles context menu without showContextMenu', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2322,7 +2411,7 @@ describe('GridItemComponent', () => {
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
     });
 
-    it('handles widget properties drawer without showWidgetProperties', () => {
+    it('handles widget properties drawer without showWidgetProperties', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2356,7 +2445,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('React.memo functionality', () => {
-    it('memoizes component correctly', () => {
+    it('memoizes component correctly', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2415,7 +2504,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when props change', () => {
+    it('re-renders when props change', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2477,7 +2566,7 @@ describe('GridItemComponent', () => {
       expect(placeholder).toBeInTheDocument();
     });
 
-    it('re-renders when widget changes', () => {
+    it('re-renders when widget changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2537,7 +2626,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when model changes', () => {
+    it('re-renders when model changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2597,7 +2686,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when layout changes', () => {
+    it('re-renders when layout changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2657,7 +2746,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when testResultsUsed changes', () => {
+    it('re-renders when testResultsUsed changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2719,7 +2808,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when inputBlockDatasUsed changes', () => {
+    it('re-renders when inputBlockDatasUsed changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2781,7 +2870,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when hasVisitedDataSelection changes', () => {
+    it('re-renders when hasVisitedDataSelection changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2839,7 +2928,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when requiredTestCount changes', () => {
+    it('re-renders when requiredTestCount changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2897,7 +2986,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('re-renders when selectedTestCount changes', () => {
+    it('re-renders when selectedTestCount changes', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -2957,7 +3046,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Advanced Edge Cases', () => {
-    it('handles test result with complex output structure', () => {
+    it('handles test result with complex output structure', async () => {
       const testResultWithComplexOutput = {
         ...mockTestResults[0],
         output: JSON.stringify({
@@ -3007,7 +3096,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with array output', () => {
+    it('handles test result with array output', async () => {
       const testResultWithArrayOutput = {
         ...mockTestResults[0],
         output: JSON.stringify([1, 2, 3, 4, 5]),
@@ -3043,7 +3132,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with string output', () => {
+    it('handles test result with string output', async () => {
       const testResultWithStringOutput = {
         ...mockTestResults[0],
         output: 'simple string output',
@@ -3079,7 +3168,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with number output', () => {
+    it('handles test result with number output', async () => {
       const testResultWithNumberOutput = {
         ...mockTestResults[0],
         output: 42,
@@ -3115,7 +3204,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with boolean output', () => {
+    it('handles test result with boolean output', async () => {
       const testResultWithBooleanOutput = {
         ...mockTestResults[0],
         output: true,
@@ -3151,7 +3240,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with undefined testArguments', () => {
+    it('handles test result with undefined testArguments', async () => {
       const testResultWithoutArguments = {
         ...mockTestResults[0],
         testArguments: undefined,
@@ -3187,7 +3276,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with undefined modelType', () => {
+    it('handles test result with undefined modelType', async () => {
       const testResultWithoutModelType = {
         ...mockTestResults[0],
         testArguments: {
@@ -3226,7 +3315,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data with complex data structure', () => {
+    it('handles input block data with complex data structure', async () => {
       const inputBlockDataWithComplexData = {
         ...mockInputBlockDatas[0],
         data: {
@@ -3274,7 +3363,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with complex properties', () => {
+    it('handles widget with complex properties', async () => {
       const widgetWithComplexProperties = {
         ...mockWidget,
         properties: [
@@ -3341,7 +3430,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget without properties array', () => {
+    it('handles widget without properties array', async () => {
       const widgetWithoutPropertiesArray = {
         ...mockWidget,
         properties: null,
@@ -3377,7 +3466,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with empty properties array', () => {
+    it('handles widget with empty properties array', async () => {
       const widgetWithEmptyProperties = {
         ...mockWidget,
         properties: [],
@@ -3413,7 +3502,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have no value, default, or helper', () => {
+    it('handles widget with properties that have no value, default, or helper', async () => {
       const widgetWithMinimalProperties = {
         ...mockWidget,
         properties: [
@@ -3456,7 +3545,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only helper value', () => {
+    it('handles widget with properties that have only helper value', async () => {
       const widgetWithHelperOnlyProperties = {
         ...mockWidget,
         properties: [
@@ -3499,7 +3588,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only default value', () => {
+    it('handles widget with properties that have only default value', async () => {
       const widgetWithDefaultOnlyProperties = {
         ...mockWidget,
         properties: [
@@ -3542,7 +3631,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only value', () => {
+    it('handles widget with properties that have only value', async () => {
       const widgetWithValueOnly = {
         ...mockWidget,
         properties: [
@@ -3585,7 +3674,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have value and default', () => {
+    it('handles widget with properties that have value and default', async () => {
       const widgetWithValueAndDefaultProperties = {
         ...mockWidget,
         properties: [
@@ -3628,7 +3717,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have value and helper', () => {
+    it('handles widget with properties that have value and helper', async () => {
       const widgetWithValueAndHelperProperties = {
         ...mockWidget,
         properties: [
@@ -3671,7 +3760,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have default and helper', () => {
+    it('handles widget with properties that have default and helper', async () => {
       const widgetWithDefaultAndHelperProperties = {
         ...mockWidget,
         properties: [
@@ -3716,7 +3805,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Error Handling and Edge Cases', () => {
-    it('handles JSON parsing errors in test result output', () => {
+    it('handles JSON parsing errors in test result output', async () => {
       const testResultWithInvalidJson = {
         ...mockTestResults[0],
         output: 'invalid json string',
@@ -3752,7 +3841,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with non-object output data', () => {
+    it('handles test result with non-object output data', async () => {
       const testResultWithNonObjectOutput = {
         ...mockTestResults[0],
         output: 'simple string output',
@@ -3788,7 +3877,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with null output', () => {
+    it('handles test result with null output', async () => {
       const testResultWithNullOutput = {
         ...mockTestResults[0],
         output: null,
@@ -3824,7 +3913,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result without testResultId', () => {
+    it('handles test result without testResultId', async () => {
       const testResultWithoutId = {
         ...mockTestResultsUsed[0],
         testResultId: undefined,
@@ -3860,7 +3949,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data without inputBlockDataId', () => {
+    it('handles input block data without inputBlockDataId', async () => {
       const inputBlockDataWithoutId = {
         ...mockInputBlockDatasUsed[0],
         inputBlockDataId: undefined,
@@ -3896,7 +3985,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data without gid and cid', () => {
+    it('handles input block data without gid and cid', async () => {
       const inputBlockDataWithoutGidCid = {
         ...mockInputBlockDatasUsed[0],
         gid: undefined,
@@ -3933,7 +4022,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result without artifacts', () => {
+    it('handles test result without artifacts', async () => {
       const testResultWithoutArtifacts = {
         ...mockTestResults[0],
         artifacts: undefined,
@@ -3969,7 +4058,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without artifacts', () => {
+    it('handles mock data without artifacts', async () => {
       const widgetWithoutArtifacts = {
         ...mockWidget,
         mockdata: [
@@ -4013,7 +4102,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without data property', () => {
+    it('handles mock data without data property', async () => {
       const widgetWithoutData = {
         ...mockWidget,
         mockdata: [
@@ -4059,7 +4148,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Data Handling Functions', () => {
-    it('handles getResults with hasVisitedDataSelection and matching test result', () => {
+    it('handles getResults with hasVisitedDataSelection and matching test result', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4088,12 +4177,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getResults with hasVisitedDataSelection and no testResultId', () => {
+    it('handles getResults with hasVisitedDataSelection and no testResultId', async () => {
       const testResultsUsedWithoutId = [
         {
           gid: 'test-algo',
@@ -4130,12 +4221,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getResults with hasVisitedDataSelection and no matching test result', () => {
+    it('handles getResults with hasVisitedDataSelection and no matching test result', async () => {
       const testResultsUsedWithoutMatch = [
         {
           gid: 'non-existent-algo',
@@ -4172,12 +4265,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getResults with hasVisitedDataSelection and no testResultsUsed', () => {
+    it('handles getResults with hasVisitedDataSelection and no testResultsUsed', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4206,12 +4301,14 @@ describe('GridItemComponent', () => {
       );
 
       const getResultsButton = screen.getByText('Get Results');
-      fireEvent.click(getResultsButton);
+      await act(async () => {
+        fireEvent.click(getResultsButton);
+      });
 
       expect(getResultsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifacts with non-array urls', () => {
+    it('handles getArtifacts with non-array urls', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4240,12 +4337,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactsButton = screen.getByText('Get Artifacts');
-      fireEvent.click(getArtifactsButton);
+      await act(async () => {
+        fireEvent.click(getArtifactsButton);
+      });
 
       expect(getArtifactsButton).toBeInTheDocument();
     });
 
-    it('handles getArtifactURL with non-array urls', () => {
+    it('handles getArtifactURL with non-array urls', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4274,12 +4373,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactURLButton = screen.getByText('Get Artifact URL');
-      fireEvent.click(getArtifactURLButton);
+      await act(async () => {
+        fireEvent.click(getArtifactURLButton);
+      });
 
       expect(getArtifactURLButton).toBeInTheDocument();
     });
 
-    it('handles getArtifactURL with no matching pathname', () => {
+    it('handles getArtifactURL with no matching pathname', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4308,12 +4409,14 @@ describe('GridItemComponent', () => {
       );
 
       const getArtifactURLButton = screen.getByText('Get Artifact URL');
-      fireEvent.click(getArtifactURLButton);
+      await act(async () => {
+        fireEvent.click(getArtifactURLButton);
+      });
 
       expect(getArtifactURLButton).toBeInTheDocument();
     });
 
-    it('handles properties with null values', () => {
+    it('handles properties with null values', async () => {
       const widgetWithNullProperties = {
         ...mockWidget,
         properties: [
@@ -4362,7 +4465,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data without data property', () => {
+    it('handles mock data without data property', async () => {
       const widgetWithoutData = {
         ...mockWidget,
         mockdata: [
@@ -4406,7 +4509,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with undefined gid fallback to widget gid', () => {
+    it('handles test result with undefined gid fallback to widget gid', async () => {
       const testResultWithUndefinedGid = {
         ...mockTestResultsUsed[0],
         gid: undefined,
@@ -4442,7 +4545,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data with undefined gid fallback to widget gid', () => {
+    it('handles input block data with undefined gid fallback to widget gid', async () => {
       const inputBlockDataWithUndefinedGid = {
         ...mockInputBlockDatasUsed[0],
         gid: undefined,
@@ -4478,7 +4581,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with object output data', () => {
+    it('handles test result with object output data', async () => {
       const testResultWithObjectOutput = {
         ...mockTestResults[0],
         output: { test: 'object data' },
@@ -4514,7 +4617,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with testArguments modelType', () => {
+    it('handles test result with testArguments modelType', async () => {
       const testResultWithModelType = {
         ...mockTestResults[0],
         testArguments: {
@@ -4552,7 +4655,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result without testArguments', () => {
+    it('handles test result without testArguments', async () => {
       const testResultWithoutTestArguments = {
         ...mockTestResults[0],
         testArguments: undefined,
@@ -4590,7 +4693,7 @@ describe('GridItemComponent', () => {
   });
 
   describe('Advanced Edge Cases and Uncovered Branches', () => {
-    it('handles input block data with gid and cid conditions', () => {
+    it('handles input block data with gid and cid conditions', async () => {
       const inputBlockDataWithGidCid = {
         ...mockInputBlockDatasUsed[0],
         gid: 'test-gid',
@@ -4627,7 +4730,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mock data fallback scenarios', () => {
+    it('handles mock data fallback scenarios', async () => {
       const widgetWithMockDataFallback = {
         ...mockWidget,
         mockdata: [
@@ -4671,7 +4774,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles ResizeObserver with null gridItemRef', () => {
+    it('handles ResizeObserver with null gridItemRef', async () => {
       // Mock ResizeObserver to test the case where gridItemRef.current is null
       const mockResizeObserver = jest.fn();
       mockResizeObserver.mockImplementation((callback) => ({
@@ -4710,7 +4813,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles mouse enter when disabled is true', () => {
+    it('handles mouse enter when disabled is true', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4739,13 +4842,15 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Context menu should not be shown when disabled
       expect(screen.queryByTestId('grid-item-context-menu')).not.toBeInTheDocument();
     });
 
-    it('handles context menu positioning with null gridItemRef', () => {
+    it('handles context menu positioning with null gridItemRef', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4774,13 +4879,15 @@ describe('GridItemComponent', () => {
       );
 
       const widgetContainer = screen.getByTestId('widget-error-boundary').parentElement;
-      fireEvent.mouseEnter(widgetContainer!);
+      await act(async () => {
+        fireEvent.mouseEnter(widgetContainer!);
+      });
 
       // Context menu should be visible
       expect(screen.getByTestId('grid-item-context-menu')).toBeInTheDocument();
     });
 
-    it('handles properties drawer when showWidgetProperties is false', () => {
+    it('handles properties drawer when showWidgetProperties is false', async () => {
       render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4812,7 +4919,7 @@ describe('GridItemComponent', () => {
       expect(screen.queryByTestId('widget-properties-drawer')).not.toBeInTheDocument();
     });
 
-    it('handles React.memo comparison with different props', () => {
+    it('handles React.memo comparison with different props', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4880,7 +4987,7 @@ describe('GridItemComponent', () => {
       expect(placeholderDiv).toBeInTheDocument();
     });
 
-    it('handles React.memo comparison with same props', () => {
+    it('handles React.memo comparison with same props', async () => {
       const { rerender } = render(
         <GridItemComponent
           allAvalaiblePlugins={mockAllPlugins}
@@ -4939,7 +5046,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles input block data without gid and cid fallback to mock data', () => {
+    it('handles input block data without gid and cid fallback to mock data', async () => {
       const inputBlockDataWithoutGidCid = {
         ...mockInputBlockDatasUsed[0],
         gid: undefined,
@@ -4976,7 +5083,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles test result with complex output structure and modelType', () => {
+    it('handles test result with complex output structure and modelType', async () => {
       const testResultWithComplexOutput = {
         ...mockTestResults[0],
         output: { complex: { nested: { data: 'value' } } },
@@ -5015,7 +5122,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have value, default, and helper', () => {
+    it('handles widget with properties that have value, default, and helper', async () => {
       const widgetWithCompleteProperties = {
         ...mockWidget,
         properties: [
@@ -5064,7 +5171,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only value', () => {
+    it('handles widget with properties that have only value', async () => {
       const widgetWithValueOnly = {
         ...mockWidget,
         properties: [
@@ -5107,7 +5214,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only default', () => {
+    it('handles widget with properties that have only default', async () => {
       const widgetWithDefaultOnly = {
         ...mockWidget,
         properties: [
@@ -5150,7 +5257,7 @@ describe('GridItemComponent', () => {
       expect(screen.getByTestId('widget-error-boundary')).toBeInTheDocument();
     });
 
-    it('handles widget with properties that have only helper', () => {
+    it('handles widget with properties that have only helper', async () => {
       const widgetWithHelperOnly = {
         ...mockWidget,
         properties: [

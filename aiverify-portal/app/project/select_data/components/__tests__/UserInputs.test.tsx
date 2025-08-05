@@ -5,6 +5,13 @@ import UserInputs from '../UserInputs';
 import { InputBlock, InputBlockData, InputBlockGroupData, Plugin } from '@/app/types';
 import { ValidationResults } from '@/app/project/select_data/utils/validationUtils';
 
+// Helper function to wrap fireEvent calls in act()
+const fireEventInAct = async (element: Element, event: any) => {
+  await act(async () => {
+    fireEvent(element, event);
+  });
+};
+
 // Mock Next.js navigation
 const mockRouter = {
   push: jest.fn(),
@@ -231,29 +238,35 @@ describe('UserInputs', () => {
   });
 
   describe('Component Rendering', () => {
-    it('renders the component with title and description', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('renders the component with title and description', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
       expect(screen.getByText('Upload new User Input or select existing User Input.')).toBeInTheDocument();
     });
 
-    it('renders group-based input blocks', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('renders group-based input blocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('test-group')).toBeInTheDocument();
       expect(screen.getAllByText('Choose User Input')).toHaveLength(3); // 1 group + 2 single inputs
     });
 
-    it('renders single input blocks', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('renders single input blocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('Single Input Block 1')).toBeInTheDocument();
       expect(screen.getByText('Single Input Block 2')).toBeInTheDocument();
       expect(screen.getAllByText('Choose User Input')).toHaveLength(3); // 1 group + 2 single inputs
     });
 
-    it('renders plugin input blocks with plugin name', () => {
+    it('renders plugin input blocks with plugin name', async () => {
       const pluginInputBlocks: InputBlock[] = [
         {
           gid: 'aiverify.plugin.test',
@@ -263,20 +276,26 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={pluginInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={pluginInputBlocks} />);
+
+      });
       
       expect(screen.getByText('Plugin Input')).toBeInTheDocument();
       expect(screen.getByText('Plugin: test')).toBeInTheDocument();
     });
 
-    it('renders ADD INPUT buttons for all input blocks', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('renders ADD INPUT buttons for all input blocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       expect(addButtons).toHaveLength(3); // 1 group + 2 single inputs
     });
 
-    it('renders MISSING GID button when gid is not available', () => {
+    it('renders MISSING GID button when gid is not available', async () => {
       const inputBlocksWithoutGid = [
         {
           gid: '',
@@ -287,21 +306,27 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithoutGid} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithoutGid} />);
+
+      });
       
       expect(screen.getByText('MISSING GID')).toBeInTheDocument();
     });
   });
 
   describe('Initial State and Props', () => {
-    it('initializes with empty selections when no initial input blocks', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('initializes with empty selections when no initial input blocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const dropdowns = screen.getAllByRole('combobox');
       expect(dropdowns.length).toBeGreaterThan(0);
     });
 
-    it('initializes with initial single input blocks', () => {
+    it('initializes with initial single input blocks', async () => {
       const propsWithInitial = {
         ...defaultProps,
         initialInputBlocks: [
@@ -315,13 +340,17 @@ describe('UserInputs', () => {
         ],
       };
       
-      render(<UserInputs {...propsWithInitial} />);
+      await act(async () => {
+      
+        render(<UserInputs {...propsWithInitial} />);
+      
+      });
       
       // Component should render without crashing
       expect(screen.getByText('Single Input Block 1')).toBeInTheDocument();
     });
 
-    it('handles missing initial group gracefully', () => {
+    it('handles missing initial group gracefully', async () => {
       const propsWithMissingGroup = {
         ...defaultProps,
         initialInputBlocks: [
@@ -338,7 +367,11 @@ describe('UserInputs', () => {
       // Mock the group data to be missing
       mockFetch.mockRejectedValueOnce(new Error('Group data not found'));
       
-      render(<UserInputs {...propsWithMissingGroup} />);
+      await act(async () => {
+      
+        render(<UserInputs {...propsWithMissingGroup} />);
+      
+      });
       
       // Should not crash
       expect(screen.getByText('Single Input Block 1')).toBeInTheDocument();
@@ -347,10 +380,14 @@ describe('UserInputs', () => {
 
   describe('Group Selection', () => {
     it('handles group selection', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[0], { target: { value: '1' } }); // First select is group dropdown
+      await act(async () => {
+        fireEvent.change(selectElements[0], { target: { value: '1' } }); // First select is group dropdown
+      });
 
       // Verify the selection was made
       expect(selectElements[0]).toHaveValue('1');
@@ -361,25 +398,35 @@ describe('UserInputs', () => {
         { gid: 'group-2', cid: 'group-input-1', id: 101 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
       
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[0], { target: { value: '' } }); // Deselect group
+      await act(async () => {
+        fireEvent.change(selectElements[0], { target: { value: '' } }); // Deselect group
+      });
 
       await waitFor(() => {
         expect(defaultProps.onInputBlocksChange).toHaveBeenCalledWith([]);
       });
     });
 
-    it('prevents unnecessary updates when same group is selected', () => {
+    it('prevents unnecessary updates when same group is selected', async () => {
       const initialInputBlocks = [
         { gid: 'group-2', cid: 'group-input-1', id: 101 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
@@ -394,18 +441,24 @@ describe('UserInputs', () => {
 
   describe('Single Input Selection', () => {
     it('handles single input selection', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Use getAllByRole to get all select elements and target the single input ones
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[1], { target: { value: '1' } }); // Second select is first single input
+      await act(async () => {
+        fireEvent.change(selectElements[1], { target: { value: '1' } }); // Second select is first single input
+      });
 
       // Verify the selection was made
       expect(selectElements[1]).toHaveValue('1');
     });
 
     it('handles multiple single input selections', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '1' } }); // First single input
@@ -416,12 +469,16 @@ describe('UserInputs', () => {
       expect(selectElements[2]).toHaveValue('3');
     });
 
-    it('prevents unnecessary updates when same input is selected', () => {
+    it('prevents unnecessary updates when same input is selected', async () => {
       const initialInputBlocks = [
         { gid: 'group-1', cid: 'input-1', id: 1 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
@@ -435,8 +492,10 @@ describe('UserInputs', () => {
   });
 
   describe('Add Input Modal', () => {
-    it('opens modal when ADD INPUT button is clicked', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('opens modal when ADD INPUT button is clicked', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Click the second ADD INPUT button (single input block) instead of the first one (group)
       const addButtons = screen.getAllByText('ADD INPUT');
@@ -445,26 +504,34 @@ describe('UserInputs', () => {
       expect(screen.getByTestId('plugin-input-modal')).toBeInTheDocument();
     });
 
-    it('closes modal when close button is clicked', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('closes modal when close button is clicked', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const closeButton = screen.getByText('Close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
     it('handles input submission from modal', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockRouter.refresh).toHaveBeenCalled();
@@ -472,7 +539,9 @@ describe('UserInputs', () => {
     });
 
     it('validates input block after submission', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
@@ -480,7 +549,9 @@ describe('UserInputs', () => {
       expect(screen.getByTestId('plugin-input-modal')).toBeInTheDocument();
       
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       // The modal should close after submission
       await waitFor(() => {
@@ -496,10 +567,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 456 }),
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith('/api/input_block_data/groups', {
@@ -522,10 +599,16 @@ describe('UserInputs', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalled();
@@ -545,10 +628,16 @@ describe('UserInputs', () => {
       delete (window as any).location;
       window.location = { href: 'http://localhost/' } as any;
       
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+      
+        render(<UserInputs {...defaultProps} />);
+      
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
       
       // The component should attempt to redirect
       await waitFor(() => {
@@ -576,10 +665,16 @@ describe('UserInputs', () => {
         projectId: 'test-project',
       };
       
-      render(<UserInputs {...propsWithFlow} />);
+      await act(async () => {
+      
+        render(<UserInputs {...propsWithFlow} />);
+      
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
       
       // The component should attempt to redirect
       await waitFor(() => {
@@ -590,7 +685,7 @@ describe('UserInputs', () => {
       window.location = originalLocation;
     });
 
-    it('shows error alert when gid is missing', () => {
+    it('shows error alert when gid is missing', async () => {
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
       
       // Create a component with missing gid
@@ -607,7 +702,11 @@ describe('UserInputs', () => {
         ],
       };
       
-      render(<UserInputs {...propsWithMissingGid} />);
+      await act(async () => {
+      
+        render(<UserInputs {...propsWithMissingGid} />);
+      
+      });
       
       // The component should render with MISSING GID button
       expect(screen.getByText('MISSING GID')).toBeInTheDocument();
@@ -617,8 +716,10 @@ describe('UserInputs', () => {
   });
 
   describe('Validation', () => {
-    it('prevalidates all input blocks on mount', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('prevalidates all input blocks on mount', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(mockProcessBatchValidations).toHaveBeenCalled();
     });
@@ -629,7 +730,11 @@ describe('UserInputs', () => {
         'test-validation': { isValid: true, errors: [] }
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       // Wait for the validation to complete and the callback to be called
       await waitFor(() => {
@@ -647,7 +752,9 @@ describe('UserInputs', () => {
 
   describe('Plugin Data Fetching', () => {
     it('fetches plugins data on mount', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
 
       await waitFor(() => {
         expect(mockGetPlugins).toHaveBeenCalledWith({ groupByPluginId: true });
@@ -655,7 +762,9 @@ describe('UserInputs', () => {
     });
 
     it('extracts input block properties from plugins', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
 
       await waitFor(() => {
         expect(mockGetPlugins).toHaveBeenCalled();
@@ -667,7 +776,11 @@ describe('UserInputs', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch plugins data:', expect.any(Error));
@@ -679,7 +792,11 @@ describe('UserInputs', () => {
     it('handles invalid plugin response', async () => {
       mockGetPlugins.mockResolvedValue({ status: 'error' });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
 
       // Should not crash and should not set plugin data
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
@@ -688,55 +805,69 @@ describe('UserInputs', () => {
 
   describe('Data Refresh', () => {
     it('refreshes data when requested', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockRouter.refresh).toHaveBeenCalled();
       });
     });
 
-    it('handles modal close with refresh', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal close with refresh', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const closeButton = screen.getByText('Close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
   });
 
   describe('Edge Cases', () => {
-    it('handles empty required input blocks', () => {
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[]} />);
+    it('handles empty required input blocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
       expect(screen.queryByText('Choose User Input')).not.toBeInTheDocument();
     });
 
-    it('handles empty input block groups', () => {
-      render(<UserInputs {...defaultProps} allInputBlockGroups={[]} />);
+    it('handles empty input block groups', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockGroups={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
       expect(screen.getByText('test-group')).toBeInTheDocument();
     });
 
-    it('handles empty input block data', () => {
-      render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+    it('handles empty input block data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
       expect(screen.getAllByText('Choose User Input')).toHaveLength(3); // 1 group + 2 single inputs
     });
 
-    it('handles missing input block properties', () => {
+    it('handles missing input block properties', async () => {
       const inputBlockWithoutProperties = {
         gid: 'group-1',
         cid: 'input-1',
@@ -744,28 +875,38 @@ describe('UserInputs', () => {
         description: 'Input without properties',
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithoutProperties]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithoutProperties]} />);
+
+      });
       
       expect(screen.getByText('Input Without Properties')).toBeInTheDocument();
     });
 
-    it('handles null projectId', () => {
-      render(<UserInputs {...defaultProps} projectId={null} />);
+    it('handles null projectId', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} projectId={null} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles undefined onValidationResultsChange', () => {
+    it('handles undefined onValidationResultsChange', async () => {
       const propsWithoutValidation = { ...defaultProps };
       propsWithoutValidation.onValidationResultsChange = undefined as any;
 
-      render(<UserInputs {...propsWithoutValidation} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithoutValidation} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
     // Additional edge cases for better branch coverage
-    it('handles input block with missing id in allInputBlockDatas', () => {
+    it('handles input block with missing id in allInputBlockDatas', async () => {
       const inputDataWithoutId = [
         {
           gid: 'group-1',
@@ -779,12 +920,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithoutId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithoutId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles input block with string id in allInputBlockDatas', () => {
+    it('handles input block with string id in allInputBlockDatas', async () => {
       const inputDataWithStringId = [
         {
           gid: 'group-1',
@@ -798,12 +943,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithStringId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithStringId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group with missing input_blocks property', () => {
+    it('handles group with missing input_blocks property', async () => {
       const groupWithoutInputBlocks = [
         {
           id: 1,
@@ -816,12 +965,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles plugin with missing input_blocks property', () => {
+    it('handles plugin with missing input_blocks property', async () => {
       const pluginWithoutInputBlocks = {
         'aiverify.plugin.test': {
           gid: 'aiverify.plugin.test',
@@ -847,12 +1000,16 @@ describe('UserInputs', () => {
         data: pluginWithoutInputBlocks,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles plugin with non-array input_blocks property', () => {
+    it('handles plugin with non-array input_blocks property', async () => {
       const pluginWithInvalidInputBlocks = {
         'aiverify.plugin.test': {
           gid: 'aiverify.plugin.test',
@@ -878,14 +1035,18 @@ describe('UserInputs', () => {
         data: pluginWithInvalidInputBlocks,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Input Block Type Detection', () => {
-    it('correctly identifies group-based input blocks', () => {
+    it('correctly identifies group-based input blocks', async () => {
       const groupBlock: InputBlock = {
         gid: 'group-1',
         cid: 'input-1',
@@ -894,12 +1055,16 @@ describe('UserInputs', () => {
         group: 'test-group',
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[groupBlock]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[groupBlock]} />);
+
+      });
       
       expect(screen.getByText('test-group')).toBeInTheDocument();
     });
 
-    it('correctly identifies single input blocks', () => {
+    it('correctly identifies single input blocks', async () => {
       const singleBlock: InputBlock = {
         gid: 'group-1',
         cid: 'input-1',
@@ -907,13 +1072,17 @@ describe('UserInputs', () => {
         description: 'Single input description',
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[singleBlock]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[singleBlock]} />);
+
+      });
       
       expect(screen.getByText('Single Input')).toBeInTheDocument();
       expect(screen.getByText('Choose User Input')).toBeInTheDocument();
     });
 
-    it('handles input block with empty group property', () => {
+    it('handles input block with empty group property', async () => {
       const blockWithEmptyGroup: InputBlock = {
         gid: 'group-1',
         cid: 'input-1',
@@ -922,21 +1091,29 @@ describe('UserInputs', () => {
         group: '',
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[blockWithEmptyGroup]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[blockWithEmptyGroup]} />);
+
+      });
       
       expect(screen.getByText('Input With Empty Group')).toBeInTheDocument();
     });
   });
 
   describe('MDX Bundle Integration', () => {
-    it('uses MDX bundle for modal content', () => {
+    it('uses MDX bundle for modal content', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: { code: 'test mdx code' },
         isLoading: false,
         error: null,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
@@ -944,14 +1121,18 @@ describe('UserInputs', () => {
       expect(screen.getByTestId('plugin-input-modal')).toBeInTheDocument();
     });
 
-    it('handles MDX bundle loading state', () => {
+    it('handles MDX bundle loading state', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
@@ -959,14 +1140,18 @@ describe('UserInputs', () => {
       expect(screen.getByTestId('plugin-input-modal')).toBeInTheDocument();
     });
 
-    it('handles MDX bundle error state', () => {
+    it('handles MDX bundle error state', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: false,
         error: new Error('MDX error'),
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
@@ -974,14 +1159,18 @@ describe('UserInputs', () => {
       expect(screen.getByTestId('plugin-input-modal')).toBeInTheDocument();
     });
 
-    it('handles MDX bundle with null data', () => {
+    it('handles MDX bundle with null data', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: false,
         error: null,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
@@ -991,7 +1180,7 @@ describe('UserInputs', () => {
   });
 
   describe('Component Lifecycle', () => {
-    it('cleans up on unmount', () => {
+    it('cleans up on unmount', async () => {
       const { unmount } = render(<UserInputs {...defaultProps} />);
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
@@ -1001,39 +1190,53 @@ describe('UserInputs', () => {
       // Component should be unmounted without errors
     });
 
-    it('handles multiple re-renders', () => {
+    it('handles multiple re-renders', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
       
-      rerender(<UserInputs {...defaultProps} />);
+      await act(async () => {
+      
+        rerender(<UserInputs {...defaultProps} />);
+      
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Validation Edge Cases', () => {
-    it('handles validation when onValidationResultsChange is undefined', () => {
+    it('handles validation when onValidationResultsChange is undefined', async () => {
       const propsWithoutValidation = { ...defaultProps };
       propsWithoutValidation.onValidationResultsChange = undefined as any;
 
-      render(<UserInputs {...propsWithoutValidation} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithoutValidation} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles validation with empty validation results', () => {
+    it('handles validation with empty validation results', async () => {
       mockProcessBatchValidations.mockResolvedValue({});
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Group Selection Edge Cases', () => {
-    it('handles group selection with non-existent group ID', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles group selection with non-existent group ID', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '999' } }); // Non-existent group ID
@@ -1042,7 +1245,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with missing group ID', () => {
+    it('handles group selection with missing group ID', async () => {
       const groupWithoutId = [
         {
           id: undefined as any,
@@ -1063,12 +1266,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group with missing input_blocks in selection', () => {
+    it('handles group with missing input_blocks in selection', async () => {
       const groupWithoutInputBlocks = [
         {
           id: 1,
@@ -1081,7 +1288,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} />);
+
+      });
       
       // Don't trigger the problematic selection
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
@@ -1089,8 +1300,10 @@ describe('UserInputs', () => {
   });
 
   describe('Single Input Selection Edge Cases', () => {
-    it('handles single input selection with missing input block data', () => {
-      render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+    it('handles single input selection with missing input block data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '999' } }); // Non-existent input ID
@@ -1098,7 +1311,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with string ID', () => {
+    it('handles single input selection with string ID', async () => {
       const inputDataWithStringId = [
         {
           gid: 'group-1',
@@ -1112,42 +1325,58 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithStringId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithStringId} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[1], { target: { value: '123' } });
+      await act(async () => {
+        fireEvent.change(selectElements[1], { target: { value: '123' } });
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Modal Edge Cases', () => {
-    it('handles modal close without refresh', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal close without refresh', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const closeButton = screen.getByText('Close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles modal close with refresh', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal close with refresh', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles modal with missing currentInputBlock', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal with missing currentInputBlock', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Force showInputModal to true without setting currentInputBlock
       // This should not happen in normal flow, but testing edge case
@@ -1157,21 +1386,25 @@ describe('UserInputs', () => {
 
   describe('Input Submission Edge Cases', () => {
     it('handles input submission without currentInputBlock', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // This should not happen in normal flow, but testing edge case
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles input submission with missing validation data', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles input submission with missing validation data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Plugin Data Processing Edge Cases', () => {
-    it('handles plugin with missing width and fullScreen properties', () => {
+    it('handles plugin with missing width and fullScreen properties', async () => {
       const pluginWithMinimalInputBlock = {
         'aiverify.plugin.test': {
           gid: 'aiverify.plugin.test',
@@ -1205,12 +1438,16 @@ describe('UserInputs', () => {
         data: pluginWithMinimalInputBlock,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles plugin with null input_blocks', () => {
+    it('handles plugin with null input_blocks', async () => {
       const pluginWithNullInputBlocks = {
         'aiverify.plugin.test': {
           gid: 'aiverify.plugin.test',
@@ -1236,14 +1473,18 @@ describe('UserInputs', () => {
         data: pluginWithNullInputBlocks,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Initial State Edge Cases', () => {
-    it('handles initial input blocks with non-matching required blocks', () => {
+    it('handles initial input blocks with non-matching required blocks', async () => {
       const initialBlocksWithNonMatching = [
         {
           gid: 'non-matching-gid',
@@ -1252,12 +1493,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithNonMatching} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithNonMatching} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles initial input blocks with group-based blocks', () => {
+    it('handles initial input blocks with group-based blocks', async () => {
       const initialBlocksWithGroup = [
         {
           gid: 'group-2',
@@ -1266,12 +1511,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithGroup} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithGroup} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles initial input blocks with missing group data', () => {
+    it('handles initial input blocks with missing group data', async () => {
       const initialBlocksWithMissingGroup = [
         {
           gid: 'group-2',
@@ -1280,32 +1529,46 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithMissingGroup} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithMissingGroup} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Effect Dependencies Edge Cases', () => {
-    it('handles effect with empty validation results', () => {
+    it('handles effect with empty validation results', async () => {
       mockProcessBatchValidations.mockResolvedValue({});
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles effect with undefined onValidationResultsChange', () => {
+    it('handles effect with undefined onValidationResultsChange', async () => {
       const propsWithoutValidation = { ...defaultProps };
       propsWithoutValidation.onValidationResultsChange = undefined as any;
 
-      render(<UserInputs {...propsWithoutValidation} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithoutValidation} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles effect with didRunValidationUpdate ref', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles effect with didRunValidationUpdate ref', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger a re-render to test the ref logic
       const selectElements = screen.getAllByRole('combobox');
@@ -1328,10 +1591,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...propsWithoutFlowAndProject} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithoutFlowAndProject} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -1350,10 +1619,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...propsWithOnlyFlow} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithOnlyFlow} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -1372,10 +1647,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...propsWithOnlyProjectId} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithOnlyProjectId} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -1384,7 +1665,7 @@ describe('UserInputs', () => {
   });
 
   describe('Button State Edge Cases', () => {
-    it('shows CREATING... button when isPending is true', () => {
+    it('shows CREATING... button when isPending is true', async () => {
       // Mock useTransition to return isPending as true
       const mockUseTransition = jest.fn().mockReturnValue([true, jest.fn()]);
       jest.doMock('react', () => ({
@@ -1392,13 +1673,17 @@ describe('UserInputs', () => {
         useTransition: mockUseTransition,
       }));
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       // The button should show CREATING... when isPending is true
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('shows MISSING GID button when gid is empty', () => {
+    it('shows MISSING GID button when gid is empty', async () => {
       const inputBlocksWithEmptyGid = [
         {
           gid: '',
@@ -1409,12 +1694,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithEmptyGid} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithEmptyGid} />);
+
+      });
       
       expect(screen.getByText('MISSING GID')).toBeInTheDocument();
     });
 
-    it('disables button when isPending is true', () => {
+    it('disables button when isPending is true', async () => {
       // Mock useTransition to return isPending as true
       const mockUseTransition = jest.fn().mockReturnValue([true, jest.fn()]);
       jest.doMock('react', () => ({
@@ -1422,13 +1711,17 @@ describe('UserInputs', () => {
         useTransition: mockUseTransition,
       }));
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       // The button should be disabled when isPending is true
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('disables button when gid is empty', () => {
+    it('disables button when gid is empty', async () => {
       const inputBlocksWithEmptyGid = [
         {
           gid: '',
@@ -1439,7 +1732,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithEmptyGid} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={inputBlocksWithEmptyGid} />);
+
+      });
       
       const missingGidButton = screen.getByText('MISSING GID');
       expect(missingGidButton).toBeInTheDocument();
@@ -1447,7 +1744,7 @@ describe('UserInputs', () => {
   });
 
   describe('Plugin Name Extraction Edge Cases', () => {
-    it('handles plugin gid with multiple dots', () => {
+    it('handles plugin gid with multiple dots', async () => {
       const pluginWithMultipleDots = [
         {
           gid: 'aiverify.plugin.test.multiple.dots',
@@ -1457,13 +1754,17 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={pluginWithMultipleDots} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={pluginWithMultipleDots} />);
+
+      });
       
       expect(screen.getByText('Plugin With Multiple Dots')).toBeInTheDocument();
       expect(screen.getByText('Plugin: test')).toBeInTheDocument();
     });
 
-    it('handles plugin gid with single dot', () => {
+    it('handles plugin gid with single dot', async () => {
       const pluginWithSingleDot = [
         {
           gid: 'aiverify.plugin',
@@ -1473,12 +1774,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={pluginWithSingleDot} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={pluginWithSingleDot} />);
+
+      });
       
       expect(screen.getByText('Plugin With Single Dot')).toBeInTheDocument();
     });
 
-    it('handles non-plugin gid', () => {
+    it('handles non-plugin gid', async () => {
       const nonPluginInput = [
         {
           gid: 'regular.group',
@@ -1488,7 +1793,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={nonPluginInput} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={nonPluginInput} />);
+
+      });
       
       expect(screen.getByText('Regular Input')).toBeInTheDocument();
       expect(screen.queryByText(/Plugin:/)).not.toBeInTheDocument();
@@ -1496,21 +1805,27 @@ describe('UserInputs', () => {
   });
 
   describe('Data Refresh Edge Cases', () => {
-    it('handles data refresh when shouldFetchData is true', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles data refresh when shouldFetchData is true', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger a refresh
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles data refresh when shouldFetchData is false', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles data refresh when shouldFetchData is false', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Don't trigger a refresh
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
@@ -1518,7 +1833,7 @@ describe('UserInputs', () => {
   });
 
   describe('Group Matching Edge Cases', () => {
-    it('handles group matching with missing input_blocks', () => {
+    it('handles group matching with missing input_blocks', async () => {
       const groupWithoutInputBlocks = [
         {
           id: 1,
@@ -1539,12 +1854,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} initialInputBlocks={initialBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutInputBlocks} initialInputBlocks={initialBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group matching with empty input_blocks array', () => {
+    it('handles group matching with empty input_blocks array', async () => {
       const groupWithEmptyInputBlocks = [
         {
           id: 1,
@@ -1565,15 +1884,21 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithEmptyInputBlocks} initialInputBlocks={initialBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithEmptyInputBlocks} initialInputBlocks={initialBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Validation Update Edge Cases', () => {
-    it('handles validation update with requestAnimationFrame', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles validation update with requestAnimationFrame', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger a validation update by changing selection
       const selectElements = screen.getAllByRole('combobox');
@@ -1583,7 +1908,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles validation update cleanup', () => {
+    it('handles validation update cleanup', async () => {
       const { unmount } = render(<UserInputs {...defaultProps} />);
       
       // Trigger a validation update
@@ -1600,10 +1925,16 @@ describe('UserInputs', () => {
     it('handles API error in submitInputBlockGroup', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -1618,10 +1949,16 @@ describe('UserInputs', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith('Failed to submit input block group:', expect.any(Error));
@@ -1638,10 +1975,16 @@ describe('UserInputs', () => {
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith('Failed to create input block. Please try again.');
@@ -1658,10 +2001,16 @@ describe('UserInputs', () => {
 
       const alertSpy = jest.spyOn(window, 'alert').mockImplementation();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(alertSpy).toHaveBeenCalledWith('Failed to create input block. Please try again.');
@@ -1675,13 +2024,19 @@ describe('UserInputs', () => {
     it('handles validation error in handleInputSubmit', async () => {
       mockValidateInputBlock.mockRejectedValue(new Error('Validation error'));
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockRouter.refresh).toHaveBeenCalled();
@@ -1689,13 +2044,17 @@ describe('UserInputs', () => {
     });
 
     it('handles validation with missing data properties', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockRouter.refresh).toHaveBeenCalled();
@@ -1703,13 +2062,17 @@ describe('UserInputs', () => {
     });
 
     it('handles validation with non-object data', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       await waitFor(() => {
         expect(mockRouter.refresh).toHaveBeenCalled();
@@ -1718,7 +2081,7 @@ describe('UserInputs', () => {
   });
 
   describe('Group Input Block Matching Edge Cases', () => {
-    it('handles group input block without matching required block', () => {
+    it('handles group input block without matching required block', async () => {
       const groupWithUnmatchedInputBlock = [
         {
           id: 1,
@@ -1739,12 +2102,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithUnmatchedInputBlock} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithUnmatchedInputBlock} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group input block with missing id', () => {
+    it('handles group input block with missing id', async () => {
       const groupWithInputBlockWithoutId = [
         {
           id: 1,
@@ -1765,14 +2132,18 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithInputBlockWithoutId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithInputBlockWithoutId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Single Input Block Data Edge Cases', () => {
-    it('handles single input block with missing id', () => {
+    it('handles single input block with missing id', async () => {
       const inputDataWithoutId = [
         {
           gid: 'group-1',
@@ -1786,7 +2157,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithoutId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithoutId} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '999' } }); // Non-existent ID
@@ -1794,7 +2169,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input block with non-numeric id', () => {
+    it('handles single input block with non-numeric id', async () => {
       const inputDataWithNonNumericId = [
         {
           gid: 'group-1',
@@ -1808,10 +2183,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithNonNumericId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithNonNumericId} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[1], { target: { value: 'abc' } });
+      await act(async () => {
+        fireEvent.change(selectElements[1], { target: { value: 'abc' } });
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
@@ -1823,7 +2204,11 @@ describe('UserInputs', () => {
         data: mockPlugins,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
 
       await waitFor(() => {
         expect(mockGetPlugins).toHaveBeenCalled();
@@ -1835,7 +2220,11 @@ describe('UserInputs', () => {
         status: 'success',
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
 
       await waitFor(() => {
         expect(mockGetPlugins).toHaveBeenCalled();
@@ -1848,7 +2237,11 @@ describe('UserInputs', () => {
         data: mockPlugins,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
 
       await waitFor(() => {
         expect(mockGetPlugins).toHaveBeenCalled();
@@ -1857,7 +2250,7 @@ describe('UserInputs', () => {
   });
 
   describe('Effect Cleanup Edge Cases', () => {
-    it('handles effect cleanup with requestAnimationFrame', () => {
+    it('handles effect cleanup with requestAnimationFrame', async () => {
       const { unmount } = render(<UserInputs {...defaultProps} />);
       
       // Trigger a validation update
@@ -1869,7 +2262,7 @@ describe('UserInputs', () => {
       expect(screen.queryByText('User Inputs')).not.toBeInTheDocument();
     });
 
-    it('handles effect cleanup without requestAnimationFrame', () => {
+    it('handles effect cleanup without requestAnimationFrame', async () => {
       const { unmount } = render(<UserInputs {...defaultProps} />);
       
       unmount();
@@ -1879,7 +2272,7 @@ describe('UserInputs', () => {
   });
 
   describe('Input Block Properties Edge Cases', () => {
-    it('handles input block with undefined properties', () => {
+    it('handles input block with undefined properties', async () => {
       const inputBlockWithoutProperties = {
         gid: 'group-1',
         cid: 'input-1',
@@ -1887,12 +2280,16 @@ describe('UserInputs', () => {
         description: 'Input without properties',
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithoutProperties]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithoutProperties]} />);
+
+      });
       
       expect(screen.getByText('Input Without Properties')).toBeInTheDocument();
     });
 
-    it('handles input block with null properties', () => {
+    it('handles input block with null properties', async () => {
       const inputBlockWithNullProperties = {
         gid: 'group-1',
         cid: 'input-1',
@@ -1902,19 +2299,27 @@ describe('UserInputs', () => {
         fullScreen: null as any,
       };
 
-      render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithNullProperties]} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} requiredInputBlocks={[inputBlockWithNullProperties]} />);
+
+      });
       
       expect(screen.getByText('Input With Null Properties')).toBeInTheDocument();
     });
   });
 
   describe('Group Selection Logic Edge Cases', () => {
-    it('handles group selection with same group ID', () => {
+    it('handles group selection with same group ID', async () => {
       const initialInputBlocks = [
         { gid: 'group-2', cid: 'group-input-1', id: 101 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
@@ -1926,8 +2331,10 @@ describe('UserInputs', () => {
       expect(defaultProps.onInputBlocksChange).not.toHaveBeenCalled();
     });
 
-    it('handles group selection with empty group ID', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles group selection with empty group ID', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '' } }); // Empty group ID
@@ -1935,8 +2342,10 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with non-existent group ID', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles group selection with non-existent group ID', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '999' } }); // Non-existent group ID
@@ -1946,12 +2355,16 @@ describe('UserInputs', () => {
   });
 
   describe('Single Input Selection Logic Edge Cases', () => {
-    it('handles single input selection with same input ID', () => {
+    it('handles single input selection with same input ID', async () => {
       const initialInputBlocks = [
         { gid: 'group-1', cid: 'input-1', id: 1 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
@@ -1963,8 +2376,10 @@ describe('UserInputs', () => {
       expect(defaultProps.onInputBlocksChange).not.toHaveBeenCalled();
     });
 
-    it('handles single input selection with empty input ID', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles single input selection with empty input ID', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '' } }); // Empty input ID
@@ -1972,8 +2387,10 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with non-existent input ID', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles single input selection with non-existent input ID', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '999' } }); // Non-existent input ID
@@ -1983,22 +2400,28 @@ describe('UserInputs', () => {
   });
 
   describe('Modal State Edge Cases', () => {
-    it('handles modal state with null currentInputBlock', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal state with null currentInputBlock', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Modal should not be shown when currentInputBlock is null
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles modal state with showInputModal false', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal state with showInputModal false', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Modal should not be shown when showInputModal is false
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles modal state with both conditions false', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal state with both conditions false', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Modal should not be shown when both conditions are false
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
@@ -2006,13 +2429,15 @@ describe('UserInputs', () => {
   });
 
   describe('Available Inputs Edge Cases', () => {
-    it('handles getAvailableInputsForBlock with empty allInputBlockDatas', () => {
-      render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+    it('handles getAvailableInputsForBlock with empty allInputBlockDatas', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles getAvailableInputsForBlock with non-matching data', () => {
+    it('handles getAvailableInputsForBlock with non-matching data', async () => {
       const nonMatchingData = [
         {
           gid: 'different-group',
@@ -2026,20 +2451,26 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={nonMatchingData} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={nonMatchingData} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Initial State Processing Edge Cases', () => {
-    it('handles initial state with empty initialInputBlocks', () => {
-      render(<UserInputs {...defaultProps} initialInputBlocks={[]} />);
+    it('handles initial state with empty initialInputBlocks', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} initialInputBlocks={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles initial state with non-matching initialInputBlocks', () => {
+    it('handles initial state with non-matching initialInputBlocks', async () => {
       const nonMatchingInitialBlocks = [
         {
           gid: 'non-matching-gid',
@@ -2048,12 +2479,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={nonMatchingInitialBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={nonMatchingInitialBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles initial state with mixed matching and non-matching blocks', () => {
+    it('handles initial state with mixed matching and non-matching blocks', async () => {
       const mixedInitialBlocks = [
         {
           gid: 'group-1',
@@ -2067,14 +2502,18 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={mixedInitialBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={mixedInitialBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Group Input Block Processing Edge Cases', () => {
-    it('handles group input block with missing matchingGroup', () => {
+    it('handles group input block with missing matchingGroup', async () => {
       const initialBlocksWithMissingGroup = [
         {
           gid: 'group-2',
@@ -2083,12 +2522,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithMissingGroup} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithMissingGroup} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group input block with candidate groups but no exact match', () => {
+    it('handles group input block with candidate groups but no exact match', async () => {
       const groupWithDifferentIds = [
         {
           id: 1,
@@ -2117,14 +2560,18 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentIds} initialInputBlocks={initialBlocksWithDifferentId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentIds} initialInputBlocks={initialBlocksWithDifferentId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Effect Dependencies and Cleanup', () => {
-    it('handles effect cleanup on unmount', () => {
+    it('handles effect cleanup on unmount', async () => {
       const { unmount } = render(<UserInputs {...defaultProps} />);
       
       unmount();
@@ -2132,50 +2579,64 @@ describe('UserInputs', () => {
       // Should not crash
     });
 
-    it('handles effect with changing dependencies', () => {
+    it('handles effect with changing dependencies', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Change the dependencies
-      rerender(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles effect with stable dependencies', () => {
+    it('handles effect with stable dependencies', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Re-render with same dependencies
-      rerender(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Router Integration Edge Cases', () => {
-    it('handles router refresh error', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles router refresh error', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles router refresh success', () => {
+    it('handles router refresh success', async () => {
       mockRouter.refresh.mockImplementation(() => {
         // Success case
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
@@ -2192,10 +2653,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -2215,10 +2682,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -2242,10 +2715,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...propsWithSpecialChars} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithSpecialChars} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -2264,10 +2743,16 @@ describe('UserInputs', () => {
         json: async () => ({ id: 123 }),
       });
 
-      render(<UserInputs {...propsWithEmptyStrings} />);
+      await act(async () => {
+
+        render(<UserInputs {...propsWithEmptyStrings} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
-      fireEvent.click(addButtons[0]);
+      await act(async () => {
+        fireEvent.click(addButtons[0]);
+      });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalled();
@@ -2280,13 +2765,19 @@ describe('UserInputs', () => {
       // Mock setTimeout to execute immediately
       jest.useFakeTimers();
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       const submitButton = screen.getByText('Submit');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
 
       // Fast-forward timers
       jest.runAllTimers();
@@ -2299,15 +2790,19 @@ describe('UserInputs', () => {
     });
 
     it('handles timeout error in handleInputSubmit', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('State Update Edge Cases', () => {
-    it('handles state update with null values', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles state update with null values', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger state updates that might involve null values
       const selectElements = screen.getAllByRole('combobox');
@@ -2316,8 +2811,10 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles state update with undefined values', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles state update with undefined values', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger state updates that might involve undefined values
       const selectElements = screen.getAllByRole('combobox');
@@ -2326,8 +2823,10 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles state update with empty objects', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles state update with empty objects', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger state updates that might involve empty objects
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
@@ -2335,36 +2834,42 @@ describe('UserInputs', () => {
   });
 
   describe('Component Re-rendering Edge Cases', () => {
-    it('handles re-rendering with changed props', () => {
+    it('handles re-rendering with changed props', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Re-render with different props
-      rerender(<UserInputs {...defaultProps} requiredInputBlocks={[]} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} requiredInputBlocks={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles re-rendering with same props', () => {
+    it('handles re-rendering with same props', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Re-render with same props
-      rerender(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles re-rendering with null props', () => {
+    it('handles re-rendering with null props', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Re-render with null values in props
-      rerender(<UserInputs {...defaultProps} projectId={null} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} projectId={null} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Additional Branch Coverage Tests', () => {
-    it('handles group selection with matching group but different input block', () => {
+    it('handles group selection with matching group but different input block', async () => {
       const groupWithDifferentInputBlock = [
         {
           id: 1,
@@ -2393,13 +2898,19 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentInputBlock} initialInputBlocks={initialBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentInputBlock} initialInputBlocks={initialBlocks} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with non-existent input block data', () => {
-      render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+    it('handles single input selection with non-existent input block data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '999' } }); // Non-existent ID
@@ -2407,7 +2918,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with empty input_blocks array', () => {
+    it('handles group selection with empty input_blocks array', async () => {
       const groupWithEmptyInputBlocks = [
         {
           id: 1,
@@ -2420,7 +2931,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithEmptyInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithEmptyInputBlocks} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '1' } });
@@ -2428,19 +2943,23 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles validation with didRunValidationUpdate ref preventing multiple calls', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles validation with didRunValidationUpdate ref preventing multiple calls', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger multiple validation updates quickly
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '1' } });
-      fireEvent.change(selectElements[1], { target: { value: '2' } });
+      await act(async () => {
+        fireEvent.change(selectElements[1], { target: { value: '2' } });
+      });
       fireEvent.change(selectElements[1], { target: { value: '1' } });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with missing required blocks for group', () => {
+    it('handles group selection with missing required blocks for group', async () => {
       const groupWithoutMatchingRequiredBlocks = [
         {
           id: 1,
@@ -2461,7 +2980,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutMatchingRequiredBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutMatchingRequiredBlocks} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '1' } });
@@ -2469,7 +2992,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with missing input block data but valid ID', () => {
+    it('handles single input selection with missing input block data but valid ID', async () => {
       const inputDataWithMissingBlock = [
         {
           gid: 'group-1',
@@ -2483,7 +3006,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithMissingBlock} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithMissingBlock} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '1' } }); // Valid ID
@@ -2492,30 +3019,38 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles input submission without data', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles input submission without data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
     it('handles timeout error in handleInputSubmit', async () => {
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles plugin data processing with empty plugins object', () => {
+    it('handles plugin data processing with empty plugins object', async () => {
       mockGetPlugins.mockResolvedValue({
         status: 'success',
         data: {},
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles plugin data processing with plugins containing no input_blocks', () => {
+    it('handles plugin data processing with plugins containing no input_blocks', async () => {
       const pluginWithoutInputBlocks = {
         'aiverify.plugin.test': {
           gid: 'aiverify.plugin.test',
@@ -2541,56 +3076,74 @@ describe('UserInputs', () => {
         data: pluginWithoutInputBlocks,
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles input submission with complete data', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles input submission with complete data', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
   });
 
   describe('Final Branch Coverage Tests', () => {
-    it('handles validation results with non-empty results and callback', () => {
+    it('handles validation results with non-empty results and callback', async () => {
       mockProcessBatchValidations.mockResolvedValue({
         'test-validation': { isValid: true, errors: [] },
         'another-validation': { isValid: false, errors: ['Error 1'] },
       });
 
-      render(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       // Trigger a selection change to cause validation update
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[1], { target: { value: '1' } });
+      await act(async () => {
+        fireEvent.change(selectElements[1], { target: { value: '1' } });
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with same group but different input block IDs', () => {
+    it('handles group selection with same group but different input block IDs', async () => {
       const initialInputBlocks = [
         { gid: 'group-2', cid: 'group-input-1', id: 101 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
       
       const selectElements = screen.getAllByRole('combobox');
-      fireEvent.change(selectElements[0], { target: { value: '2' } }); // Different group ID
+      await act(async () => {
+        fireEvent.change(selectElements[0], { target: { value: '2' } }); // Different group ID
+      });
 
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with same input but different block', () => {
+    it('handles single input selection with same input but different block', async () => {
       const initialInputBlocks = [
         { gid: 'group-1', cid: 'input-1', id: 1 },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} />);
+
+      });
       
       // Clear the previous calls
       jest.clearAllMocks();
@@ -2601,21 +3154,27 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles modal close with refresh flag', () => {
-      render(<UserInputs {...defaultProps} />);
+    it('handles modal close with refresh flag', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} />);
+      });
       
       const addButtons = screen.getAllByText('ADD INPUT');
       fireEvent.click(addButtons[1]); // Click second button for single input block
 
       // Close modal with refresh flag
       const closeButton = screen.getByText('Close');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
 
       expect(screen.queryByTestId('plugin-input-modal')).not.toBeInTheDocument();
     });
 
-    it('handles group selection with missing group in allInputBlockGroups', () => {
-      render(<UserInputs {...defaultProps} allInputBlockGroups={[]} />);
+    it('handles group selection with missing group in allInputBlockGroups', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockGroups={[]} />);
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '999' } }); // Non-existent group
@@ -2623,7 +3182,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles initial state with group blocks but no matching group', () => {
+    it('handles initial state with group blocks but no matching group', async () => {
       const initialBlocksWithNonMatchingGroup = [
         {
           gid: 'group-2',
@@ -2632,12 +3191,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithNonMatchingGroup} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} initialInputBlocks={initialBlocksWithNonMatchingGroup} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles effect with allInputBlockDatas change and selected inputs', () => {
+    it('handles effect with allInputBlockDatas change and selected inputs', async () => {
       const initialInputBlocks = [
         { gid: 'group-1', cid: 'input-1', id: 1 },
       ];
@@ -2658,18 +3221,24 @@ describe('UserInputs', () => {
         },
       ];
 
-      rerender(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} allInputBlockDatas={newInputBlockDatas} />);
+      await act(async () => {
+
+        rerender(<UserInputs {...defaultProps} initialInputBlocks={initialInputBlocks} allInputBlockDatas={newInputBlockDatas} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles effect with empty allInputBlockDatas and no selected inputs', () => {
-      render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+    it('handles effect with empty allInputBlockDatas and no selected inputs', async () => {
+      await act(async () => {
+        render(<UserInputs {...defaultProps} allInputBlockDatas={[]} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles selectedGroup state update effect', () => {
+    it('handles selectedGroup state update effect', async () => {
       const { rerender } = render(<UserInputs {...defaultProps} />);
       
       // Trigger selectedGroup state change
@@ -2677,12 +3246,14 @@ describe('UserInputs', () => {
       fireEvent.change(selectElements[0], { target: { value: '1' } });
 
       // Re-render to trigger effect
-      rerender(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles selectedGroup state update effect with null selectedGroup', () => {
+    it('handles selectedGroup state update effect with null selectedGroup', async () => {
       const initialInputBlocks = [
         { gid: 'group-2', cid: 'group-input-1', id: 101 },
       ];
@@ -2694,12 +3265,14 @@ describe('UserInputs', () => {
       fireEvent.change(selectElements[0], { target: { value: '' } });
 
       // Re-render to trigger effect
-      rerender(<UserInputs {...defaultProps} />);
+      await act(async () => {
+        rerender(<UserInputs {...defaultProps} />);
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group input block with missing matchingGroup but candidate groups', () => {
+    it('handles group input block with missing matchingGroup but candidate groups', async () => {
       const groupWithDifferentIds = [
         {
           id: 1,
@@ -2728,12 +3301,16 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentIds} initialInputBlocks={initialBlocksWithDifferentId} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithDifferentIds} initialInputBlocks={initialBlocksWithDifferentId} />);
+
+      });
       
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles single input selection with missing input block data but valid ID', () => {
+    it('handles single input selection with missing input block data but valid ID', async () => {
       const inputDataWithMissingBlock = [
         {
           gid: 'group-1',
@@ -2747,7 +3324,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithMissingBlock} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockDatas={inputDataWithMissingBlock} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[1], { target: { value: '1' } }); // Valid ID
@@ -2756,7 +3337,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group selection with missing required blocks for group', () => {
+    it('handles group selection with missing required blocks for group', async () => {
       const groupWithoutMatchingRequiredBlocks = [
         {
           id: 1,
@@ -2777,7 +3358,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutMatchingRequiredBlocks} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithoutMatchingRequiredBlocks} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '1' } });
@@ -2785,7 +3370,7 @@ describe('UserInputs', () => {
       expect(screen.getByText('User Inputs')).toBeInTheDocument();
     });
 
-    it('handles group input block without matching required block', () => {
+    it('handles group input block without matching required block', async () => {
       const groupWithUnmatchedInputBlock = [
         {
           id: 1,
@@ -2806,7 +3391,11 @@ describe('UserInputs', () => {
         },
       ];
 
-      render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithUnmatchedInputBlock} />);
+      await act(async () => {
+
+        render(<UserInputs {...defaultProps} allInputBlockGroups={groupWithUnmatchedInputBlock} />);
+
+      });
       
       const selectElements = screen.getAllByRole('combobox');
       fireEvent.change(selectElements[0], { target: { value: '1' } });

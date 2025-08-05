@@ -16,8 +16,15 @@ jest.mock('@/lib/fetchApis/getProjects', () => ({
 
 jest.mock('next/link', () => {
   return function MockLink({ href, children, onClick, ...props }: any) {
+    const handleClick = (e: any) => {
+      e.preventDefault(); // Prevent actual navigation
+      if (onClick) {
+        onClick(e);
+      }
+    };
+    
     return (
-      <a href={href} onClick={onClick} {...props}>
+      <a href={href} onClick={handleClick} {...props}>
         {children}
       </a>
     );

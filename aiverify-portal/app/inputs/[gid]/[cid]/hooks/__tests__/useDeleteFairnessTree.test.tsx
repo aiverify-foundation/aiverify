@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useDeleteFairnessTree } from '../useDeleteFairnessTree';
 
@@ -381,24 +381,31 @@ describe('useDeleteFairnessTree', () => {
     );
 
     // Start mutation
-    const mutationPromise = result.current.mutateAsync(707);
+    let mutationPromise: any;
+    await act(async () => {
+      mutationPromise = result.current.mutateAsync(707);
+    });
 
     // Wait for the mutation to start
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     expect(result.current.isPending).toBe(true);
 
     // Resolve the promise
-    resolvePromise!({
-      ok: true,
-      status: 200,
-      json: async () => mockResponse,
-    } as Response);
+    await act(async () => {
+      resolvePromise!({
+        ok: true,
+        status: 200,
+        json: async () => mockResponse,
+      } as Response);
 
-    await mutationPromise;
+      await mutationPromise;
 
-    // Wait for the mutation state to update
-    await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for the mutation state to update
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     expect(result.current.isPending).toBe(false);
     expect(onSuccess).toHaveBeenCalledWith({ status: 200, data: mockResponse }, 707, undefined);
@@ -422,24 +429,31 @@ describe('useDeleteFairnessTree', () => {
     );
 
     // Start mutation
-    const mutationPromise = result.current.mutateAsync(808);
+    let mutationPromise: any;
+    await act(async () => {
+      mutationPromise = result.current.mutateAsync(808);
+    });
 
     // Wait for the mutation to start
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     expect(result.current.isPending).toBe(true);
 
     // Reject the promise
-    rejectPromise!(networkError);
+    await act(async () => {
+      rejectPromise!(networkError);
 
-    try {
-      await mutationPromise;
-    } catch (error) {
-      // Expected to throw
-    }
+      try {
+        await mutationPromise;
+      } catch (error) {
+        // Expected to throw
+      }
 
-    // Wait for the mutation state to update
-    await new Promise(resolve => setTimeout(resolve, 0));
+      // Wait for the mutation state to update
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     expect(result.current.isPending).toBe(false);
     expect(onError).toHaveBeenCalledWith(networkError, 808, undefined);

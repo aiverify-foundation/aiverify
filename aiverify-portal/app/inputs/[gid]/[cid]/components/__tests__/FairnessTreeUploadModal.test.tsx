@@ -157,40 +157,48 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Component rendering', () => {
-    it('should not render when isOpen is false', () => {
+    it('should not render when isOpen is false', async () => {
       render(<FairnessTreeUploadModal {...defaultProps} isOpen={false} />);
       expect(screen.queryByTestId('modal')).not.toBeInTheDocument();
     });
 
-    it('should render loading state when MDX bundle is loading', () => {
+    it('should render loading state when MDX bundle is loading', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-heading')).toHaveTextContent('Loading Fairness Tree Editor');
       expect(screen.getByText('Loading content...')).toBeInTheDocument();
     });
 
-    it('should render loading state when summary bundle is loading', () => {
+    it('should render loading state when summary bundle is loading', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: null,
         isLoading: true,
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-heading')).toHaveTextContent('Loading Fairness Tree Editor');
       expect(screen.getByText('Loading content...')).toBeInTheDocument();
     });
 
-    it('should render error state when MDX bundle has error', () => {
+    it('should render error state when MDX bundle has error', async () => {
       const error = new Error('MDX bundle error');
       mockUseMDXBundle.mockReturnValue({
         data: null,
@@ -198,14 +206,18 @@ describe('FairnessTreeUploadModal', () => {
         error,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-heading')).toHaveTextContent('Error');
       expect(screen.getByText('Error loading content: MDX bundle error')).toBeInTheDocument();
     });
 
-    it('should render error state when summary bundle has error', () => {
+    it('should render error state when summary bundle has error', async () => {
       const error = new Error('Summary bundle error');
       mockUseMDXSummaryBundle.mockReturnValue({
         data: null,
@@ -213,15 +225,21 @@ describe('FairnessTreeUploadModal', () => {
         error,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-heading')).toHaveTextContent('Error');
       expect(screen.getByText('Error loading content: Summary bundle error')).toBeInTheDocument();
     });
 
-    it('should render main form when data is loaded successfully', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should render main form when data is loaded successfully', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.getByTestId('modal-heading')).toHaveTextContent('Add Fairness Tree');
@@ -229,7 +247,7 @@ describe('FairnessTreeUploadModal', () => {
       expect(screen.getByTestId('mdx-component')).toBeInTheDocument();
     });
 
-    it('should not render Component when mdxBundle is null', () => {
+    it('should not render Component when mdxBundle is null', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: false,
@@ -243,7 +261,11 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       // The Component should not be rendered when mdxBundle is null
       expect(screen.queryByTestId('mdx-component')).not.toBeInTheDocument();
@@ -255,14 +277,16 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Validation functions', () => {
-    it('should extract validation functions from summary bundle', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should extract validation functions from summary bundle', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       // The validation functions should be extracted and used
       expect(screen.getByText('Completion: 0%')).toBeInTheDocument();
     });
 
-    it('should handle error when creating validation functions', () => {
+    it('should handle error when creating validation functions', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
       
       mockUseMDXSummaryBundle.mockReturnValue({
@@ -273,13 +297,17 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(consoleSpy).toHaveBeenCalledWith('Error creating summary functions:', expect.any(Error));
       consoleSpy.mockRestore();
     });
 
-    it('should handle error when calculating progress', () => {
+    it('should handle error when calculating progress', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
       
       mockUseMDXSummaryBundle.mockReturnValue({
@@ -295,7 +323,11 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(consoleSpy).toHaveBeenCalledWith('Error calculating progress:', expect.any(Error));
       consoleSpy.mockRestore();
@@ -304,10 +336,14 @@ describe('FairnessTreeUploadModal', () => {
 
   describe('Form validation', () => {
     it('should show error when name is empty', async () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByText('Please enter a name before submitting.')).toBeInTheDocument();
@@ -328,13 +364,21 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByText('Please fill in all fields before submitting.')).toBeInTheDocument();
@@ -357,13 +401,21 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByText('Error validating form data. Please check your inputs.')).toBeInTheDocument();
@@ -373,19 +425,25 @@ describe('FairnessTreeUploadModal', () => {
       consoleSpy.mockRestore();
     });
 
-    it('should clear form error when name input changes', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should clear form error when name input changes', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const nameInput = screen.getByLabelText('Name');
       
       // First trigger validation error
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       expect(screen.getByText('Please enter a name before submitting.')).toBeInTheDocument();
       
       // Then change the name input
-      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      });
       
       expect(screen.queryByText('Please enter a name before submitting.')).not.toBeInTheDocument();
     });
@@ -409,13 +467,21 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
       
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+      
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(mockSubmitFairnessTree).toHaveBeenCalledWith({
@@ -479,13 +545,21 @@ describe('FairnessTreeUploadModal', () => {
       
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
       
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+      
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('modal-heading')).toHaveTextContent('Error');
@@ -496,33 +570,45 @@ describe('FairnessTreeUploadModal', () => {
       consoleSpy.mockRestore();
     });
 
-    it('should show loading state during submission', () => {
+    it('should show loading state during submission', async () => {
       mockUseSubmitFairnessTree.mockReturnValue({
         submitFairnessTree: mockSubmitFairnessTree,
         isSubmitting: true,
       });
       
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+      
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      
+      });
       
       expect(screen.getByTestId('primary-btn')).toHaveTextContent('Submitting...');
     });
   });
 
   describe('Modal interactions', () => {
-    it('should handle close icon click', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should handle close icon click', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const closeButton = screen.getByTestId('close-icon');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
 
-    it('should handle secondary button click', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should handle secondary button click', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const cancelButton = screen.getByTestId('secondary-btn');
-      fireEvent.click(cancelButton);
+      await act(async () => {
+        fireEvent.click(cancelButton);
+      });
       
       expect(defaultProps.onClose).toHaveBeenCalled();
     });
@@ -544,20 +630,30 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
       
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+      
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('modal-heading')).toHaveTextContent('Success');
       });
       
       const successCloseButton = screen.getByTestId('close-icon');
-      fireEvent.click(successCloseButton);
+      await act(async () => {
+        fireEvent.click(successCloseButton);
+      });
       
       expect(mockRefresh).toHaveBeenCalled();
       expect(defaultProps.onClose).toHaveBeenCalled();
@@ -581,20 +677,30 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
       
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+      
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Tree' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(screen.getByTestId('modal-heading')).toHaveTextContent('Error');
       });
       
       const errorCloseButton = screen.getByTestId('close-icon');
-      fireEvent.click(errorCloseButton);
+      await act(async () => {
+        fireEvent.click(errorCloseButton);
+      });
       
       expect(mockRefresh).toHaveBeenCalled();
       expect(defaultProps.onClose).toHaveBeenCalled();
@@ -602,7 +708,7 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Progress calculation', () => {
-    it('should update progress when tree data changes', () => {
+    it('should update progress when tree data changes', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: {
           code: `
@@ -620,7 +726,11 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       // Initially should show 0% progress
       expect(screen.getByText('Completion: 0%')).toBeInTheDocument();
@@ -635,7 +745,7 @@ describe('FairnessTreeUploadModal', () => {
       // Note: This is a simplified test as the actual progress update depends on the MDX component implementation
     });
 
-    it('should show green progress bar when completion is 100%', () => {
+    it('should show green progress bar when completion is 100%', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: {
           code: `
@@ -649,7 +759,11 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('Completion: 100%')).toBeInTheDocument();
       
@@ -658,7 +772,7 @@ describe('FairnessTreeUploadModal', () => {
       expect(progressBar).toHaveClass('bg-green-500');
     });
 
-    it('should show primary color progress bar when completion is less than 100%', () => {
+    it('should show primary color progress bar when completion is less than 100%', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: {
           code: `
@@ -672,7 +786,11 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       expect(screen.getByText('Completion: 50%')).toBeInTheDocument();
       
@@ -683,8 +801,10 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('MDX component integration', () => {
-    it('should render MDX component with correct props', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should render MDX component with correct props', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const mdxComponent = screen.getByTestId('mdx-component');
       expect(mdxComponent).toBeInTheDocument();
@@ -710,8 +830,10 @@ describe('FairnessTreeUploadModal', () => {
       );
     });
 
-    it('should update tree data when MDX component calls onChangeData', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should update tree data when MDX component calls onChangeData', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const mdxComponent = screen.getByTestId('mdx-component');
       const onChangeData = mockComponent.mock.calls[0][0].onChangeData;
@@ -734,18 +856,24 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Form reset on close', () => {
-    it('should reset form state when modal is closed', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should reset form state when modal is closed', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      });
       
       // Verify the input has the value
       expect(nameInput).toHaveValue('Test Name');
       
       // Close the modal
       const closeButton = screen.getByTestId('close-icon');
-      fireEvent.click(closeButton);
+      await act(async () => {
+        fireEvent.click(closeButton);
+      });
       
       // The onClose should be called, which would reset the form
       expect(defaultProps.onClose).toHaveBeenCalled();
@@ -753,23 +881,29 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have proper label for name input', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should have proper label for name input', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const nameInput = screen.getByLabelText('Name');
       expect(nameInput).toBeInTheDocument();
       expect(nameInput).toHaveAttribute('id', 'name');
     });
 
-    it('should have tooltip for name field', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should have tooltip for name field', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const tooltip = screen.getByTestId('tooltip');
       expect(tooltip).toHaveAttribute('data-content', 'Enter a unique name for the fairness tree');
     });
 
-    it('should have info icon for name field', () => {
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+    it('should have info icon for name field', async () => {
+      await act(async () => {
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+      });
       
       const infoIcon = screen.getByTestId('info-icon');
       expect(infoIcon).toBeInTheDocument();
@@ -778,21 +912,25 @@ describe('FairnessTreeUploadModal', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle null validation functions gracefully', () => {
+    it('should handle null validation functions gracefully', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: null,
         isLoading: false,
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       // Should render without validation functions
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.queryByText(/Completion:/)).not.toBeInTheDocument();
     });
 
-    it('should handle missing progress function', () => {
+    it('should handle missing progress function', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: {
           code: `
@@ -805,14 +943,18 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       // Should render without progress bar
       expect(screen.getByTestId('modal')).toBeInTheDocument();
       expect(screen.queryByText(/Completion:/)).not.toBeInTheDocument();
     });
 
-    it('should handle missing validate function', () => {
+    it('should handle missing validate function', async () => {
       mockUseMDXSummaryBundle.mockReturnValue({
         data: {
           code: `
@@ -825,13 +967,21 @@ describe('FairnessTreeUploadModal', () => {
         error: null,
       });
 
-      render(<FairnessTreeUploadModal {...defaultProps} />);
+      await act(async () => {
+
+        render(<FairnessTreeUploadModal {...defaultProps} />);
+
+      });
       
       const nameInput = screen.getByLabelText('Name');
-      fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      await act(async () => {
+        fireEvent.change(nameInput, { target: { value: 'Test Name' } });
+      });
       
       const submitButton = screen.getByTestId('primary-btn');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        fireEvent.click(submitButton);
+      });
       
       // Should submit successfully without validation function
       expect(mockSubmitFairnessTree).toHaveBeenCalled();

@@ -119,12 +119,12 @@ const mockWidget: WidgetOnGridLayout = {
   dependencies: [
     {
       gid: 'test-plugin',
-      cid: 'test-algo',
+      cid: 'test-algo-1',
       version: '1.0.0',
     },
     {
       gid: 'test-plugin',
-      cid: 'test-input-block',
+      cid: 'test-input-block-1',
       version: '1.0.0',
     },
   ],
@@ -163,7 +163,7 @@ const mockPlugins: Plugin[] = [
     zip_hash: 'test-hash',
     algorithms: [
       {
-        cid: 'test-algo',
+        cid: 'test-algo-1',
         gid: 'test-plugin',
         name: 'Test Algorithm',
         modelType: ['classification'],
@@ -236,7 +236,7 @@ const mockPlugins: Plugin[] = [
     input_blocks: [
       {
         gid: 'test-plugin',
-        cid: 'test-input-block',
+        cid: 'test-input-block-1',
         name: 'Test Input Block',
         description: 'A test input block',
         group: 'Test Group',

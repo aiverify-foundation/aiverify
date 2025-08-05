@@ -58,11 +58,22 @@ jest.mock('@/lib/components/modal', () => ({
     secondaryBtnLabel, 
     onPrimaryBtnClick, 
     onSecondaryBtnClick, 
-    onCloseIconClick, 
+    onCloseIconClick,
+    textColor,
+    enableScreenOverlay,
+    top,
+    left,
+    width,
+    height,
+    bgColor,
+    headingColor,
+    hideCloseIcon,
+    overlayOpacity,
+    className,
     ...props 
   }: any) {
     return (
-      <div data-testid="modal" {...props}>
+      <div data-testid="modal" className={className} {...props}>
         <h2 data-testid="modal-heading">{heading}</h2>
         <div data-testid="modal-content">{children}</div>
         {onCloseIconClick && (

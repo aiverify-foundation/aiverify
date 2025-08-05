@@ -32,8 +32,8 @@ describe('MDXComponentWrapper', () => {
         <MDXComponentWrapper 
           code={mockCode}
           component={mockComponent}
-          class="test-class"
-          for="test-for"
+          className="test-class"
+          htmlFor="test-for"
           style={{ color: 'red' }}
         />
       );
@@ -124,8 +124,8 @@ describe('MDXComponentWrapper', () => {
         code: mockCode,
         className: 'container',
         htmlFor: 'input-field',
-        tabindex: '0',
-        readonly: 'true',
+        tabIndex: '0',
+        readOnly: true,
       }, undefined);
     });
 
@@ -141,8 +141,8 @@ describe('MDXComponentWrapper', () => {
 
       expect(mockComponent).toHaveBeenCalledWith({
         code: mockCode,
-        class: '',
-        for: '',
+        className: '',
+        htmlFor: '',
       }, undefined);
     });
 
@@ -158,8 +158,8 @@ describe('MDXComponentWrapper', () => {
 
       expect(mockComponent).toHaveBeenCalledWith({
         code: mockCode,
-        class: undefined,
-        for: null,
+        className: undefined,
+        htmlFor: null,
       }, undefined);
     });
 

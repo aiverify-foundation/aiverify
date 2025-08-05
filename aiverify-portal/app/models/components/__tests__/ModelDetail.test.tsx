@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ModelDetail from '../ModelDetail';
 
@@ -180,7 +180,9 @@ describe('ModelDetail Simple Tests', () => {
   it('should open edit modal when edit icon is clicked', async () => {
     render(<ModelDetail model={mockModel} />);
     const editIcon = screen.getByTestId('icon');
-    await editIcon.click();
+    await act(async () => {
+      await editIcon.click();
+    });
     expect(screen.getByTestId('modal')).toBeInTheDocument();
     expect(screen.getByTestId('modal')).toHaveAttribute('data-heading', 'Edit Model');
   });

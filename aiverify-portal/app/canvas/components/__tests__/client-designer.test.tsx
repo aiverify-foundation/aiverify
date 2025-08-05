@@ -7,8 +7,8 @@ import { UserFlows } from '@/app/userFlowsEnum';
 jest.mock('next/dynamic', () => ({
   __esModule: true,
   default: (importFn: () => Promise<any>, options: any) => {
-    const MockDesigner = ({ ...props }: any) => (
-      <div data-testid="mock-designer" {...props}>
+    const MockDesigner = () => (
+      <div data-testid="mock-designer">
         Mock Designer Component
       </div>
     );
@@ -18,8 +18,8 @@ jest.mock('next/dynamic', () => ({
 
 // Mock the designer component
 jest.mock('../designer', () => ({
-  Designer: ({ ...props }: any) => (
-    <div data-testid="designer-component" {...props}>
+  Designer: () => (
+    <div data-testid="designer-component">
       Designer Component
     </div>
   ),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInputBlockGroupData } from '@/app/inputs/context/InputBlockGroupDataContext';
@@ -138,23 +138,31 @@ describe('UploadPage', () => {
     } as any);
   });
 
+  const renderComponent = async () => {
+    let result: any;
+    await act(async () => {
+      result = render(<UploadPage />);
+    });
+    return result;
+  };
+
   describe('Rendering', () => {
-    it('should render the upload page with correct title', () => {
-      render(<UploadPage />);
+    it('should render the upload page with correct title', async () => {
+      await renderComponent();
       
       expect(screen.getByText('Add New Checklist')).toBeInTheDocument();
       expect(screen.getByText('How would you like to create your checklist?')).toBeInTheDocument();
     });
 
-    it('should render both option cards', () => {
-      render(<UploadPage />);
+    it('should render both option cards', async () => {
+      await renderComponent();
       
       expect(screen.getByText('Manual Entry')).toBeInTheDocument();
       expect(screen.getByText('Excel Upload')).toBeInTheDocument();
     });
 
-    it('should render manual entry descriptions', () => {
-      render(<UploadPage />);
+    it('should render manual entry descriptions', async () => {
+      await renderComponent();
       
       expect(screen.getByText('Create checklist items one by one')).toBeInTheDocument();
       expect(screen.getByText('Full control over checklist structure')).toBeInTheDocument();
@@ -162,8 +170,8 @@ describe('UploadPage', () => {
       expect(screen.getByText('*Best for creating new checklists from scratch')).toBeInTheDocument();
     });
 
-    it('should render excel upload descriptions', () => {
-      render(<UploadPage />);
+    it('should render excel upload descriptions', async () => {
+      await renderComponent();
       
       expect(screen.getByText('Upload pre-formatted Excel files')).toBeInTheDocument();
       expect(screen.getByText('Bulk import of checklist items')).toBeInTheDocument();
@@ -171,23 +179,23 @@ describe('UploadPage', () => {
       expect(screen.getByText('*Best for importing existing checklists')).toBeInTheDocument();
     });
 
-    it('should render next button disabled initially', () => {
-      render(<UploadPage />);
+    it('should render next button disabled initially', async () => {
+      await renderComponent();
       
       const nextButton = screen.getByTestId('next-button');
       expect(nextButton).toBeDisabled();
     });
 
-    it('should render layout header', () => {
-      render(<UploadPage />);
+    it('should render layout header', async () => {
+      await renderComponent();
       
       expect(screen.getByTestId('layout-header')).toBeInTheDocument();
     });
   });
 
   describe('Card Selection', () => {
-    it('should select manual entry card when clicked', () => {
-      render(<UploadPage />);
+    it('should select manual entry card when clicked', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -195,8 +203,8 @@ describe('UploadPage', () => {
       expect(screen.getByTestId('next-button')).not.toBeDisabled();
     });
 
-    it('should select excel upload card when clicked', () => {
-      render(<UploadPage />);
+    it('should select excel upload card when clicked', async () => {
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -204,8 +212,8 @@ describe('UploadPage', () => {
       expect(screen.getByTestId('next-button')).not.toBeDisabled();
     });
 
-    it('should change selection when different card is clicked', () => {
-      render(<UploadPage />);
+    it('should change selection when different card is clicked', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       const excelCard = screen.getByText('Excel Upload').closest('div');
@@ -216,8 +224,8 @@ describe('UploadPage', () => {
       expect(screen.getByTestId('next-button')).not.toBeDisabled();
     });
 
-    it('should apply correct styles to selected card', () => {
-      render(<UploadPage />);
+    it('should apply correct styles to selected card', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -228,8 +236,8 @@ describe('UploadPage', () => {
       expect(cardContainer).toHaveAttribute('style', expect.stringContaining('background-color: var(--color-primary-600)'));
     });
 
-    it('should apply correct styles to unselected card', () => {
-      render(<UploadPage />);
+    it('should apply correct styles to unselected card', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       const excelCard = screen.getByText('Excel Upload').closest('div');
@@ -245,7 +253,7 @@ describe('UploadPage', () => {
 
   describe('Navigation - Manual Entry', () => {
     it('should navigate to manual entry page when manual card is selected and next is clicked', async () => {
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -270,7 +278,7 @@ describe('UploadPage', () => {
     });
 
     it('should navigate to correct URL after successful API call', async () => {
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -290,7 +298,7 @@ describe('UploadPage', () => {
         json: () => Promise.resolve({}),
       } as any);
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -308,7 +316,7 @@ describe('UploadPage', () => {
     it('should log success message when API call succeeds', async () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -325,8 +333,8 @@ describe('UploadPage', () => {
   });
 
   describe('Navigation - Excel Upload', () => {
-    it('should navigate to excel upload page when excel card is selected and next is clicked', () => {
-      render(<UploadPage />);
+    it('should navigate to excel upload page when excel card is selected and next is clicked', async () => {
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -348,7 +356,7 @@ describe('UploadPage', () => {
     });
 
     it('should include project parameters in manual entry navigation', async () => {
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -361,8 +369,8 @@ describe('UploadPage', () => {
       });
     });
 
-    it('should include project parameters in excel upload navigation', () => {
-      render(<UploadPage />);
+    it('should include project parameters in excel upload navigation', async () => {
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -373,8 +381,8 @@ describe('UploadPage', () => {
       expect(mockPush).toHaveBeenCalledWith('/inputs/groups/test-gid/test-group/upload/excel?flow=test-flow&projectId=test-project');
     });
 
-    it('should handle back navigation to project select data', () => {
-      render(<UploadPage />);
+    it('should handle back navigation to project select data', async () => {
+      await renderComponent();
       
       const backButton = screen.getByText('Back');
       fireEvent.click(backButton);
@@ -382,7 +390,7 @@ describe('UploadPage', () => {
       expect(mockPush).toHaveBeenCalledWith('/project/select_data?flow=test-flow&projectId=test-project');
     });
 
-    it('should render back link when flow is NOT present', () => {
+    it('should render back link when flow is NOT present', async () => {
       // Reset search params to not have flow
       mockSearchParams.get.mockImplementation((key: string) => {
         if (key === 'projectId') return 'test-project';
@@ -390,7 +398,7 @@ describe('UploadPage', () => {
         return null;
       });
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const backLink = screen.getByText('Add New Checklist').closest('a');
       expect(backLink).toHaveAttribute('href', '/inputs/groups/test-gid/test-group?projectId=test-project&flow=null');
@@ -399,7 +407,7 @@ describe('UploadPage', () => {
 
   describe('Non-Project Flow Navigation', () => {
     it('should not include project parameters in navigation when not in project flow', async () => {
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -412,8 +420,8 @@ describe('UploadPage', () => {
       });
     });
 
-    it('should not include project parameters in excel navigation when not in project flow', () => {
-      render(<UploadPage />);
+    it('should not include project parameters in excel navigation when not in project flow', async () => {
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -424,8 +432,8 @@ describe('UploadPage', () => {
       expect(mockPush).toHaveBeenCalledWith('/inputs/groups/test-gid/test-group/upload/excel');
     });
 
-    it('should not handle back navigation when not in project flow', () => {
-      render(<UploadPage />);
+    it('should not handle back navigation when not in project flow', async () => {
+      await renderComponent();
       
       const backButton = screen.getByText('Back');
       fireEvent.click(backButton);
@@ -433,8 +441,8 @@ describe('UploadPage', () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it('should render title without back link when flow is not present', () => {
-      render(<UploadPage />);
+    it('should render title without back link when flow is not present', async () => {
+      await renderComponent();
       
       const title = screen.getByText('Add New Checklist');
       expect(title.tagName).toBe('H1');
@@ -442,8 +450,8 @@ describe('UploadPage', () => {
   });
 
   describe('Button State Management', () => {
-    it('should enable next button when card is selected', () => {
-      render(<UploadPage />);
+    it('should enable next button when card is selected', async () => {
+      await renderComponent();
       
       const nextButton = screen.getByTestId('next-button');
       expect(nextButton).toBeDisabled();
@@ -454,15 +462,15 @@ describe('UploadPage', () => {
       expect(nextButton).not.toBeDisabled();
     });
 
-    it('should disable next button when no card is selected', () => {
-      render(<UploadPage />);
+    it('should disable next button when no card is selected', async () => {
+      await renderComponent();
       
       const nextButton = screen.getByTestId('next-button');
       expect(nextButton).toBeDisabled();
     });
 
-    it('should not navigate when next button is clicked without selection', () => {
-      render(<UploadPage />);
+    it('should not navigate when next button is clicked without selection', async () => {
+      await renderComponent();
       
       const nextButton = screen.getByTestId('next-button');
       fireEvent.click(nextButton);
@@ -473,26 +481,26 @@ describe('UploadPage', () => {
   });
 
   describe('Icon Rendering', () => {
-    it('should render folder icons for both cards', () => {
-      render(<UploadPage />);
+    it('should render folder icons for both cards', async () => {
+      await renderComponent();
       
       expect(screen.getAllByTestId('icon-Folder')).toHaveLength(2);
     });
 
-    it('should render arrow left icon in back link when flow is NOT present', () => {
+    it('should render arrow left icon in back link when flow is NOT present', async () => {
       mockSearchParams.get.mockImplementation((key: string) => {
         if (key === 'projectId') return 'test-project';
         if (key === 'flow') return null;
         return null;
       });
       
-      render(<UploadPage />);
+      await renderComponent();
       
       expect(screen.getByTestId('icon-ArrowLeft')).toBeInTheDocument();
     });
 
-    it('should apply correct icon colors for selected card', () => {
-      render(<UploadPage />);
+    it('should apply correct icon colors for selected card', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -501,8 +509,8 @@ describe('UploadPage', () => {
       expect(folderIcons[0]).toHaveAttribute('data-color', '#C084FC');
     });
 
-    it('should apply correct icon colors for unselected card', () => {
-      render(<UploadPage />);
+    it('should apply correct icon colors for unselected card', async () => {
+      await renderComponent();
       
       const folderIcons = screen.getAllByTestId('icon-Folder');
       expect(folderIcons[0]).toHaveAttribute('data-color', '#A1A1AA');
@@ -510,23 +518,23 @@ describe('UploadPage', () => {
   });
 
   describe('Description Rendering', () => {
-    it('should render descriptions with correct formatting', () => {
-      render(<UploadPage />);
+    it('should render descriptions with correct formatting', async () => {
+      await renderComponent();
       
       // Check that descriptions with colons are split correctly
       expect(screen.getByText('Create checklist items one by one')).toBeInTheDocument();
       expect(screen.getByText('Full control over checklist structure')).toBeInTheDocument();
     });
 
-    it('should render note descriptions with correct styling', () => {
-      render(<UploadPage />);
+    it('should render note descriptions with correct styling', async () => {
+      await renderComponent();
       
       const noteElement = screen.getByText('*Best for creating new checklists from scratch');
       expect(noteElement).toHaveClass('text-zinc-400');
     });
 
-    it('should render regular descriptions with correct styling', () => {
-      render(<UploadPage />);
+    it('should render regular descriptions with correct styling', async () => {
+      await renderComponent();
       
       const regularElement = screen.getByText('Create checklist items one by one');
       expect(regularElement).toHaveClass('text-white');
@@ -540,7 +548,7 @@ describe('UploadPage', () => {
         json: () => Promise.resolve({}),
       } as any);
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -560,7 +568,7 @@ describe('UploadPage', () => {
         json: () => Promise.resolve({ error: 'API Error' }),
       } as any);
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -577,7 +585,7 @@ describe('UploadPage', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle empty gid and group', () => {
+    it('should handle empty gid and group', async () => {
       mockUseInputBlockGroupData.mockReturnValue({
         ...mockInputBlockGroupData,
         gid: '',
@@ -590,7 +598,7 @@ describe('UploadPage', () => {
         },
       });
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -612,14 +620,14 @@ describe('UploadPage', () => {
       });
     });
 
-    it('should handle null projectId and flow', () => {
+    it('should handle null projectId and flow', async () => {
       mockSearchParams.get.mockImplementation((key: string) => {
         if (key === 'projectId') return null;
         if (key === 'flow') return null;
         return null;
       });
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -630,10 +638,10 @@ describe('UploadPage', () => {
       expect(mockPush).toHaveBeenCalledWith('/inputs/groups/test-gid/test-group/upload/excel');
     });
 
-    it('should handle undefined search params', () => {
+    it('should handle undefined search params', async () => {
       mockSearchParams.get.mockReturnValue(undefined);
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const excelCard = screen.getByText('Excel Upload').closest('div');
       fireEvent.click(excelCard!);
@@ -644,8 +652,8 @@ describe('UploadPage', () => {
       expect(mockPush).toHaveBeenCalledWith('/inputs/groups/test-gid/test-group/upload/excel');
     });
 
-    it('should handle back navigation when not in project flow', () => {
-      render(<UploadPage />);
+    it('should handle back navigation when not in project flow', async () => {
+      await renderComponent();
       
       const backButton = screen.getByText('Back');
       fireEvent.click(backButton);
@@ -653,8 +661,8 @@ describe('UploadPage', () => {
       expect(mockPush).not.toHaveBeenCalled();
     });
 
-    it('should handle next button click without selection', () => {
-      render(<UploadPage />);
+    it('should handle next button click without selection', async () => {
+      await renderComponent();
       
       const nextButton = screen.getByTestId('next-button');
       fireEvent.click(nextButton);
@@ -663,23 +671,23 @@ describe('UploadPage', () => {
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
-    it('should handle description rendering with content', () => {
-      render(<UploadPage />);
+    it('should handle description rendering with content', async () => {
+      await renderComponent();
       
       // Check that descriptions with colons are split correctly
       expect(screen.getByText('Create checklist items one by one')).toBeInTheDocument();
       expect(screen.getByText('Full control over checklist structure')).toBeInTheDocument();
     });
 
-    it('should handle description rendering without content', () => {
-      render(<UploadPage />);
+    it('should handle description rendering without content', async () => {
+      await renderComponent();
       
       // Check that descriptions without colons are rendered as-is
       expect(screen.getByText('*Best for creating new checklists from scratch')).toBeInTheDocument();
       expect(screen.getByText('*Best for importing existing checklists')).toBeInTheDocument();
     });
 
-    it('should handle description rendering with content after colon', () => {
+    it('should handle description rendering with content after colon', async () => {
       // Test the actual description rendering logic from the component
       const descriptions = ['Title: This is the content'];
       const isNote = descriptions[0].startsWith('*');
@@ -695,7 +703,7 @@ describe('UploadPage', () => {
       expect(isNote).toBe(false);
     });
 
-    it('should handle description rendering with note formatting', () => {
+    it('should handle description rendering with note formatting', async () => {
       // Test the note formatting logic
       const descriptions = ['*This is a note'];
       const isNote = descriptions[0].startsWith('*');
@@ -703,7 +711,7 @@ describe('UploadPage', () => {
       expect(isNote).toBe(true);
     });
 
-    it('should handle description rendering without note formatting', () => {
+    it('should handle description rendering without note formatting', async () => {
       // Test the non-note formatting logic
       const descriptions = ['This is not a note'];
       const isNote = descriptions[0].startsWith('*');
@@ -711,7 +719,7 @@ describe('UploadPage', () => {
       expect(isNote).toBe(false);
     });
 
-    it('should handle description rendering with content after colon', () => {
+    it('should handle description rendering with content after colon', async () => {
       // Create a minimal component to test the description rendering logic
       const DescriptionRenderer = ({ descriptions }: { descriptions: string[] }) => {
         return (
@@ -765,8 +773,8 @@ describe('UploadPage', () => {
       expect(screen.getByText('This is a regular description')).toBeInTheDocument();
     });
 
-    it('should handle radio button selection state', () => {
-      render(<UploadPage />);
+    it('should handle radio button selection state', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       fireEvent.click(manualCard!);
@@ -780,8 +788,8 @@ describe('UploadPage', () => {
       expect(radioDot).toBeInTheDocument();
     });
 
-    it('should handle radio button unselected state', () => {
-      render(<UploadPage />);
+    it('should handle radio button unselected state', async () => {
+      await renderComponent();
       
       const manualCard = screen.getByText('Manual Entry').closest('div');
       const excelCard = screen.getByText('Excel Upload').closest('div');
@@ -799,20 +807,20 @@ describe('UploadPage', () => {
   });
 
   describe('Component Integration', () => {
-    it('should pass correct props to LayoutHeader', () => {
+    it('should pass correct props to LayoutHeader', async () => {
       mockSearchParams.get.mockImplementation((key: string) => {
         if (key === 'projectId') return 'test-project';
         return null;
       });
       
-      render(<UploadPage />);
+      await renderComponent();
       
       const layoutHeader = screen.getByTestId('layout-header');
       expect(layoutHeader).toHaveTextContent('Layout Header - Project: test-project');
     });
 
-    it('should pass correct props to Button component', () => {
-      render(<UploadPage />);
+    it('should pass correct props to Button component', async () => {
+      await renderComponent();
       
       // Check that Button was called with the correct props
       const buttonCall = mockButton.mock.calls[0][0];
@@ -826,8 +834,8 @@ describe('UploadPage', () => {
       expect(typeof buttonCall.onClick).toBe('function');
     });
 
-    it('should pass correct props to Icon components', () => {
-      render(<UploadPage />);
+    it('should pass correct props to Icon components', async () => {
+      await renderComponent();
       
       // Check that Icon was called with the correct props for the first call (ArrowLeft)
       const iconCall = mockIcon.mock.calls[0][0];
@@ -839,7 +847,7 @@ describe('UploadPage', () => {
     });
   });
 
-  it('should test description rendering with content after colon', () => {
+  it('should test description rendering with content after colon', async () => {
     // Test the exact logic from the component with content after colon
     const descriptions = ['Title: This is the content'];
     
@@ -874,7 +882,7 @@ describe('UploadPage', () => {
     });
   });
 
-  it('should test description rendering with content after colon in actual component', () => {
+  it('should test description rendering with content after colon in actual component', async () => {
     // Create a custom component that tests the description rendering with content
     const CustomUploadPage = () => {
       const [activeCard, setActiveCard] = useState<string>('');

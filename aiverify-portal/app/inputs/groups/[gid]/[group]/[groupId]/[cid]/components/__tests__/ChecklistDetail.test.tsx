@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ChecklistDetail from '../ChecklistDetail';
@@ -150,32 +150,36 @@ describe('ChecklistDetail', () => {
     jest.clearAllMocks();
   });
 
-  const renderComponent = () => {
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <ChecklistDetail cid="test-cid" gid="test-gid" />
-      </QueryClientProvider>
-    );
+  const renderComponent = async () => {
+    let result: any;
+    await act(async () => {
+      result = render(
+        <QueryClientProvider client={queryClient}>
+          <ChecklistDetail cid="test-cid" gid="test-gid" />
+        </QueryClientProvider>
+      );
+    });
+    return result;
   };
 
   describe('Component Rendering', () => {
-    it('should render the component with group data', () => {
-      renderComponent();
+    it('should render the component with group data', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
       expect(screen.getByText('Clear Fields')).toBeInTheDocument();
       expect(screen.getByText(/Last updated:/)).toBeInTheDocument();
     });
 
-    it('should show alert when no group data is available', () => {
+    it('should show alert when no group data is available', async () => {
       mockGetGroupDataById.mockReturnValue(null);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
 
-    it('should show loading state when MDX bundle is loading', () => {
+    it('should show loading state when MDX bundle is loading', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: undefined,
         isLoading: true,
@@ -197,28 +201,28 @@ describe('ChecklistDetail', () => {
         status: 'pending',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
   });
 
   describe('Clear Fields Functionality', () => {
-    it('should render clear fields button', () => {
-      renderComponent();
+    it('should render clear fields button', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Clear Fields')).toBeInTheDocument();
     });
   });
 
   describe('MDX Component Integration', () => {
-    it('should render MDX component when available', () => {
-      renderComponent();
+    it('should render MDX component when available', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should show skeleton when MDX component is loading', () => {
+    it('should show skeleton when MDX component is loading', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: undefined,
         isLoading: true,
@@ -240,12 +244,12 @@ describe('ChecklistDetail', () => {
         status: 'pending',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
 
-    it('should handle MDX bundle error gracefully', () => {
+    it('should handle MDX bundle error gracefully', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: undefined,
         isLoading: false,
@@ -267,21 +271,21 @@ describe('ChecklistDetail', () => {
         status: 'error',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
   });
 
   describe('Data Management', () => {
-    it('should initialize with input block data', () => {
-      renderComponent();
+    it('should initialize with input block data', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
       expect(screen.getByText(/Last updated:/)).toBeInTheDocument();
     });
 
-    it('should handle empty input block data', () => {
+    it('should handle empty input block data', async () => {
       const emptyInputBlockData = {
         ...mockInputBlockData,
         ibdata: {
@@ -292,12 +296,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(emptyInputBlockData);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle missing input blocks', () => {
+    it('should handle missing input blocks', async () => {
       const groupDataWithoutBlocks = {
         ...mockCurrentGroupData,
         input_blocks: [],
@@ -305,19 +309,19 @@ describe('ChecklistDetail', () => {
 
       mockGetGroupDataById.mockReturnValue(groupDataWithoutBlocks);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle data changes', () => {
-      renderComponent();
+    it('should handle data changes', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should update local data when input block data changes', () => {
-      const { rerender } = renderComponent();
+    it('should update local data when input block data changes', async () => {
+      const { rerender } = await renderComponent();
 
       // Simulate data change
       const newInputBlockData = {
@@ -330,18 +334,20 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(newInputBlockData);
 
-      rerender(
-        <QueryClientProvider client={queryClient}>
-          <ChecklistDetail cid="test-cid" gid="test-gid" />
-        </QueryClientProvider>
-      );
+      await act(async () => {
+        rerender(
+          <QueryClientProvider client={queryClient}>
+            <ChecklistDetail cid="test-cid" gid="test-gid" />
+          </QueryClientProvider>
+        );
+      });
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle MDX bundle error', () => {
+    it('should handle MDX bundle error', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: undefined,
         isLoading: false,
@@ -363,14 +369,14 @@ describe('ChecklistDetail', () => {
         status: 'error',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
   });
 
   describe('Edge Cases', () => {
-    it('should handle undefined data in input block', () => {
+    it('should handle undefined data in input block', async () => {
       const inputBlockDataWithUndefined = {
         ...mockInputBlockData,
         ibdata: {
@@ -381,12 +387,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(inputBlockDataWithUndefined);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle null data in input block', () => {
+    it('should handle null data in input block', async () => {
       const inputBlockDataWithNull = {
         ...mockInputBlockData,
         ibdata: {
@@ -397,12 +403,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(inputBlockDataWithNull);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle complex data structures', () => {
+    it('should handle complex data structures', async () => {
       const complexData = {
         nested: {
           array: [1, 2, 3],
@@ -422,12 +428,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(inputBlockDataWithComplexData);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle invalid date in group data', () => {
+    it('should handle invalid date in group data', async () => {
       const groupDataWithInvalidDate = {
         ...mockCurrentGroupData,
         updated_at: 'invalid-date',
@@ -435,12 +441,12 @@ describe('ChecklistDetail', () => {
 
       mockGetGroupDataById.mockReturnValue(groupDataWithInvalidDate);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle empty MDX bundle code', () => {
+    it('should handle empty MDX bundle code', async () => {
       const emptyMDXBundle = {
         code: '',
         frontmatter: {},
@@ -467,12 +473,12 @@ describe('ChecklistDetail', () => {
         status: 'success',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
 
-    it('should handle null MDX bundle', () => {
+    it('should handle null MDX bundle', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: null,
         isLoading: false,
@@ -494,12 +500,12 @@ describe('ChecklistDetail', () => {
         status: 'success',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
 
-    it('should handle undefined MDX bundle', () => {
+    it('should handle undefined MDX bundle', async () => {
       mockUseMDXBundle.mockReturnValue({
         data: undefined,
         isLoading: false,
@@ -521,145 +527,149 @@ describe('ChecklistDetail', () => {
         status: 'success',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
   });
 
   describe('Component Lifecycle', () => {
-    it('should handle component unmounting', () => {
-      const { unmount } = renderComponent();
+    it('should handle component unmounting', async () => {
+      const { unmount } = await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
 
       unmount();
     });
 
-    it('should handle useEffect cleanup', () => {
-      renderComponent();
+    it('should handle useEffect cleanup', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
   });
 
   describe('Additional Coverage Tests', () => {
-    it('should handle data change function', () => {
-      renderComponent();
+    it('should handle data change function', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle modal state changes', () => {
-      renderComponent();
+    it('should handle modal state changes', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle dynamic component loading', () => {
-      renderComponent();
+    it('should handle dynamic component loading', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle error boundaries', () => {
-      renderComponent();
+    it('should handle error boundaries', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle data initialization', () => {
-      renderComponent();
+    it('should handle data initialization', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle useEffect dependencies', () => {
-      renderComponent();
+    it('should handle useEffect dependencies', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle component re-rendering', () => {
-      const { rerender } = renderComponent();
+    it('should handle component re-rendering', async () => {
+      const { rerender } = await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
 
-      rerender(
-        <QueryClientProvider client={queryClient}>
-          <ChecklistDetail cid="test-cid" gid="test-gid" />
-        </QueryClientProvider>
-      );
-
-      expect(screen.getByText('Test Input Block')).toBeInTheDocument();
-    });
-
-    it('should handle context updates', () => {
-      renderComponent();
+      await act(async () => {
+        rerender(
+          <QueryClientProvider client={queryClient}>
+            <ChecklistDetail cid="test-cid" gid="test-gid" />
+          </QueryClientProvider>
+        );
+      });
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle MDX bundle updates', () => {
-      renderComponent();
+    it('should handle context updates', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle input block data updates', () => {
-      renderComponent();
+    it('should handle MDX bundle updates', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle group data updates', () => {
-      renderComponent();
+    it('should handle input block data updates', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle error state recovery', () => {
-      renderComponent();
+    it('should handle group data updates', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle loading state transitions', () => {
-      renderComponent();
+    it('should handle error state recovery', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle success state', () => {
-      renderComponent();
+    it('should handle loading state transitions', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle component props changes', () => {
-      const { rerender } = renderComponent();
-
-      expect(screen.getByText('Test Input Block')).toBeInTheDocument();
-
-      rerender(
-        <QueryClientProvider client={queryClient}>
-          <ChecklistDetail cid="new-cid" gid="new-gid" />
-        </QueryClientProvider>
-      );
+    it('should handle success state', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle missing input block data gracefully', () => {
+    it('should handle component props changes', async () => {
+      const { rerender } = await renderComponent();
+
+      expect(screen.getByText('Test Input Block')).toBeInTheDocument();
+
+      await act(async () => {
+        rerender(
+          <QueryClientProvider client={queryClient}>
+            <ChecklistDetail cid="new-cid" gid="new-gid" />
+          </QueryClientProvider>
+        );
+      });
+
+      expect(screen.getByText('Test Input Block')).toBeInTheDocument();
+    });
+
+    it('should handle missing input block data gracefully', async () => {
       mockGetInputBlockData.mockReturnValue(null);
 
-      renderComponent();
+      await renderComponent();
 
       // When ibdata is null, the component returns null and doesn't render anything
       expect(screen.queryByText('Test Input Block')).not.toBeInTheDocument();
     });
 
-    it('should handle missing currentGroupData gracefully', () => {
+    it('should handle missing currentGroupData gracefully', async () => {
       mockUseInputBlockGroupData.mockReturnValue({
         gid: 'test-gid',
         group: 'test-group',
@@ -685,13 +695,13 @@ describe('ChecklistDetail', () => {
         flow: 'test-flow',
       });
 
-      renderComponent();
+      await renderComponent();
 
       // When currentGroupData is null, ibdata will be null, so the component returns null
       expect(screen.queryByText('Test Input Block')).not.toBeInTheDocument();
     });
 
-    it('should handle MDX component creation error gracefully', () => {
+    it('should handle MDX component creation error gracefully', async () => {
       const invalidMDXBundle = {
         code: 'invalid javascript code that will cause error',
         frontmatter: {},
@@ -718,38 +728,40 @@ describe('ChecklistDetail', () => {
         status: 'success',
       } as any);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('No checklist data available')).toBeInTheDocument();
     });
 
-    it('should handle clear fields button rendering', () => {
-      renderComponent();
+    it('should handle clear fields button rendering', async () => {
+      await renderComponent();
 
       expect(screen.getByText('Clear Fields')).toBeInTheDocument();
     });
 
-    it('should handle last updated date display', () => {
-      renderComponent();
+    it('should handle last updated date display', async () => {
+      await renderComponent();
 
       expect(screen.getByText(/Last updated:/)).toBeInTheDocument();
     });
 
-    it('should handle component with different props', () => {
-      const { rerender } = renderComponent();
+    it('should handle component with different props', async () => {
+      const { rerender } = await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
 
-      rerender(
-        <QueryClientProvider client={queryClient}>
-          <ChecklistDetail cid="different-cid" gid="different-gid" />
-        </QueryClientProvider>
-      );
+      await act(async () => {
+        rerender(
+          <QueryClientProvider client={queryClient}>
+            <ChecklistDetail cid="different-cid" gid="different-gid" />
+          </QueryClientProvider>
+        );
+      });
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle component with empty data', () => {
+    it('should handle component with empty data', async () => {
       const emptyInputBlockData = {
         ...mockInputBlockData,
         ibdata: {
@@ -760,12 +772,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(emptyInputBlockData);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle component with null data', () => {
+    it('should handle component with null data', async () => {
       const nullInputBlockData = {
         ...mockInputBlockData,
         ibdata: {
@@ -776,12 +788,12 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(nullInputBlockData);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });
 
-    it('should handle component with undefined data', () => {
+    it('should handle component with undefined data', async () => {
       const undefinedInputBlockData = {
         ...mockInputBlockData,
         ibdata: {
@@ -792,7 +804,7 @@ describe('ChecklistDetail', () => {
 
       mockGetInputBlockData.mockReturnValue(undefinedInputBlockData);
 
-      renderComponent();
+      await renderComponent();
 
       expect(screen.getByText('Test Input Block')).toBeInTheDocument();
     });

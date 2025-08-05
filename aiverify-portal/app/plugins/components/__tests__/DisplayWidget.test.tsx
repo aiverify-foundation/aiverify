@@ -5,11 +5,12 @@ import WidgetCard from '../DisplayWidget';
 
 // Mock Button component
 jest.mock('@/lib/components/button', () => ({
-  Button: ({ text, onClick, 'aria-label': ariaLabel, ...props }: any) => (
+  Button: ({ text, onClick, 'aria-label': ariaLabel, pill, textColor, variant, size, className, ...props }: any) => (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
       data-testid={`button-${text.toLowerCase().replace(/\s+/g, '-')}`}
+      className={className}
       {...props}
     >
       {text}

@@ -29,7 +29,7 @@ jest.mock('@/lib/components/IconSVG', () => ({
 }));
 
 jest.mock('@/lib/components/button', () => ({
-  Button: ({ text, onClick, disabled, className, ...props }: any) => (
+  Button: ({ text, onClick, disabled, className, pill, textColor, variant, size, ...props }: any) => (
     <button
       data-testid={`button-${text?.replace(/\s+/g, '-').toLowerCase()}`}
       onClick={onClick}

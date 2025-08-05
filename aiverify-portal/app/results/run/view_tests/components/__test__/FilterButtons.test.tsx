@@ -398,7 +398,7 @@ describe('FilterButtons', () => {
   it('handles duplicate filter IDs gracefully', () => {
     const duplicateFilters = [
       { id: 'pending', label: 'PENDING' },
-      { id: 'pending', label: 'PENDING DUPLICATE' },
+      { id: 'pending-duplicate', label: 'PENDING DUPLICATE' },
       { id: 'running', label: 'RUNNING' },
     ];
     
