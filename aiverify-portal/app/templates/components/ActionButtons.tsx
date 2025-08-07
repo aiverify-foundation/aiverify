@@ -7,9 +7,7 @@ const ActionButtons: React.FC = () => (
     className="flex h-full items-center"
     role="group"
     aria-label="upload template button">
-    <Link
-      href="/templates/upload"
-      passHref>
+    <Link href="/templates/upload">
       <Button
         pill
         textColor="white"

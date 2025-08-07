@@ -31,7 +31,7 @@ function PluginsPanel(props: PluginsPanelProps) {
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((plugin) => ({
         ...plugin,
-        widgets: [...plugin.widgets].sort((a, b) =>
+        widgets: (plugin.widgets || []).sort((a, b) =>
           a.name.localeCompare(b.name)
         ),
       }));
@@ -65,7 +65,7 @@ function PluginsPanel(props: PluginsPanelProps) {
               <div className="flex items-center gap-2 font-semibold text-gray-200">
                 <div>{plugin.name}</div>
                 <div className="text-xs text-gray-400">
-                  {plugin.widgets.length} widgets
+                  {plugin.widgets.length} {plugin.widgets.length === 1 ? 'widget' : 'widgets'}
                 </div>
               </div>
             </AccordionTrigger>
@@ -104,10 +104,11 @@ function PluginsPanel(props: PluginsPanelProps) {
   );
 
   return (
-    <section className={cn('flex flex-col', className)}>
+    <section data-testid="plugins-panel" className={cn('flex flex-col', className)}>
       <div>
         <TextInput
-          placeholder="Search plugins"
+          data-testid="search-input"
+          placeholder="Search plugins..."
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />

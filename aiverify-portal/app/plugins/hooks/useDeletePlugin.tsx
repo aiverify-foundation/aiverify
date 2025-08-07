@@ -8,7 +8,7 @@ const deletePlugin = async (id: string): Promise<string> => {
   
     if (!response.ok) {
       const errorData = await response.json();
-      return errorData.detail || 'Failed to delete the plugin.';
+      throw new Error(errorData.detail || 'Failed to delete the plugin.');
     }
   
     return 'Plugin deleted successfully!';

@@ -87,6 +87,8 @@ const Dropdown = ({
   }, [isOpen, position]);
 
   // Calculate the max width for the button
+  // TODO: Handle empty data array case to prevent Math.max(...[]) returning -Infinity
+  // which causes invalid CSS minWidth values. Consider adding a fallback value.
   useEffect(() => {
     if (!fullWidth && measureRef.current) {
       const widths = data.map((item) => {

@@ -743,9 +743,9 @@ export default function UserInputs({
               }
               className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
               <option value="">Choose User Input</option>
-              {availableInputs.map((input) => (
+              {availableInputs.map((input, index) => (
                 <option
-                  key={input.id}
+                  key={input.id || `input-${index}`}
                   value={input.id?.toString() || ''}>
                   {input.name}
                 </option>
@@ -848,9 +848,9 @@ export default function UserInputs({
                   }
                   className="w-full cursor-pointer appearance-none rounded bg-secondary-900 p-3 pr-10 text-gray-300">
                   <option value="">Choose User Input</option>
-                  {groupSelection.availableGroups.map((group) => (
+                  {groupSelection.availableGroups.map((group, index) => (
                     <option
-                      key={group.id}
+                      key={group.id || `group-${index}`}
                       value={group.id?.toString() || ''}>
                       {group.name}
                     </option>
@@ -890,7 +890,11 @@ export default function UserInputs({
         })}
 
         {/* Single Input Blocks */}
-        {singleInputBlocks.map((inputBlock) => renderSingleInputBlock(inputBlock))}
+        {singleInputBlocks.map((inputBlock) => (
+          <div key={`${inputBlock.gid}-${inputBlock.cid}`}>
+            {renderSingleInputBlock(inputBlock)}
+          </div>
+        ))}
       </div>
 
       {/* Input Modal - will render the appropriate modal based on input block type */}

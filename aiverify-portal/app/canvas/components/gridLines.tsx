@@ -16,6 +16,11 @@ function GridLines({
   lineColor = '#e5e7eb',
   className,
 }: GridLinesProps) {
+  // Don't render if columns or rows are 0 or negative
+  if (columns <= 0 || rows <= 0) {
+    return null;
+  }
+
   return (
     <div
       className={cn(

@@ -28,7 +28,7 @@ export const GroupNameInput: React.FC = () => {
       </label>
       <input
         type="text"
-        value={groupName}
+        value={groupName || ''}
         onChange={handleChange}
         required
         placeholder="Enter group name"
