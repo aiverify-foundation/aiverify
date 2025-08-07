@@ -286,7 +286,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const allRemainingInputBlocks = Object.values(
         clonedInputBlockDatasMap
       ).flat();
-      const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
+      const newInputBlocksOnReport = (state.inputBlocksOnReport || []).filter(
         (inputBlock) =>
           allRemainingInputBlocks.some(
             (remaining) =>
@@ -458,7 +458,7 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
       const allRemainingInputBlocks = Object.values(
         clonedInputBlockDatasMap
       ).flat();
-      const newInputBlocksOnReport = state.inputBlocksOnReport.filter(
+      const newInputBlocksOnReport = (state.inputBlocksOnReport || []).filter(
         (inputBlock) =>
           allRemainingInputBlocks.some(
             (remaining) =>
@@ -467,7 +467,8 @@ function pagesDesignReducer(state: State, action: WidgetAction): State {
           )
       );
 
-      const newCurrentPage = Math.min(state.currentPage, newLayouts.length - 1);
+      // Calculate new current page - if no pages remain, set to 0, otherwise clamp to valid range
+      const newCurrentPage = newLayouts.length === 0 ? 0 : Math.min(state.currentPage, newLayouts.length - 1);
 
       newState = {
         ...state,

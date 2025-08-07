@@ -597,9 +597,14 @@ export const excelToJson = async (
       throw error;
     }
     
-    // Handle network/API errors
-    if (error instanceof Error && error.message.includes('fetch')) {
+    // Handle network/API errors (fetch rejections)
+    if (error instanceof Error && error.message.includes('Network error')) {
       throw new ExcelFormatError('Unable to process Excel file: Network error. Please check your connection and try again.');
+    }
+    
+    // Handle fetch response errors (non-ok responses)
+    if (error instanceof Error && error.message.includes('Failed to fetch MDX summary bundle')) {
+      throw new ExcelFormatError('An unexpected error occurred while processing the Excel file. Please try again or contact support if the problem persists.');
     }
     
     // Handle MDX bundle errors

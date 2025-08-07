@@ -248,7 +248,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
         {model.modelAPI && (
           <Button
             pill
-            textColor="white"
             variant={ButtonVariant.PRIMARY}
             size="sm"
             text="DOWNLOAD API DATA"
@@ -261,7 +260,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
           <>
             <Button
               pill
-              textColor="white"
               variant={ButtonVariant.PRIMARY}
               size="sm"
               text={isLoading ? 'LOADING...' : 'DOWNLOAD MODEL FILE'}
@@ -278,7 +276,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <Modal
-            textColor="white"
             onCloseIconClick={() => handleCloseModal()}
             enableScreenOverlay
             heading="Edit Model"
@@ -360,7 +357,6 @@ const ModelDetail: React.FC<Props> = ({ model }) => {
       )}
       {isFeedbackModalOpen && (
         <Modal
-          textColor="white"
           onCloseIconClick={() => setIsFeedbackModalOpen(false)}
           enableScreenOverlay
           heading={feedbackSuccess ? 'Edit Model Success' : 'Edit Model Error'}>

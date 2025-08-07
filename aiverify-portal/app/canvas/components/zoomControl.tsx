@@ -29,10 +29,12 @@ export function ZoomControl({
         onClick={onZoomIn}
         disabled={zoomLevel >= MAX_ZOOM}
         className="disabled:opacity-50"
-        title="Zoom in">
+        title="Zoom in"
+        data-testid="zoom-in-button">
         <RiZoomInLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
       </button>
       <button
+        data-testid="reset-zoom-button"
         onClick={onZoomReset}
         className="rounded p-1 text-xs text-gray-900 hover:bg-gray-200"
         title="Reset zoom">
@@ -42,7 +44,8 @@ export function ZoomControl({
         onClick={onZoomOut}
         disabled={zoomLevel <= MIN_ZOOM}
         className="disabled:opacity-50"
-        title="Zoom out">
+        title="Zoom out"
+        data-testid="zoom-out-button">
         <RiZoomOutLine className="h-5 w-5 text-gray-500 hover:text-gray-900" />
       </button>
     </div>

@@ -230,7 +230,6 @@ function ChecklistsPageContent({ group }: ChecklistsPageContentProps) {
       for (const checklist of checklistSubmissions) {
         await submitChecklist(checklist);
       }
-      console.log('here');
       setModalMessage('Checklists saved successfully');
       setIsModalVisible(true);
       clearAllChecklists();

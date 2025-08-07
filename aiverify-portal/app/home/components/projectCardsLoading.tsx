@@ -3,7 +3,7 @@ import { Card } from '@/lib/components/card/card';
 
 export function ProjectCardsLoading({ className }: { className?: string }) {
   return (
-    <section className={className}>
+    <section className={className} data-testid="project-cards-loading">
       {[1, 2, 3].map((i) => (
         <Card
           key={i}

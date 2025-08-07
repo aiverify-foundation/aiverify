@@ -8,9 +8,21 @@ import { DatasetList } from './components/DatasetList';
 export default async function DatasetsPage() {
   noStore();
   const result = await getTestDatasets();
+  
+  // Handle null or undefined result
+  if (!result) {
+    return <div>Failed to fetch datasets</div>;
+  }
+  
   if ('message' in result) {
     return <div>{result.message}</div>;
   }
+  
+  // Check if data property exists
+  if (!result.data) {
+    return <div>Failed to fetch datasets</div>;
+  }
+  
   const datasets = result.data;
 
   return (

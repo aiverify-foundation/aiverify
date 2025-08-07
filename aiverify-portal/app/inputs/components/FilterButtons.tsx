@@ -26,7 +26,7 @@ export default function ChecklistsFilters({ onSearch, onSort }: FilterProps) {
   };
 
   return (
-    <section className="flex justify-between">
+    <section className="flex justify-between" data-testid="filter-section">
       {/* Search Bar */}
       <div>
         <div className="relative flex w-full items-start">
