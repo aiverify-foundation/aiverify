@@ -5,7 +5,7 @@
 #
 # Stage 1: Build Python
 #
-FROM python:3.11-slim AS build
+FROM python:3.11-slim-bookworm AS build
 ARG TARGETARCH
 
 RUN apt-get update && \
@@ -40,28 +40,15 @@ RUN if [ "$TARGETARCH" = "amd64" ] ; then pip install --no-cache-dir torch==2.4.
 # # #
 # # # Stage 2: Runtime image
 # # #
-FROM python:3.11-slim
+FROM python:3.11-slim-bookworm
 
 # update all the system packages to the latest versions
+# install libhdf5 libraries for keras
 RUN apt-get update && \
     apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends libhdf5-103-1 libhdf5-hl-100 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# # # Install runtime dependencies
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     libssl3 \
-#     zlib1g \
-#     libsqlite3-0 \
-#     libgdbm6 \
-#     libbz2-1.0 \
-#     liblzma5 \
-#     libffi8 \
-#     libncursesw6 \
-#     libtinfo6 \
-#     libreadline8 \
-#     libhdf5-310-* \
-#     && rm -rf /var/lib/apt/lists/*
 
 # copy the aiverify-test-engine
 WORKDIR /app

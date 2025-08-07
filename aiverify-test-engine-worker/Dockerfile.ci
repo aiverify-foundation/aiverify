@@ -4,7 +4,7 @@
 ##
 ## Base worker buid
 #
-FROM aiverify-python-base AS base
+FROM ghcr.io/aiverify-foundation/aiverify-python-base AS base
 ARG TARGETARCH
 ARG APT_WORKER_PACKAGES_TO_INSTALL="gcc g++ pkg-config"
 
