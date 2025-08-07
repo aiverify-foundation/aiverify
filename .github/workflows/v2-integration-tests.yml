@@ -147,6 +147,15 @@ jobs:
       #     npx playwright install --with-deps
       #     URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
 
+      # Clean slate
+      - name: Delete all local Docker images
+        run: |
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f
+
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
         if: always()
