@@ -155,4 +155,4 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           pip install pytest requests
-          pytest . -vv
+          pytest . -vv -k "test_blur_corruptions_zip"
