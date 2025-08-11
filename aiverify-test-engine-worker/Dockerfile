@@ -8,7 +8,7 @@ FROM aiverify-python-base AS base
 ARG TARGETARCH
 ARG APT_WORKER_PACKAGES_TO_INSTALL="gcc g++ pkg-config"
 
-ENV PATH=/usr/local/bin:$PATH
+ENV PATH=$PATH:/usr/local/bin
 ENV CMAKE_PREFIX_PATH=/usr/local/
 
 # Create a non-root user
