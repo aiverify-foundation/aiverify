@@ -63,6 +63,12 @@ jobs:
           ref: main
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
+
+      # Set Python Version
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.12'
           
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
