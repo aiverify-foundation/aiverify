@@ -85,7 +85,10 @@ jobs:
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
-          cd aiverify-test-engine-worker
+          cd aiverify-apigw
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+          cd ../aiverify-test-engine-worker
           rm Dockerfile
           mv Dockerfile.ci Dockerfile
           cd ../deployment/docker-compose-dev
