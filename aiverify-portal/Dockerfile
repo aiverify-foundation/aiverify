@@ -1,4 +1,4 @@
-FROM node:23-alpine AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ WORKDIR /app/aiverify-portal
 RUN npm install && npm link ../aiverify-shared-library && npm run build
 
 # production
-FROM node:23-alpine
+FROM node:24-alpine
 
 ARG APIGW_HOST=http://host.docker.internal:4000
 

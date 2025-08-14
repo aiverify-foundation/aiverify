@@ -7,7 +7,7 @@ services:
       context: ../../
       dockerfile: aiverify-apigw/Dockerfile
     # profiles: [frontend,automated_tests]
-    user: appuser
+    user: nonroot
     ports:
       - "4000:4000"
     volumes:

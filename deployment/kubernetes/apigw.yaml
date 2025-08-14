@@ -40,9 +40,9 @@ spec:
         app: apigw
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
       containers:
         - name: apigw
           image: ghcr.io/aiverify-foundation/aiverify-apigw
