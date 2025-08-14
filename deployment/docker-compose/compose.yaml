@@ -4,7 +4,7 @@ name: aiverify
 services:
   apigw: # required for all services
     image: "ghcr.io/aiverify-foundation/aiverify-apigw"
-    user: appuser
+    user: nonroot
     ports:
       - "4000:4000"
     volumes:

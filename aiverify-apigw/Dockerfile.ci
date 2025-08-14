@@ -6,7 +6,7 @@
 ARG PYTHON_VERSION=3.12
 
 # Stage 1: Build stage
-FROM aiverify-python-base AS build
+FROM ghcr.io/aiverify-foundation/aiverify-python-base AS build
 
 RUN apt-get update && \
     apt-get upgrade -y && \
