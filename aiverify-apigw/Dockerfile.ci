@@ -3,7 +3,7 @@
 ## docker buildx build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
 ##
 # define base python version
-ARG PYTHON_VERSION=3.12
+ARG PYTHON_VERSION=3.11
 
 # Stage 1: Build stage
 FROM ghcr.io/aiverify-foundation/aiverify-python-base AS build
