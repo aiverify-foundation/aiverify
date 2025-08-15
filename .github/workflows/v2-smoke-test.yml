@@ -91,7 +91,7 @@ jobs:
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
-          docker buildx build --load -t aiverify-python-base -f aiverify-test-engine/Dockerfile .
+          docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile .
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"
