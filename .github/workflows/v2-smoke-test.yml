@@ -91,7 +91,10 @@ jobs:
       # Launch containers in Docker Compose
       - name: Run images in Docker Compose
         run: |
-          docker buildx build --platform linux/amd64 -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache --load .
+          docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
+          docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
+          docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
+          docker build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
           docker image list
           cd deployment/docker-compose-dev
           docker-compose --profile automated-tests-venv --profile portal up -d
