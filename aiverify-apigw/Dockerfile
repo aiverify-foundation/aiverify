@@ -42,8 +42,8 @@ RUN pip install -e . && \
     npm install ../../aiverify-shared-library
 
 # add library links
-RUN echo "$TARGETARCH"
-RUN if [ "$TARGETARCH" = "amd64" ] ; then ln -s /lib/x86_64-linux-gnu /lib/custom-linux-gnu; else ln -s /lib/aarch64-linux-gnu /lib/custom-linux-gnu; fi
+# RUN if [ "$TARGETARCH" = "amd64" ] ; then ln -s /lib/x86_64-linux-gnu /lib/custom-linux-gnu; else ln -s /lib/aarch64-linux-gnu /lib/custom-linux-gnu; fi
+ln -s /lib/x86_64-linux-gnu /lib/custom-linux-gnu
 
 # Stage 2: Runtime stage
 FROM gcr.io/distroless/cc-debian12:nonroot
