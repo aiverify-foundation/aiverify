@@ -56,8 +56,7 @@ COPY --from=build /usr/local/bin/python${PYTHON_VERSION} /usr/local/bin/pythonap
 COPY --from=build /usr/local/lib/python${PYTHON_VERSION} /usr/local/lib/python${PYTHON_VERSION}
 COPY --from=build /usr/local/lib/libpython${PYTHON_VERSION}.so* /usr/local/lib/
 # Copy system libraries
-# COPY --from=build /lib/custom-linux-gnu/lib* /lib/custom-linux-gnu/
-COPY --from=build /lib/custom-linux-gnu/lib/x86_64-linux-gnu /lib/custom-linux-gnu/
+COPY --from=build /lib/custom-linux-gnu/lib* /lib/custom-linux-gnu/
 
 # Copy only the necessary files from the build stage
 # WORKDIR /app
