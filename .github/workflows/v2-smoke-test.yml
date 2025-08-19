@@ -68,6 +68,12 @@ jobs:
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
 
+      # Set Python Version
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.12'
+
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
         run: |
@@ -82,11 +88,16 @@ jobs:
           docker volume prune --all -f
           docker builder prune -a -f
 
-      # Launch containers in Docker Compose
-      - name: Run images in Docker Compose
+      # Build and Launch Docker Containers
+      - name: Build and Launch Docker Containers
         run: |
+          docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
+          docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
+          docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
+          docker build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
+
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          docker-compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
 
