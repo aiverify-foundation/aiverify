@@ -61,7 +61,7 @@ export default function ChecklistDetailPage() {
         {/* Left section: Icon + Text */}
         
         <div className="flex items-center mb-6">
-          <Link href={preserveQueryParams("/inputs")}>
+          <Link href={preserveQueryParams(`/inputs/groups/${gid}/${group}/${groupId}`)}>
             <RiArrowLeftLine className="text-2xl text-white hover:text-gray-300" />
           </Link>
           <Icon
