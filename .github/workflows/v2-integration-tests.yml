@@ -37,12 +37,6 @@ jobs:
       packages: write
 
     steps:
-      
-      # Setup Python
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
       # Change Existing File Permissions For Later Removal During Checkout of AI Verify
       - name: Change Existing File Permissions From Previous Runs
@@ -184,15 +178,9 @@ jobs:
        # Build and Launch Docker Containers
       - name: Build and Launch Docker Containers
         run: |
-          cd aiverify-apigw
-          rm Dockerfile
-          mv Dockerfile.ci Dockerfile
-          cd ../
-
           docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
           docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
-          docker build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
 
           cd deployment/docker-compose-dev
           docker-compose --profile automated-tests-venv --profile portal up -d
