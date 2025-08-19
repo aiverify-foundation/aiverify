@@ -1,7 +1,7 @@
 {
   "cid": "aiverify_shap_toolbox",
   "gid": "aiverify.stock.shap_toolbox",
-  "name": "SHAP Toolbox",
+  "name": "SHAP Toolbox for Explainability",
   "modelType": ["classification", "regression"],
   "version": "2.0.1",
   "author": "AI Verify",

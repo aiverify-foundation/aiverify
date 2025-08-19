@@ -937,7 +937,7 @@ export default function TestRunForm({
         algorithm: {
           type: "string",
           title: 'Algorithm',
-          enum: allAlgorithms.map((algo) => algo.cid),
+          enum: allAlgorithms.map((algo) => algo.name),
         },
         model: {
           type: "string",
