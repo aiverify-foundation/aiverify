@@ -110,9 +110,9 @@ jobs:
         run: |
           sudo apt-get install zip -y
           echo "Preparing Integration Test Data"
-          rm -rf stock-plugins/user_defined_files/data
-          rm -rf stock-plugins/user_defined_files/model
-          rm -rf stock-plugins/user_defined_files/pipeline
+          sudo rm -rf stock-plugins/user_defined_files/data
+          sudo rm -rf stock-plugins/user_defined_files/model
+          sudo rm -rf stock-plugins/user_defined_files/pipeline
 
           cp -r integration-testing/test-data/data stock-plugins/user_defined_files/data
           cp -r integration-testing/test-data/model stock-plugins/user_defined_files/model
