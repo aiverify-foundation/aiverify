@@ -1,0 +1,68 @@
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const ib_cid = "fairness_tree"
+export const gid = "aiverify.stock.fairness_metrics_toolbox_for_classification"
+
+import { TechnicalInterpretationChart } from "./technical_interpretationtype.mdx";
+import { TechnicalInterpretationChart2 } from "./technical_interpretationtype2.mdx";
+
+export const GetAllMetrics = ({ id, results, width, height }) => {
+  let metrics_map = {
+    "False Negative Rate Parity": "False Negative Rate",
+    "False Positive Rate Parity": "False Positive Rate",
+    "False Discovery Rate Parity": "False Discovery Rate",
+    "False Omission Rate Parity": "False Omission Rate",
+    "True Positive Rate Parity / Equal Opportunity": "True Positive Rate",
+    "True Negative Rate Parity": "True Negative Rate",
+    "Positive Predictive Value Parity": "Positive Predictive Value Parity",
+    "Negative Predictive Value Parity": "Negative Predictive Value Parity",
+    "Equal Parity": "Equal Selection Parity",
+    "Disparate Impact": "Disparate Impact",
+  };
+  let metrics = Object.values(metrics_map);
+
+  return (
+    <div style={{ width, height: 'auto', display: 'flex', gap: 5, flexDirection: 'column' }}>
+      {metrics.map((metric, idx) =>
+        metric == "Equal Selection Parity" || metric == "Disparate Impact" ? (
+          <TechnicalInterpretationChart2
+            id={`${id}-${metric}-${idx}`}
+            key={`${id}-${metric}-${idx}`}
+            metric={metric}
+            data={results}
+          />
+        ) : (
+          <TechnicalInterpretationChart
+            id={`${id}-${metric}-${idx}`}
+            key={`${id}-${metric}-${idx}`}
+            metric={metric}
+            data={results}
+          />
+        )
+      )}
+    </div>
+  );
+};
+
+<div className="widget-wrapper" style={{ height: 'auto' }}>
+  ### Fairness Metrics
+
+  ##### The displayed metric(s) demonstrate the equity between two subgroups. In cases where the selected feature consists of more than two subgroups (such as race with multiple subgroups), the parity value is determined by comparing the subgroup with the smallest value to the subgroup with the largest value.
+
+  <ul>
+    <li>
+      <i>Disparate Impact</i>: The closer the value is to 1, the better it is.
+    </li>
+    <li>
+      <i>Equal Selection Parity</i>: The smaller the value, the better it is.
+    </li>
+    <li>Other fairness metrics: The smaller the value, the better it is</li>
+  </ul>
+  <br />
+
+  <GetAllMetrics
+    id={props.id}
+    results={props.getResults(cid, gid)}
+    width={props.width}
+    height={props.height}
+  />
+</div>
