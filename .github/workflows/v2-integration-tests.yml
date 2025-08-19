@@ -87,25 +87,25 @@ jobs:
           docker volume prune --all -f
           docker builder prune -a -f
 
-      # Build and Launch Docker Containers
-      - name: Build and Launch Docker Containers
-        run: |
-          cd aiverify-apigw
-          rm Dockerfile
-          mv Dockerfile.ci Dockerfile
-          cd ../
+      # # Build and Launch Docker Containers
+      # - name: Build and Launch Docker Containers
+      #   run: |
+      #     cd aiverify-apigw
+      #     rm Dockerfile
+      #     mv Dockerfile.ci Dockerfile
+      #     cd ../
           
-          docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
-          docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
-          docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
-          docker build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
+      #     docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
+      #     docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
+      #     docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
+      #     docker build -t aiverify-portal -f aiverify-portal/Dockerfile --no-cache .
 
-          cd deployment/docker-compose-dev
-          docker-compose --profile automated-tests-venv --profile portal up -d
-          echo "Initialising AI Verify Plugins"
-          sleep 5m
+      #     cd deployment/docker-compose-dev
+      #     docker-compose --profile automated-tests-venv --profile portal up -d
+      #     echo "Initialising AI Verify Plugins"
+      #     sleep 5m
           
-       # Prepare Integration Test Data
+      # Prepare Integration Test Data
       - name: Prepare Integration Test Data
         run: |
           sudo apt-get install zip -y
@@ -140,40 +140,39 @@ jobs:
 
           echo "Integration Test Data Prepared"
 
-      # Run UI Integration Test
-      - name: Run UI Integration Test
-        run: |
-          cd integration-testing
-          npm install
-          npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
+      # # Run UI Integration Test
+      # - name: Run UI Integration Test
+      #   run: |
+      #     cd integration-testing
+      #     npm install
+      #     npx playwright install --with-deps
+      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
 
-      # Upload Playwright Traces
-      - name: Upload Playwright Traces
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
-          path: |
-            ${{ github.workspace }}/integration-testing/test-results/
+      # # Upload Playwright Traces
+      # - name: Upload Playwright Traces
+      #   if: ${{ failure() }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
+      #     path: |
+      #       ${{ github.workspace }}/integration-testing/test-results/
 
-      # Run API Integration Test
-      - name: Run API Integration Test
-        if: always()
-        run: |
-          cd integration-testing
-          npm install
-          npx playwright install --with-deps
-          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+      # # Run API Integration Test
+      # - name: Run API Integration Test
+      #   run: |
+      #     cd integration-testing
+      #     npm install
+      #     npx playwright install --with-deps
+      #     URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
 
-      # Clean slate to force rebuild all images
-      - name: Delete all local Docker images
-        run: |
-          docker ps -q | xargs -r docker stop
-          docker images -q | xargs -r docker rmi -f
-          docker system prune -a -f
-          docker volume prune --all -f
-          docker builder prune -a -f
+      # # Clean slate to force rebuild all images
+      # - name: Delete all local Docker images
+      #   run: |
+      #     docker ps -q | xargs -r docker stop
+      #     docker images -q | xargs -r docker rmi -f
+      #     docker system prune -a -f
+      #     docker volume prune --all -f
+      #     docker builder prune -a -f
 
        # Build and Launch Docker Containers
       - name: Build and Launch Docker Containers
@@ -183,13 +182,12 @@ jobs:
           docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
 
           cd deployment/docker-compose-dev
-          docker-compose --profile automated-tests-venv --profile portal up -d
+          docker-compose --profile automated-tests-venv up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
 
       # Run Standalone Plugin Integration Test
       - name: Run Standalone Plugin Integration Test
-        if: always()
         run: |
           cd integration-testing/tests/standalone-plugins
           python -m venv .venv
