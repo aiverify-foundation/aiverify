@@ -1,0 +1,48 @@
+export const summary = (data) => {
+  if (!data) {
+    return "No data";
+  }
+  return JSON.stringify(data || {});
+}
+
+export const progress = (data) => {
+  console.log("DATA HERE:");
+  console.log(data);
+
+  if (!data || typeof data !== 'object') {
+    console.warn("Invalid data provided.");
+    return 0;
+  }
+
+  const isEmptyObject = (obj) => {
+    return obj && typeof obj === 'object' && Object.keys(obj).length === 0;
+  };
+
+  if (isEmptyObject(data)) {
+    console.warn("Data is an empty object.");
+    return 0;
+  }
+
+  const mandatoryKeys = [
+    '5_1_1', '5_1_2', '5_1_3', '5_2_1', '5_2_2', '5_3_1', '5_3_2', '5_3_3'
+  ];
+
+  const filledKeysCount = mandatoryKeys.filter(key => {
+    const value = data[key];
+    return typeof value === "string" ? value.trim().length > 0 : value !== undefined && value !== null;
+  }).length;
+
+  const progressPercentage = Math.round((filledKeysCount / mandatoryKeys.length) * 100);
+
+  console.log("Progress Percentage:");
+  console.log(progressPercentage);
+
+  return progressPercentage;
+}
+
+export const validate = (data) => {
+  console.log("VALIDATE FUNC:");
+  console.log("Is data valid (100% progress)?");
+  console.log(progress(data) === 100);
+  return progress(data) === 100;
+}

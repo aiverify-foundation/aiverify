@@ -1,0 +1,56 @@
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const gid = "aiverify.stock.fairness_metrics_toolbox_for_classification"
+
+{props.getResults(cid, gid)?(
+  <>
+    <div>
+    <h3>Fairness for Classification</h3>
+    The fairness test shows how correctly your model has predicted the selected sensitive feature(s) (Selected: {props.getResults(cid, gid).sensitive_feature.join(", ")}). These fairness metrics are calculated based on the performance measurement for classification models. The table shows a list of fairness metrics that are generated in this report.
+    <br/>
+    <table style={{width:"100%", padding:"5px", textAlign:"left", borderCollapse:'collapse'}} border="1">
+      <tbody>
+        <tr style={{padding:"5px"}}>
+          <th>Fairness Metrics</th>
+          <th>Description</th>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>False Negative Rate Parity</td>
+          <td>The difference between two groups based on the percentage of incorrect predictions among the actual negative values.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>False Positive Rate Parity</td>
+          <td>The difference between two groups based on the percentage of incorrect predictions among the actual positive values.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>False Discovery Rate Parity</td>
+          <td>The difference between two groups based on the percentage of incorrect predictions among those that are predicted as positive.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>False Omission Rate Parity</td>
+          <td>The diffrence between two groups based on the percentage of incorrect predictions among those that are predicted as negative.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>True Positive Rate Parity</td>
+          <td>The difference between two groups based on the percentage of correct predictions among the actual positive values.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>True Negative Rate Parity</td>
+          <td>The difference between two groups based on the percentage of correct predictions among the actual negative values.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>Positive Predictive Value Parity</td>
+          <td>The difference between two groups based on the percentage of correct predictions among the labels that are predicted as positive.</td>
+        </tr>
+        <tr style={{padding:"5px"}}>
+          <td>Negative Predictive Value Parity</td>
+          <td>The difference between two groups based on the percentage of correct predictions among the labels that are predicted as negative.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </>
+):(
+<>
+  No data  
+</>
+)}

@@ -1,0 +1,8 @@
+{
+  "ground_truth_path": "/app/aiverify-test-engine-worker/data/datasets/pickle_pandas_fashion_mnist_annotated_labels_10.sav",
+  "file_name_label": "file_name",
+  "set_seed": 10,
+  "corruptions": [
+    "all"
+  ]
+}
