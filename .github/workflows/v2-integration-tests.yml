@@ -51,7 +51,7 @@ jobs:
           ref: ${{ inputs.branch_to_test }}
           repository: aiverify-foundation/aiverify
 
-      # Checkout AI Verify
+      # Checkout AI Verify (Schedule)
       - name: Checkout Code 
         if: (github.event_name == 'schedule')
         uses: actions/checkout@v4
