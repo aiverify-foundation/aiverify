@@ -90,6 +90,11 @@ jobs:
       # # Build and Launch Docker Containers
       - name: Build and Launch Docker Containers
         run: |
+          cd aiverify-apigw
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+          cd ../
+          
           docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
           docker build -t aiverify-test-engine-worker -f aiverify-test-engine-worker/Dockerfile --no-cache .
@@ -172,10 +177,6 @@ jobs:
       # Build and Launch Docker Containers
       - name: Build and Launch Docker Containers
         run: |
-          cd aiverify-apigw
-          rm Dockerfile
-          mv Dockerfile.ci Dockerfile
-          cd ../
 
           docker build -t aiverify-python-base -f aiverify-test-engine/Dockerfile --no-cache .
           docker build -t aiverify-apigw -f aiverify-apigw/Dockerfile --no-cache .
