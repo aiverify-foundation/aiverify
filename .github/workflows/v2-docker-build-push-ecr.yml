@@ -144,10 +144,11 @@ jobs:
           tag="${{ github.event.inputs.tag || 'dev' }}"
           github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
 
-          if [ ${{ matrix.image_name }} == "aiverify-test-engine-worker" || ${{ matrix.image_name }} == "aiverify-apigw" ]
+          if [ ${{ matrix.image_name }} == "aiverify-test-engine-worker" || ${{ matrix.image_name }} == "aiverify-apigw" ]; then
             dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile.ci"
           else
             dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile"
+          fi
           
           build_target="${{ matrix.build_target }}"
           tag_suffix="${{ matrix.tag_suffix }}"
