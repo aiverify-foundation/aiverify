@@ -22,7 +22,7 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: automated-testing
+  group: self-hosted-runner
   cancel-in-progress: false
 
 jobs:
