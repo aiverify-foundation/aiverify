@@ -175,6 +175,11 @@ jobs:
       max-parallel: 1
     steps:
       
+      # Change Existing File Permissions For Later Removal During Checkout of AI Verify
+      - name: Change Existing File Permissions From Previous Runs
+        run: |
+          sudo chmod -R 777 .
+      
       # Checkout the code at the specified branch or tag
       - name: Checkout code
         uses: actions/checkout@v4
@@ -182,9 +187,18 @@ jobs:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
       # Free up disk space before building large images
-      - name: Free up disk space
+      # - name: Free up disk space
+      #   run: |
+      #     bash .ci/free_disk_space.sh      
+
+      # Clean slate to force rebuild all images
+      - name: Delete all local Docker images
         run: |
-          bash .ci/free_disk_space.sh          
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f    
 
       # Set BUILD_BASE flag
       - name: Set BUILD_BASE flag
