@@ -210,7 +210,7 @@ jobs:
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
           echo "Building aiverify-python-base..."
-          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine/Dockerfile
 
       # Step: Build and push image using docker_build_push.sh script
       # If no manual tag is provided, extract the version from pyproject.toml or package.json
