@@ -23,7 +23,7 @@ echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name imagebuilder --use
+docker buildx create --name imagebuilder --append $IMAGE_NAME
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
