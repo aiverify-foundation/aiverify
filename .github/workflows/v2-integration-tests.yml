@@ -1,7 +1,7 @@
 # Integration Tests
 # Build aiverify and run QA test suites
 
-name: v2 Integration Tests
+name: v2 Integration Tests (UI And APIGW)
 
 env:
   GITHUB_TOKEN: ${{ github.token }}
@@ -26,11 +26,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  Integration-Test:
+  setup:
     
     # Run only on Workflow Dispatch and Schedule
     runs-on: self-hosted-aiverify
-    timeout-minutes: 240
+    timeout-minutes: 180
     permissions:
       id-token: write
       contents: read
@@ -140,31 +140,59 @@ jobs:
 
           echo "Integration Test Data Prepared"
 
+  Integration-Test-UI-And-APIGW:
+    
+    # Run only on Workflow Dispatch and Schedule
+    runs-on: self-hosted-aiverify
+    timeout-minutes: 180
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    
+    needs: setup
+
+    steps:
+      
       # Run UI Integration Test
-      # - name: Run UI Integration Test
-      #   run: |
-      #     cd integration-testing
-      #     npm install
-      #     npx playwright install --with-deps
-      #     URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
+      - name: Run UI Integration Test
+        run: |
+          cd integration-testing
+          npm install
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=3000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/portal
 
       # Upload Playwright Traces
-      # - name: Upload Playwright Traces
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
-      #     path: |
-      #       ${{ github.workspace }}/integration-testing/test-results/
+      - name: Upload Playwright Traces
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-trace-v2.0-integration-testing-${{ github.run_id }}
+          path: |
+            ${{ github.workspace }}/integration-testing/test-results/
 
       # Run API Integration Test
-      # - name: Run API Integration Test
-      #   run: |
-      #     cd integration-testing
-      #     npm install
-      #     npx playwright install --with-deps
-      #     URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+      - name: Run API Integration Test
+        run: |
+          cd integration-testing
+          npm install
+          npx playwright install --with-deps
+          URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
 
+  Integration-Test-Standalone-Plugins:
+    
+    # Run only on Workflow Dispatch and Schedule
+    runs-on: self-hosted-aiverify
+    timeout-minutes: 240
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+
+    needs: setup
+
+    steps:
+      
       # Clean slate to force rebuild all images
       # - name: Delete all local Docker images
       #   run: |
