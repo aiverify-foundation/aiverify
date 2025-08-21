@@ -57,6 +57,9 @@ TAG_SUFFIX=${6:-}
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
+# Remove Any Dangling Builder Instance
+docker buildx rm --all-inactive --force
+
 # echo "Create a new build instance..."
 
 # Create a new builder instance

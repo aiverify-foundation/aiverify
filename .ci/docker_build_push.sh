@@ -20,6 +20,9 @@ TAG_SUFFIX=${6:-}
 # Login to GitHub Container Registry
 echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
 
+# Remove Any Dangling Builder Instance
+docker buildx rm --all-inactive --force
+
 # echo "Create a new build instance..."
 
 # Create a new builder instance
