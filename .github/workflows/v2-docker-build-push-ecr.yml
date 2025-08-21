@@ -143,7 +143,12 @@ jobs:
           image_name="${{ matrix.image_name }}"
           tag="${{ github.event.inputs.tag || 'dev' }}"
           github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
-          dockerfile_dir="${{ matrix.dockerfile_dir }}"
+
+          if [ ${{ matrix.image_name }} == "aiverify-test-engine-worker" || ${{ matrix.image_name }} == "aiverify-apigw" ]
+            dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile.ci"
+          else
+            dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile"
+          
           build_target="${{ matrix.build_target }}"
           tag_suffix="${{ matrix.tag_suffix }}"
 
@@ -151,6 +156,6 @@ jobs:
             "$image_name" \
             "$tag" \
             "$github_username" \
-            "$dockerfile_dir" \
+            "$dockerfile_path" \
             "$build_target" \
             "$tag_suffix"
