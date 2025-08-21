@@ -46,8 +46,8 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: ${{ github.repository }}-${{ github.workflow }}
-  cancel-in-progress: true
+  group: self-hosted-runner
+  cancel-in-progress: false
 
 jobs:
 
@@ -55,7 +55,7 @@ jobs:
   init-image-build-push:
     # Run only when triggered manually or on push event
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-aiverify
     outputs:
       branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
       pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
@@ -219,10 +219,17 @@ jobs:
 
           set +e
           echo "Building image ${{ matrix.image_name}}:$tag ${{ matrix.target }} ${{ matrix.tag_suffix }}..."
-          if [ "${{ matrix.target }}" == "" ]; then
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }}
+
+          if [[ "${{ matrix.image_name }}" == "aiverify-test-engine-worker" || "${{ matrix.image_name }}" == "aiverify-apigw" ]]; then
+            dockerfile_path="${{ matrix.image_name }}/Dockerfile.ci"
           else
-            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation ${{ matrix.image_name }} ${{ matrix.target }} ${{ matrix.tag_suffix }}
+            dockerfile_path="${{ matrix.image_name }}/Dockerfile"
+          fi
+          
+          if [ "${{ matrix.target }}" == "" ]; then
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation $dockerfile_path
+          else
+            bash .ci/docker_build_push.sh ${{ matrix.image_name }} $tag aiverify-foundation $dockerfile_path ${{ matrix.target }} ${{ matrix.tag_suffix }}
           fi
           build_status=$?
           set -e
