@@ -26,7 +26,7 @@ docker buildx rm --all-inactive --force
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name imagebuilder --driver=docker-container
+docker buildx create --name imagebuilder --use
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
