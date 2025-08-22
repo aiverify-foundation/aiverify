@@ -179,7 +179,6 @@ jobs:
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv up -d
           echo "Initialising AI Verify Plugins"
-          sleep 5mlising AI Verify Plugins"
           sleep 5m
 
       # Run Standalone Plugin Integration Test
