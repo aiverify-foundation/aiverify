@@ -1,3 +1,17 @@
+from aiverify_test_engine.utils.json_utils import (
+    remove_numpy_formats,
+    validate_json,
+    # validate_test_result_schema,
+)
+from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
+from aiverify_test_engine.plugins.enums.model_type import ModelType
+from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
+from aiverify_test_engine.interfaces.ipipeline import IPipeline
+from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
+from aiverify_test_engine.interfaces.imodel import IModel
+from aiverify_test_engine.interfaces.idata import IData
+from aiverify_test_engine.plugins.plugins_manager import PluginManager
+from aiverify_test_engine.plugins.enums.plugin_type import PluginType
 from pathlib import Path
 import argparse
 import sys
@@ -12,27 +26,14 @@ from .algorithm_utils import validate_algorithm
 import logging
 from datetime import datetime
 import requests
-logging.basicConfig(format='%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
+logging.basicConfig(
+    format='%(levelname)-8s [%(filename)s:%(lineno)d] %(message)s')
 logger = logging.getLogger(__name__)
-
-from aiverify_test_engine.plugins.enums.plugin_type import PluginType
-from aiverify_test_engine.plugins.plugins_manager import PluginManager
-from aiverify_test_engine.interfaces.idata import IData
-from aiverify_test_engine.interfaces.imodel import IModel
-from aiverify_test_engine.interfaces.ialgorithm import IAlgorithm
-from aiverify_test_engine.interfaces.ipipeline import IPipeline
-from aiverify_test_engine.interfaces.itestresult import ITestArguments, ITestResult
-from aiverify_test_engine.plugins.enums.model_type import ModelType
-from aiverify_test_engine.plugins.enums.pipeline_plugin_type import PipelinePluginType
-from aiverify_test_engine.utils.json_utils import (
-    remove_numpy_formats,
-    validate_json,
-    # validate_test_result_schema,
-)
 
 
 def load_algorithm_class(algo_path: Path) -> tuple[Path, type[IAlgorithm], dict, dict, dict]:
-    algo_script, input_schema_file, output_schema_file, algo_meta_file = validate_algorithm(algo_path)
+    algo_script, input_schema_file, output_schema_file, algo_meta_file = validate_algorithm(
+        algo_path)
     module_name = algo_script.parent.name
     # load module
     logger.debug(f"algo module: {module_name}")
@@ -95,18 +96,24 @@ def load_plugin_manager():
     core_modules_path = Path(spec.origin).parent
     logger.debug(f"core_modules_path: {core_modules_path}")
     PluginManager.discover(str(core_modules_path))
-    logger.debug(f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
+    logger.debug(
+        f"[DETECTED_PLUGINS]: {PluginManager.get_printable_plugins()}")
     return core_modules_path
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Execute algorithm with specified parameters.")
+    parser = argparse.ArgumentParser(
+        description="Execute algorithm with specified parameters.")
 
     parser.add_argument("--test_run_id", type=str, help="Test run identifier")
-    parser.add_argument("--algo_path", required=True, type=Path, help="Path to the algorithm file.")
-    parser.add_argument("--data_path", required=True, type=Path, help="Path to the data file.")
-    parser.add_argument("--model_path", required=True, type=Path, help="Path to the model file.")
-    parser.add_argument("--ground_truth_path", type=Path, help="Path to the ground truth data file.")
+    parser.add_argument("--algo_path", required=True,
+                        type=Path, help="Path to the algorithm file.")
+    parser.add_argument("--data_path", required=True,
+                        type=Path, help="Path to the data file.")
+    parser.add_argument("--model_path", required=True,
+                        type=Path, help="Path to the model file.")
+    parser.add_argument("--ground_truth_path", type=Path,
+                        help="Path to the ground truth data file.")
     parser.add_argument(
         "--ground_truth",
         required="--ground_truth_path" in sys.argv,
@@ -124,14 +131,16 @@ def parse_arguments():
         required=True,
         help="JSON string of arguments for the algorithm."
     )
-    parser.add_argument("--apigw_url", type=str, help="URL of apigw to report updates")
+    parser.add_argument("--apigw_url", type=str,
+                        help="URL of apigw to report updates")
     parser.add_argument(
         "--upload_output_to_apigw",
         action="store_true",
         help="If set, results will be uploaded to the specified apigw URL (requires --apigw_url)"
     )
-    
-    parser.add_argument("--output_zip", type=Path, help="Path to output zip file, default saved under algo_path")
+
+    parser.add_argument("--output_zip", type=Path,
+                        help="Path to output zip file, default saved under algo_path")
     parser.add_argument(
         "-v", "--verbose",
         action="count",
@@ -140,12 +149,14 @@ def parse_arguments():
     )
 
     args = parser.parse_args()
-    
+
     # Post-parsing validation
     if args.upload_output_to_apigw and not args.apigw_url:
-        parser.error("--apigw_url is required when --upload_output_to_apigw is set.")
+        parser.error(
+            "--apigw_url is required when --upload_output_to_apigw is set.")
     if args.apigw_url and not args.upload_output_to_apigw:
-        logger.warning("--apigw_url is set but --upload_output_to_apigw is not. URL will be used only for progress update.")
+        logger.warning(
+            "--apigw_url is set but --upload_output_to_apigw is not. URL will be used only for progress update.")
 
     if args.verbose > 0:
         if args.verbose == 1:
@@ -189,7 +200,8 @@ class ProcessCallback:
         Args:
             completion_value (int): Current progress completion
         """
-        logger.info(f"[Test Run ID {self.test_run_id}] Progress Update: {completion_value}")
+        logger.info(
+            f"[Test Run ID {self.test_run_id}] Progress Update: {completion_value}")
         if not self.__class__.apigw_url:
             # logger.error("API Gateway URL is not set.")
             return
@@ -209,7 +221,8 @@ def run():
 
     args = parse_arguments()
     # print(f"Executing algorithm {args.algo_path}")
-    algo_script, plugin_class, input_schema, output_schema, algo_meta = load_algorithm_class(args.algo_path)
+    algo_script, plugin_class, input_schema, output_schema, algo_meta = load_algorithm_class(
+        args.algo_path)
     algo_src_path = algo_script.parent.absolute()
 
     # validate input arguments
@@ -313,13 +326,13 @@ def run():
     input_arguments["project_base_path"] = algo_src_path
 
     logger.debug(f"input_arguments: {input_arguments}")
-    
-    #Remove old output folder if present
+
+    # Remove old output folder if present
     output_folder: Path = args.algo_path.joinpath("output")
     if output_folder.exists():
         import shutil
         shutil.rmtree(output_folder)
-        
+
     # Run the plugin with the arguments and instances
     logger.debug("Creating an instance of the Plugin...")
     start_time = time.time()
@@ -339,7 +352,7 @@ def run():
     # Get the task results and convert to json friendly and validate against the output schema
     logger.debug("Converting numpy formats if exists...")
     results = remove_numpy_formats(plugin.get_results())
-    
+
     logger.debug("Verifying results with output schema...")
     if not isinstance(results, Dict) or not validate_json(results, output_schema):
         logger.critical(f"Invalid results: {results}")
@@ -413,11 +426,12 @@ def run():
         output_json = json.dumps(output_dict, default=str)
         with open(json_file_path, "w") as json_file:
             json_file.write(output_json)
-            
-    output_zip_path: Path = args.output_zip if args.output_zip else args.algo_path.joinpath("output.zip")
+
+    output_zip_path: Path = args.output_zip if args.output_zip else args.algo_path.joinpath(
+        "output.zip")
 
     output_zip_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Create a zip file of all files in the output_folder
     with ZipFile(output_zip_path, "w") as zipf:
         for file_path in output_folder.rglob("**/*"):
@@ -427,10 +441,10 @@ def run():
                 zipf.mkdir(file_path.relative_to(output_folder).as_posix())
 
     logger.info("Algorithm run method completed successfully.")
-    
+
     if args.upload_output_to_apigw:
         upload_url = f"{args.apigw_url}/test_results/upload_zip"
-        
+
         try:
             with open(output_zip_path, 'rb') as zip_file:
                 # Prepare the files dictionary for the POST request
@@ -441,16 +455,18 @@ def run():
 
                 # Check if the upload was successful
                 if response.status_code == 200:
-                    logger.debug(f"Successfully uploaded zip file to {upload_url}")
+                    logger.debug(
+                        f"Successfully uploaded zip file to {upload_url}")
                 else:
                     logger.error(
                         f"Failed to upload zip file. Status code: {response.status_code}, Response: {response.text}")
-                    
+
         except FileNotFoundError:
             logger.error(f"Zip file not found at: {output_zip_path}")
         except Exception as e:
             logger.exception(f"Unexpected error while uploading zip: {e}")
-    
+
+
 if __name__ == "__main__":
 
     try:
@@ -458,12 +474,12 @@ if __name__ == "__main__":
     except Exception as e:
         logger.critical(f"Failed to parse arguments: {e}")
         exit(-1)
-    
+
     if args.upload_output_to_apigw:
-        # Run with error reporting 
+        # Run with error reporting
         try:
             run()
-        except Exception as e:
+        except Exception:
             import traceback
             error_message = traceback.format_exc()
             logger.debug(f"Update Pipeline error to API GW")
@@ -483,9 +499,11 @@ if __name__ == "__main__":
                     requests.patch(update_url, json=update_obj)
                     logger.info("Error successfully reported to API Gateway.")
                 except Exception as api_error:
-                    logger.warning(f"Failed to report error to API Gateway: {api_error}")
+                    logger.warning(
+                        f"Failed to report error to API Gateway: {api_error}")
             else:
-                logger.warning("Missing apigw_url or test_run_id; cannot send error update.")
+                logger.warning(
+                    "Missing apigw_url or test_run_id; cannot send error update.")
 
             exit(-1)
     else:

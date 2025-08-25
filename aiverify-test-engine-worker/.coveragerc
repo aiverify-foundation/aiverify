@@ -1,0 +1,5 @@
+[run]
+omit = 
+    __main__.py
+    __init__.py
+    model_api.py
