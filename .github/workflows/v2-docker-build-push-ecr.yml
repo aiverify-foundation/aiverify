@@ -53,10 +53,15 @@ on:
   # push:
   #   branches:
   #     - 'ci/image-scan-ecr'
+
+# Allow one concurrent deployment
+concurrency:
+  group: self-hosted-runner
+  cancel-in-progress: false
  
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-aiverify
     timeout-minutes: 360
     permissions:
       id-token: write
@@ -85,6 +90,11 @@ jobs:
       max-parallel: 1
 
     steps:
+      
+      # Change Existing File Permissions For Later Removal During Checkout of AI Verify
+      - name: Change Existing File Permissions From Previous Runs
+        run: |
+          sudo chmod -R 777 .
 
       # Check out the source code from the specified branch
       - name: Checkout code
@@ -93,9 +103,18 @@ jobs:
           ref: ${{ github.event.inputs.branch || 'main' }}
       
       # Free up disk space before building large Docker images
-      - name: Free up disk space
+      # - name: Free up disk space
+      #   run: |
+      #     bash .ci/free_disk_space.sh
+
+      # Clean slate to force rebuild all images
+      - name: Delete all local Docker images
         run: |
-          bash .ci/free_disk_space.sh
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f
 
       # Set BUILD_BASE flag
       - name: Set BUILD_BASE flag
@@ -107,7 +126,7 @@ jobs:
         if: (matrix.image_name == 'aiverify-test-engine-worker' || matrix.image_name == 'aiverify-apigw') && env.BUILD_BASE == 'true'
         run: |
           chmod +x .ci/docker_build_push.sh
-          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine
+          bash .ci/docker_build_push.sh aiverify-python-base latest aiverify-foundation aiverify-test-engine/Dockerfile
 
       # Configure AWS credentials using OIDC
       - name: Configure AWS credentials
@@ -143,7 +162,13 @@ jobs:
           image_name="${{ matrix.image_name }}"
           tag="${{ github.event.inputs.tag || 'dev' }}"
           github_username="${{ github.event.inputs.github_username || 'aiverify-foundation' }}"
-          dockerfile_dir="${{ matrix.dockerfile_dir }}"
+
+          if [[ "${{ matrix.dockerfile_dir }}" == "aiverify-test-engine-worker" || "${{ matrix.dockerfile_dir }}" == "aiverify-apigw" ]]; then
+            dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile.ci"
+          else
+            dockerfile_path="${{ matrix.dockerfile_dir }}/Dockerfile"
+          fi
+          
           build_target="${{ matrix.build_target }}"
           tag_suffix="${{ matrix.tag_suffix }}"
 
@@ -151,6 +176,6 @@ jobs:
             "$image_name" \
             "$tag" \
             "$github_username" \
-            "$dockerfile_dir" \
+            "$dockerfile_path" \
             "$build_target" \
             "$tag_suffix"
