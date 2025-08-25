@@ -13,17 +13,20 @@ set -e
 IMAGE_NAME=$1
 TAG=$2
 GITHUB_USERNAME=$3
-DOCKERFILE_DIR=$4
+DOCKERFILE_PATH=$4
 TARGET=${5:-}
 TAG_SUFFIX=${6:-}
 
 # Login to GitHub Container Registry
 echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
 
+# Remove Any Dangling Builder Instance
+docker buildx rm --all-inactive --force
+
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name mybuilder --use
+docker buildx create --name imagebuilder --use
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
@@ -32,9 +35,9 @@ echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$
 
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG-$TAG_SUFFIX -f $DOCKERFILE_PATH --provenance=false --sbom=false --target $TARGET --push .
 else
-    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/$GITHUB_USERNAME/$IMAGE_NAME:$TAG -f $DOCKERFILE_PATH --provenance=false --sbom=false --push .
 fi
 
 echo "Create and push manifests..."
@@ -52,6 +55,6 @@ fi
 yes | docker builder prune --all
 
 # Clean up
-docker buildx rm mybuilder
+docker buildx rm imagebuilder
 
 echo "Docker image built and pushed to GitHub Container Registry successfully!"

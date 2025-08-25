@@ -7,6 +7,7 @@ ARG PYTHON_VERSION=3.12
 
 # Stage 1: Build stage
 FROM aiverify-python-base AS build
+ARG TARGETARCH
 
 RUN apt-get update && \
     apt-get upgrade -y && \

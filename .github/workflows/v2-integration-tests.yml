@@ -22,7 +22,7 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: automated-testing
+  group: self-hosted-runner
   cancel-in-progress: false
 
 jobs:
@@ -30,27 +30,30 @@ jobs:
     
     # Run only on Workflow Dispatch and Schedule
     runs-on: self-hosted-aiverify
-    timeout-minutes: 120
+    timeout-minutes: 300
     permissions:
       id-token: write
       contents: read
       packages: write
 
     steps:
-      
-      # Setup Python
-      - name: Setup Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
       # Change Existing File Permissions For Later Removal During Checkout of AI Verify
       - name: Change Existing File Permissions From Previous Runs
         run: |
           sudo chmod -R 777 .
 
-      # Checkout AI Verify
-      - name: Checkout Code
+      # Checkout AI Verify (Workflow Dispatch)
+      - name: Checkout Code (Workflow Dispatch)
+        if: (github.event_name == 'workflow_dispatch')
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch_to_test }}
+          repository: aiverify-foundation/aiverify
+
+      # Checkout AI Verify (Schedule)
+      - name: Checkout Code 
+        if: (github.event_name == 'schedule')
         uses: actions/checkout@v4
         with:
           ref: main
@@ -63,6 +66,12 @@ jobs:
           ref: main
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
+
+      # Set Python Version
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.12'
           
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
@@ -78,22 +87,31 @@ jobs:
           docker volume prune --all -f
           docker builder prune -a -f
 
-      # Launch containers in Docker Compose
-      - name: Run images in Docker Compose
+      # Build and Launch Docker Containers
+      - name: Build and Launch Docker Containers
         run: |
+          cd aiverify-apigw
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+
+          cd ../aiverify-test-engine-worker
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+          cd ../
+
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
-
-       # Prepare Integration Test Data
+          
+      # Prepare Integration Test Data
       - name: Prepare Integration Test Data
         run: |
           sudo apt-get install zip -y
           echo "Preparing Integration Test Data"
-          rm -rf stock-plugins/user_defined_files/data
-          rm -rf stock-plugins/user_defined_files/model
-          rm -rf stock-plugins/user_defined_files/pipeline
+          sudo rm -rf stock-plugins/user_defined_files/data
+          sudo rm -rf stock-plugins/user_defined_files/model
+          sudo rm -rf stock-plugins/user_defined_files/pipeline
 
           cp -r integration-testing/test-data/data stock-plugins/user_defined_files/data
           cp -r integration-testing/test-data/model stock-plugins/user_defined_files/model
@@ -120,7 +138,7 @@ jobs:
           ls -la
 
           echo "Integration Test Data Prepared"
-
+      
       # Run UI Integration Test
       - name: Run UI Integration Test
         run: |
@@ -140,20 +158,36 @@ jobs:
 
       # Run API Integration Test
       - name: Run API Integration Test
-        if: always()
         run: |
           cd integration-testing
           npm install
           npx playwright install --with-deps
           URL=http://127.0.0.1 PORT_NUMBER=4000 ROOT_PATH=$GITHUB_WORKSPACE/stock-plugins/user_defined_files npx playwright test tests/apigw
+      
+      # Clean slate to force rebuild all images
+      - name: Delete all local Docker images
+        run: |
+          docker ps -q | xargs -r docker stop
+          docker images -q | xargs -r docker rmi -f
+          docker system prune -a -f
+          docker volume prune --all -f
+          docker builder prune -a -f
+
+      # Build and Launch Docker Containers
+      - name: Build and Launch Docker Containers
+        run: |
+          cd deployment/docker-compose-dev
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv up -d
+          echo "Initialising AI Verify Plugins"
+          sleep 5m
 
       # Run Standalone Plugin Integration Test
-      # - name: Run Standalone Plugin Integration Test
-      #   if: always()
-      #   run: |
-      #     cd integration-testing/tests/standalone-plugins
-      #     python -m venv .venv
-      #     source .venv/bin/activate
-      #     pip install pytest requests
-      #     pytest -vv
-      #   shell: bash
+      - name: Run Standalone Plugin Integration Test
+        run: |
+          cd integration-testing/tests/standalone-plugins
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install pytest requests
+          pytest . -vv
+          deactivate
+          rm -rf .venv
