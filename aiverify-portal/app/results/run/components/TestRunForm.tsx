@@ -105,7 +105,17 @@ function CustomSelectWidget(props: WidgetProps) {
   }
 
   // Extract enumOptions from options
-  const enumOptions = (options.enumOptions || []) as SelectOption[];
+  let enumOptions = (options.enumOptions || []) as SelectOption[];
+  
+  // If no custom enumOptions provided, create from enum values
+  if (enumOptions.length === 0 && options.enumNames && options.enumNames.length > 0) {
+    const optionsWithEnum = options as typeof options & { enumValues?: (string | number)[] };
+    enumOptions = options.enumNames.map((name: string, index: number) => ({
+      label: name,
+      value: optionsWithEnum.enumValues?.[index] || name,
+    }));
+  }
+  
   const emptyValue = options.emptyValue;
 
   // State for dropdown open/close and keyboard navigation
@@ -938,6 +948,7 @@ export default function TestRunForm({
           type: "string",
           title: 'Algorithm',
           enum: allAlgorithms.map((algo) => algo.cid),
+          enumNames: allAlgorithms.map((algo) => algo.name),
         },
         model: {
           type: "string",
@@ -984,7 +995,7 @@ export default function TestRunForm({
         'ui:emptyValue': '',
         'ui:widget': 'CustomSelectWidget',
         'ui:enumOptions': allAlgorithms.map((algo) => ({
-          label: algo.zip_hash,
+          label: algo.name,
           value: algo.cid,
         })),
       },
