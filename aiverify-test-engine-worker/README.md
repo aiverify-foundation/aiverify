@@ -129,7 +129,7 @@ Developers should execute `hatch fmt` before raising Merge Request, to ensure th
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip:
 
 ```
-pip install pytest faker
+pip install pytest pytest-mock faker aiverify-test-engine
 ```
 
 To run the tests:
