@@ -3,7 +3,7 @@
   "gid": "aiverify.stock.image_corruption_toolbox",
   "name": "General Corruptions",
   "modelType": ["classification"],
-  "version": "2.0.1",
+  "version": "2.1.0",
   "author": "AI Verify",
   "description": "Algorithm that adds general corruptions (gaussian, poisson and salt and pepper noise)",
   "tags": ["General Corruptions", "classification"],
