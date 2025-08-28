@@ -187,9 +187,9 @@ jobs:
           ref: ${{ needs.init-image-build-push.outputs.branch_to_test }}
 
       # Free up disk space before building large images
-      # - name: Free up disk space
-      #   run: |
-      #     bash .ci/free_disk_space.sh      
+      - name: Free up disk space
+        run: |
+          bash .ci/free_disk_space.sh      
 
       # Clean slate to force rebuild all images
       - name: Delete all local Docker images
