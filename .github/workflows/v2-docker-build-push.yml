@@ -167,7 +167,7 @@ jobs:
   run-image-build-push:
     needs: init-image-build-push
     if: ${{ needs.init-image-build-push.outputs.matrix != '{"include":[]}' }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-aiverify
     timeout-minutes: 360
     strategy:
       matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}
