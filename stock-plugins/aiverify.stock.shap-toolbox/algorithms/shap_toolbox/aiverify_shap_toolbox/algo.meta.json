@@ -3,7 +3,7 @@
   "gid": "aiverify.stock.shap_toolbox",
   "name": "SHAP Toolbox for Explainability",
   "modelType": ["classification", "regression"],
-  "version": "2.0.1",
+  "version": "2.1.0",
   "author": "AI Verify",
   "description": "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model.",
   "tags": ["SHAP Toolbox", "classification", "regression"],

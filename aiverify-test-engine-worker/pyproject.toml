@@ -9,10 +9,10 @@ Source = "https://github.com/aiverify-foundation/aiverify/tree/v2.x"
 
 [project]
 name = "aiverify-test-engine-worker"
-version = "2.0.5"
+version = "2.1.0"
 description = 'The Test Engine Worker read tasks from the task queue to execute tests and post results to aiverify-apigw'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = []
 authors = [
@@ -45,11 +45,12 @@ allow-direct-references = true
 dev = "python -m aiverify_test_engine_worker"
 
 [[tool.hatch.envs.hatch-test.matrix]]
-python = ["3.11"]
+python = ["3.11", "3.12"]
 
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
-  "faker>=28.1.0"
+  "faker>=28.1.0",
+  "aiverify-test-engine"
 ]
 
 [tool.ruff.lint]

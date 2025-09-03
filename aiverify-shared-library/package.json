@@ -1,6 +1,6 @@
 {
   "name": "aiverify-shared-library",
-  "version": "2.0.0a1",
+  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "clean": "npx rimraf dist",
