@@ -23,7 +23,7 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: automated-testing
+  group: self-hosted-runner
   cancel-in-progress: false
 
 jobs:
@@ -68,6 +68,12 @@ jobs:
           repository: aiverify-foundation/aivt-integration-testing
           path: integration-testing
 
+      # Set Python Version
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+            python-version: '3.12'
+
       # Log in to GitHub Container Registry (ghcr.io), needed by Github Actions to access ghcr.io
       - name: Login to GHCR
         run: |
@@ -82,9 +88,18 @@ jobs:
           docker volume prune --all -f
           docker builder prune -a -f
 
-      # Launch containers in Docker Compose
-      - name: Run images in Docker Compose
+      # Build and Launch Docker Containers
+      - name: Build and Launch Docker Containers
         run: |
+          cd aiverify-apigw
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+
+          cd ../aiverify-test-engine-worker
+          rm Dockerfile
+          mv Dockerfile.ci Dockerfile
+          cd ../
+
           cd deployment/docker-compose-dev
           COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"

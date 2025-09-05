@@ -1,6 +1,6 @@
 {
   "name": "aiverify-apigw-node",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Collection of node scripts for aiverify-apigw",
   "type": "module",
   "scripts": {

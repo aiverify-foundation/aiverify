@@ -50,17 +50,20 @@ fi
 IMAGE_NAME=$1
 TAG=$2
 GITHUB_USERNAME=$3
-DOCKERFILE_DIR=$4
+DOCKERFILE_PATH=$4
 TARGET=${5:-}
 TAG_SUFFIX=${6:-}
 
 ECR_REPO=$IMAGE_NAME
 ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$GITHUB_USERNAME/$IMAGE_NAME
 
+# Remove Any Dangling Builder Instance
+docker buildx rm --all-inactive --force
+
 # echo "Create a new build instance..."
 
 # Create a new builder instance
-docker buildx create --name mybuilder --use
+docker buildx create --name imagebuilder_ecr --use
 
 # Inspect the builder instance
 docker buildx inspect --bootstrap
@@ -72,9 +75,9 @@ echo "Build and push image name=$IMAGE_NAME tag=$TAG target=$TARGET tag_suffix=$
 
 # Build and push the image for both amd64 and arm64 platforms
 if [ -n "$TARGET" ]; then
-    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --target $TARGET --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG-$TAG_SUFFIX -f $DOCKERFILE_PATH --provenance=false --sbom=false --target $TARGET --push .
 else
-    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_DIR/Dockerfile --provenance=false --sbom=false --push .
+    docker buildx build --platform linux/amd64,linux/arm64 -t $ECR_IMAGE_URI:$TAG -f $DOCKERFILE_PATH --provenance=false --sbom=false --push .
 fi
 
 echo "Create and push manifests..."
@@ -92,6 +95,6 @@ fi
 yes | docker builder prune --all
 
 # Clean up
-docker buildx rm mybuilder
+docker buildx rm imagebuilder_ecr
 
 echo "Docker image built and pushed to AWS ECR successfully!"

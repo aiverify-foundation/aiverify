@@ -1,14 +1,11 @@
 from ..pipe import Pipe, PipeException
 from ..schemas import PipelineData, PipeStageEnum
 from ...lib.logging import logger
-from ...lib.filecache import base_data_dir
 
 import os
 import json
 import subprocess
 from pathlib import Path
-import shutil
-import tempfile
 import uuid
 
 
