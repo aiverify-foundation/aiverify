@@ -886,9 +886,15 @@ export default function ClientSelectData({
             </Button>
           </Link>
         
-        {(requiredInputBlocks.length === 0 ||
-          requiredInputBlocks.length <= selectedInputBlocks.length) &&
-          !hasValidationErrors && (
+        {(() => {
+          // Filter required input blocks to only include group-based ones (those with a 'group' property)
+          // This makes individual input blocks like decision tree optional
+          const requiredGroupInputBlocks = requiredInputBlocks.filter(block => block.group);
+          
+          return (requiredGroupInputBlocks.length === 0 ||
+            requiredGroupInputBlocks.length <= selectedInputBlocks.length) &&
+            !hasValidationErrors;
+        })() && (
             <Button
               className={`w-[130px] gap-4 p-2 text-white ${flow}`}
               variant="secondary"
