@@ -20,7 +20,7 @@
             ]
         },
         "background_path": {
-            "title": "Path of the Background Path",
+            "title": "Path of the Background Data",
             "description": "Background data path",
             "type": "string",
             "ui:widget": "selectDataset"
