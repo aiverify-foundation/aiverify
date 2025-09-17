@@ -13,10 +13,12 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.\nThe company should ensure performance claims are verifiable and clearly state specific metrics, allowing consumers to understand features, capabilities, and limitations. Consumers should be informed about the AI model's accuracy in its output so that consumers can make informed choices when using the model. Any AI-driven mechanisms that influence consumer behaviour should be transparent and avoid deceptive design patterns that could exploit consumer vulnerabilities. If the company is making claims that turn out to be false or misleading to consumers without any disclaimer or disclosure of limitations, or employs deceptive nudging mechanisms, the company could be engaging in an unfair practice as defined under the Consumer Protection (Fair Trading) Act.";
+    recommendation = `The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.
+    The business should ensure performance claims are verifiable and clearly state specific metrics, allowing consumers to understand features, capabilities, and limitations. Consumers should be informed about the AI model's accuracy in its output so that consumers can make informed choices when using the model. Any AI-driven mechanisms that influence consumer behaviour should be transparent and avoid deceptive design patterns that could exploit consumer vulnerabilities. If the business is making claims that turn out to be false or misleading to consumers without any disclaimer or disclosure of limitations, or employs deceptive nudging mechanisms, the business could be engaging in an unfair practice as defined under the Consumer Protection (Fair Trading) Act.`;
   } else {
     //Passed Test
-    recommendation = "The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.\nThe company has implemented measures to ensure its claims about AI models are accurate, verifiable, and not misleading. The company provides information about the AI system’s limitations and risks in a clear and accessible manner and maintains transparency about how AI-driven recommendations may influence consumer decisions.";
+    recommendation = `The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.
+    The business has implemented measures to ensure its claims about AI models are accurate, verifiable, and not misleading. The business provides information about the AI system’s limitations and risks in a clear and accessible manner and maintains transparency about how AI-driven recommendations may influence consumer decisions. `;
   }
 
   return (
@@ -29,14 +31,14 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "5_1_1": "5.1.1 Claims comparing company’s AI models with another competing model should clearly state specific metrics and criteria.",
-        "5_1_2": "5.1.2 Performance claims made by the company should be verifiable and substantiated.",
+        "5_1_1": "5.1.1 Claims comparing the business’s AI models with another competing model should clearly state specific metrics and criteria.",
+        "5_1_2": "5.1.2 Performance claims made by the business should be verifiable and substantiated.",
         "5_1_3": "5.1.3 Consumers should be able to understand the features and capabilities easily.",
         "5_2_1": "5.2.1 Ensure that users are informed of the AI model’s information (including limitations in accuracy, if any).",
         "5_2_2": "5.2.2 Ensure that users are able to make informed choices when using the AI model (including the knowledge of when an AI model is being used).",
-        "5_3_1": "5.3.1 Has the company implemented processes to review whether its AI system's interface design and recommendation patterns misrepresent or make false or misleading claims about products, services, or choices to consumers?",
-        "5_3_2": "5.3.2 Does the company regularly audit its AI recommendation systems to ensure the design does not misrepresent or make false or misleading claims about products or services to consumers?",
-        "5_3_3": "5.3.3 Has the company established clear guidelines on how it is using AI systems to present choices to consumers, ensuring options are not presented in a way that is misleading or misrepresenting?"
+        "5_3_1": "5.3.1 Ensure that businesses actively monitor their AI system’s interface and recommendation pattern to identify and prevent AI systems to be used as a means to mislead consumers.",
+        "5_3_2": "5.3.2 Ensure that AI recommendation systems are continuously monitored to ensure that they are not meant to impair the independent and informed decision making of a consumer.",
+        "5_3_3": "5.3.3 Ensure that clear standards exist for presenting choices to consumers in a way that promotes independent and informed decision-making and not designed in a way to mislead consumer choices."
     };
 
     const noResponses = data
@@ -107,10 +109,10 @@ export const MyComponent = (props) => {
                 <h2>CCCS Recommendations</h2>
             </div>
             <div style={{ padding:"10px", textAlign: "center" }}>
-                <h2 className="c-primary">Principle: Transparency (Competition)</h2>
+                <h2 className="c-primary">Principle: Transparency (Consumer Protection)</h2>
             </div>
             <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
-                The outcome of this principle is to ensure that the AI company is transparent about the AI models it uses and the data it collects. 
+                Brief overview of principle:  Ensures clear and truthful communication about AI capabilities and prevents misleading claims or deceptive practices. This involves providing accurate descriptions of the AI system’s capabilities and limitations, and offering explanations that are understandable to users. The market would trend towards positive outcomes if models were themselves reliable and accurate, and if consumers had the right information about them to make informed decisions. In cases where AI models have limitations, users should be appropriately informed about these constraints.
             </h4>
             <div style={{ height:"400px", padding:"5px" }}>
                 <PieChart

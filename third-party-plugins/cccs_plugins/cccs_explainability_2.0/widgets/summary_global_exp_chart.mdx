@@ -110,33 +110,16 @@ export const MyChart = ({ results, featureNames, properties }) => {
         <span>
           <b>The global explainability test shows the top {getTopN()} features affecting the AI model's prediction.</b>
           <br/>
-          Each bar represents a feature. They are ranked from the highest to the lowest contribution to the predictions. The length of the bar represents the absolute SHAP value across all predictions. A higher value means the feature had more importance on the predicitons, and vice-versa.
+          Each bar represents a feature. They are ranked from the highest to the lowest contribution to the predictions. The length of the bar represents the absolute SHAP value across all predictions. A higher value means the feature had more importance on the predictions, and vice-versa.
           <br/><br/>
 
           <b>What it means:</b>
           <br/>
-          The test results enable the Company to help its stakeholders understand key factors affecting the AI model's recommendation.
+          The test results enable the business to help its stakeholders understand key factors affecting the AI model's recommendation.
           <ul>
             <li>These features contribute {getTopNContribution()}% towards the final predictions of the AI model.</li>
-            <li>Company needs to consider the extent of which these features could be shared with stakeholders. If the company assess that these features should not be made public, company can consider aggregating them.</li>
+            <li>The business needs to consider the extent of which these features could be shared with stakeholders. If the business assess that these features should not be made public, the business can consider aggregating them.</li>
           </ul>
-          <br/>
-          <b>Recommendation(s)</b>
-          <br/>
-          <p>The test results enable the company to understand key factors affecting the AI model's recommendation. The potential use cases (non-exhaustive) are as follows:</p>
-            <p><u>Algorithmic collusion</u> </p>
-            <p>If a feature relating to competitors’ business models or decisions has a high value on company’s decision, the company could potentially be engaging in algorithmic collusion if the algorithm is designed to coordinate changes with other competitors and/or facilitate anti-competitive agreements.</p>
-            
-            <p>To avoid potentially infringing Section 34 of the Competition Act, which prohibits agreements that prevent, restrict, or distort competition within Singapore, the company should review and ensure that its AI model considers a diverse set of factors or practices that are not derived from other companies' business models or decisions.</p>
-            
-            <p><u>Anticompetitive algorithms leading to foreclosure</u></p>
-            <p>If a feature relating to customer’s loyalty (e.g. years of subscription) has a high value on whether a discount is provided, the company’s algorithm could potentially be engaging in loyalty inducing behaviour. </p>
-            <p>If the company considers itself to be dominant, it should review the AI algorithm to avoid potentially infringing Section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.</p>
-
-            <p><u>Discriminatory treatment or Dark patterns </u></p>
-            <p>If a feature relating to consumer’s profile (e.g. age) has a high value on company’s pricing decisions or choice of user interface for its products, the company’s algorithm could potentially be engaging in discriminatory treatment or employing dark patterns to take advantage of vulnerable consumers.</p>
-
-            <p>The company should ensure that the AI algorithm does not discriminate and take advantage of vulnerable consumers with discriminatory prices or deceptive website designs.</p>
         </span>
       }
     </>

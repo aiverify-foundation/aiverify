@@ -1,7 +1,7 @@
 {
   "cid": "diversity",
   "name": "Diversity (General Good Practice)",
-  "description": "This input block consists of 3 process checklist questions that the user has to complete. The 3 questions pertain to 2 testable criteria: 1) Lack of Diverse Model Offerings 2) Lack of Open-Source Community Engagements",
+  "description": "This input block consists of 3 process checklist questions that the user has to complete. The 3 questions pertain to 2 testable criteria: 1) Lack of diverse model offerings 2) Lack of open-source community engagements",
   "group": "CCCS Process Checklists",   
   "width": "xl",   
   "groupNumber": 6

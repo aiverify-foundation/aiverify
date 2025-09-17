@@ -1,0 +1,11 @@
+{
+  "cid": "aiv_intro",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 9,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "AIV Introduction",
+  "description": "Introduction to AI Verify"
+}

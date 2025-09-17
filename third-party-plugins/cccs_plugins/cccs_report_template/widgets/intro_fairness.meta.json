@@ -1,0 +1,11 @@
+{
+  "cid": "intro_fairness",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 5,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Fairness testing introduction",
+  "description": "Explains what is the fairness testing"
+}

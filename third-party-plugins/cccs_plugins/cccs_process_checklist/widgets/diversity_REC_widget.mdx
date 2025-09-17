@@ -13,10 +13,13 @@ export const Recommendation = ({ data02 }) => {
   let recommendation;
   if (noCount >= 1) {
     //Failed Test
-    recommendation = "Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that companies employ will help to increase innovation and competition in the market to the benefit of consumers.\nIf the company does not offer a diverse range of business models, the company can consider offering a both open-source and closed-source options to provide consumers with diverse product offerings and drive innovation.\nIf the company already offers open-source options, it should consider increasing engagement efforts with the open-source community to bolster development efforts and ensure that the open-source models are made accessible in a non-discriminatory manner.";
+    recommendation = `Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ can help to increase innovation and competition in the market to the benefit of consumers.
+    If the business does not offer a diverse range of business models, the business can consider offering a both open-source and closed-source options to provide consumers with diverse product offerings and drive innovation. 
+    If the business already offers open-source options, it should consider increasing engagement efforts with the open-source community to bolster development efforts and ensure that the open-source models are made accessible in a non-discriminatory manner.`;
   } else {
     //Passed Test
-    recommendation = "Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that companies employ can help to increase innovation and competition in the market to the benefit of consumers.\n\n\nThe company has a wide array of models (both open and closed source) to provide consumers with diverse product offerings and drive innovation. The company also actively engages with the open-source community and made sure that the open-source models are accessible in a non-discriminatory manner.";
+    recommendation = `Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ will help to increase innovation and competition in the market to the benefit of consumers.
+    The business has a wide array of models (both open and closed source) to provide consumers with diverse product offerings and drive innovation. The business also actively engages with the open-source community and made sure that the open-source models are accessible in a non-discriminatory manner.`;
   }
 
   return (
@@ -29,9 +32,9 @@ export const Recommendation = ({ data02 }) => {
 
 export const MissingCriteria = ({ data }) => {
     const questionsDict = {
-        "6_1_1": "6.1.1 The company could consider providing both open and closed source models to drive innovation and provide more choices for consumers.",
-        "6_2_1": "6.2.1 The company could consider actively engaging with the open-source community, seeking feedback and contributions to improve open-source AI models, supporting collaborative efforts.",
-        "6_2_2": "6.2.2 Ensure that open-source models by the company are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion."
+        "6_1_1": "6.1.1 The business could consider providing both open and closed source models to drive innovation and provide more choices for consumers. ",
+        "6_2_1": "6.2.1 The business could consider actively engaging with the open-source community, seeking feedback and contributions to improve open-source AI models, supporting collaborative efforts.",
+        "6_2_2": "6.2.2 Ensure that open-source models by the business are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion."
     };
 
     const noResponses = data
@@ -100,7 +103,7 @@ export const MyComponent = (props) => {
                 <h2 className="c-primary">Principle: Diversity (General good practice)</h2>
             </div>
             <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
-                The outcome of this principle is to ensure that the company offers a diverse range of business models for its AI models, including both open-source and closed-source options, to provide a wide array of choices for consumers, and to drive innovation across the market.
+                Brief overview of principle: Promotes variety in AI model offerings and encourages open-source engagement to drive innovation. Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ can help to increase competition in the market to the benefit of consumers.
             </h4>
             <div style={{ height:"400px", padding:"5px" }}>
                 <PieChart

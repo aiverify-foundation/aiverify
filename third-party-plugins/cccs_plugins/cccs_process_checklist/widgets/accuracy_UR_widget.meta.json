@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Accuracy - User Response",
-  "description": "This widget is used to display user responses for the Accuracy (General Good Practice) process checklist.",
+  "description": "This widget is used to display user responses for the Accuracy (General good practice) process checklist.",
   "dynamicHeight": true,
   "dependencies": [
     {

@@ -1,0 +1,17 @@
+import { styles } from './styles.mdx';
+
+<table style={{ width:'100%' }}>
+  <tbody>
+    <tr>
+      <th style={{ ...styles.th, width:'25%' }}>Model Tested:</th>
+      <td style={styles.td}>{props.properties.modelTested || ""}</td>
+    </tr>
+    <tr>
+      <th style={styles.th}>Purpose of Model:</th>
+      <td style={styles.td}>{props.properties.modelPurpose || ""}</td>
+    </tr>
+  </tbody>
+</table> 
+
+
+

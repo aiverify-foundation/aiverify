@@ -1,0 +1,17 @@
+{
+  "cid": "page_title1",
+  "widgetSize": {
+    "minW": 1,
+    "minH": 2,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Page Title 1",
+  "description": "Standard page title 1",
+  "properties": [
+    {
+      "key": "title",
+      "helper": "Enter the title to display"
+    }
+  ]
+}

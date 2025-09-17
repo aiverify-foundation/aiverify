@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Diversity - User Response",
-  "description": "This widget is used to display user responses for the Diversity (General Good Practice) process checklist.",
+  "description": "This widget is used to display user responses for the Diversity (General good practice) process checklist.",
   "dynamicHeight": true,
   "dependencies": [
     {
