@@ -17,6 +17,12 @@ export const GetInterpretation = ({ data, container, results }) => {
     "Equal Parity": "Equal Selection Parity",
     "Disparate Impact": "Disparate Impact",
   };
+
+  // Defensive check to ensure data and data.metrics exist
+  if (!data || !data.metrics || !Array.isArray(data.metrics)) {
+    return <div>No metrics data available</div>;
+  }
+
   let content = [];
   let metrics = data.metrics;
   
@@ -50,7 +56,7 @@ export const GetInterpretation = ({ data, container, results }) => {
     <b>What it means:</b>
     <br/>
     The test results enable the Company to help its stakeholder understand if the model is able to predict the outcomes fairly among the demographic groups.
-    {props.getResults(cid) ? (
+    {props.getResults(cid) && props.getIBData(ib_cid) ? (
           <GetInterpretation
             data={props.getIBData(ib_cid)}
             container={props.container}
