@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response
+from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response, Request
 from typing import List, Annotated, Any
 import json
 import zipfile
 import io
+import os
+from starlette.formparsers import MultiPartParser
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from pathlib import PurePath
@@ -187,19 +189,49 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
 
 @router.post("/upload")
 async def upload_test_result(
-    test_result: Annotated[Any, Form(examples=test_result_examples)],
+    request: Request,
     session: Session = Depends(get_db_session),
     artifacts: List[UploadFile] = [],
 ) -> List[str]:
     """Endpoint to upload test result"""
-    logger.debug(f"upload_test_result, test_result {type(test_result)}: {test_result}")
-    # logger.debug(f"upload_test_result test_results: {test_results}")
-    if artifacts:
-        logger.debug(f"Number of artifacts files: {len(artifacts)}")
-    else:
-        logger.debug("No artifacts")
+    # Parse multipart form data using Starlette's MultiPartParser to handle forms above 1 MB
     try:
-        obj = json.loads(test_result)
+        # Get os.environs for max_part_size
+        if "APIGW_MAX_PART_SIZE_MB" in os.environ:
+            env_max_part_size = int(os.environ["APIGW_MAX_PART_SIZE_MB"]) * 1024 * 1024
+        else:
+            env_max_part_size = 20*1024*1024 # 20 MB Default
+
+        parser = MultiPartParser(
+            headers=request.headers,
+            stream=request.stream(),
+            max_part_size=env_max_part_size
+        )       
+        form_data = await parser.parse()
+
+    except Exception as e:
+        logger.error(f"Error parsing form data: {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid form data: {str(e)}")
+    
+    # Extract test_result JSON from form data
+    test_result_data = form_data.get("test_result")
+    if not test_result_data:
+        raise HTTPException(status_code=400, detail="test_result field is required")
+    
+    # Handle both string and list of strings from Starlette FormData
+    if isinstance(test_result_data, list):
+        if test_result_data:
+            test_result_str = test_result_data[0] 
+        else:
+            test_result_str = ""
+    else:
+        test_result_str = test_result_data
+    
+    if not test_result_str:
+        raise HTTPException(status_code=400, detail="test_result field is empty")
+    
+    try:
+        obj = json.loads(test_result_str)
         if isinstance(obj, dict):
             result_dicts = [obj]
         elif isinstance(obj, list):
