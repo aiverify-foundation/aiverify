@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response, Request
+from fastapi import APIRouter, HTTPException, UploadFile, Form, Depends, Response, Request, File
 from typing import List, Annotated, Any
 import json
 import zipfile
@@ -191,7 +191,7 @@ async def _save_test_result(session: Session, test_result: TestResult, artifact_
 async def upload_test_result(
     request: Request,
     session: Session = Depends(get_db_session),
-    artifacts: List[UploadFile] = [],
+
 ) -> List[str]:
     """Endpoint to upload test result"""
     # Parse multipart form data using Starlette's MultiPartParser to handle forms above 1 MB
@@ -218,18 +218,7 @@ async def upload_test_result(
     if not test_result_data:
         raise HTTPException(status_code=400, detail="test_result field is required")
     
-    # Handle both string and list of strings from Starlette FormData
-    if isinstance(test_result_data, list):
-        if test_result_data:
-            test_result_str = test_result_data[0] 
-        else:
-            test_result_str = ""
-    else:
-        test_result_str = test_result_data
-    
-    if not test_result_str:
-        raise HTTPException(status_code=400, detail="test_result field is empty")
-    
+  
     try:
         obj = json.loads(test_result_str)
         if isinstance(obj, dict):
@@ -243,11 +232,11 @@ async def upload_test_result(
         print("Exception: ", e)
         raise HTTPException(status_code=422)
 
+    # Extract artifacts from form data
     artifact_set = dict[str, UploadFile]()
-    if artifacts and len(artifacts) > 0:
-        for artifact in artifacts:
-            if artifact.filename:
-                artifact_set[artifact.filename] = artifact
+    for key, value in form_data.items():
+        if key != "test_result" and hasattr(value, 'filename') and value.filename:
+            artifact_set[value.filename] = value
 
     all_urls = []
     for result in results:
