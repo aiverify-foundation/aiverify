@@ -220,7 +220,7 @@ async def upload_test_result(
     
   
     try:
-        obj = json.loads(test_result_str)
+        obj = json.loads(test_result_data)
         if isinstance(obj, dict):
             result_dicts = [obj]
         elif isinstance(obj, list):
