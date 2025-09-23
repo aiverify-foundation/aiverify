@@ -7,7 +7,7 @@
     "maxH": 36
   },
   "name": "Accountability - User Response",
-  "description": "This widget is used to display user responses for the Accountability (General Good Practice) process checklist.",
+  "description": "This widget is used to display user responses for the Accountability (General good practice) process checklist.",
   "dynamicHeight": true,
   "dependencies": [
     {

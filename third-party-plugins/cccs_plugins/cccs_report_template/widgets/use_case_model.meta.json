@@ -1,0 +1,21 @@
+{
+  "cid": "use_case_model",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 3,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Use Case and Model Tested",
+  "description": "Describe use case and model tested",
+  "properties": [
+    {
+      "key": "modelTested",
+      "helper": "Enter the name of the model tested"
+    },
+    {
+      "key": "modelPurpose",
+      "helper": "Enter the purpose of the model being tested"
+    }
+  ]
+}

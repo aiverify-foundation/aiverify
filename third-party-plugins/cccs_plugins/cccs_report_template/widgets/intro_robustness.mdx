@@ -1,0 +1,18 @@
+export const cid = "into_robustness";
+
+export const RobustnessIntro = ({ props }) => {
+  return (
+    <div style={{ padding: "10px"}}>
+      <p style={{ marginBottom: "10px" }}>
+        Robustness requires that AI systems maintain their level of performance under any circumstances, including potential changes in their operating environment or the presence of other agents (human or artificial) that may interact with the AI system in an adversarial manner.
+      </p>
+      <p style={{ marginBottom: "10px" }}>
+        In this technical test, the tool generates performance metrics when perturbed testing datasets are input to the model. The changes in performance provide insight into the model’s robustness to potential changes in inputs. Depending on the use case and type of model, users can choose to investigate robustness to adversarial perturbations and/or natural corruptions.
+      </p>
+    </div>
+  );
+};
+
+<div style={{ width: props.width, height: props.height }}>
+  <RobustnessIntro props={props} />
+</div>

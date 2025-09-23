@@ -1,0 +1,25 @@
+{
+  "cid": "cover_page_main",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 36,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Main cover page",
+  "description": "Main Cover Page for the reports",
+  "properties": [
+    {
+      "key": "reportTitle",
+      "helper": "Report Title"
+    },
+    {
+      "key": "reportSubtitle1",
+      "helper": "Subtitle 1 of report"
+    },
+    {
+      "key": "reportSubtitle2",
+      "helper": "Subtitle 2 of report"
+    }
+  ]
+}

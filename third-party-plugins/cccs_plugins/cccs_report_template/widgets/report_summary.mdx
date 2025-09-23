@@ -1,0 +1,34 @@
+import { MyPageTitle2 } from './misc.mdx';
+import { styles } from './styles.mdx';
+import { getReportDateTime } from './utils.ts';
+
+This summary provides an overview of the AI model tested. The details of each principle and the interpretation can be found on the following pages.
+
+<MyPageTitle2 title="AI Model Information" />
+
+{props.modelAndDatasets && (
+  <table style={{ width:'100%', marginTop:'10px' }}>
+    <tbody>
+      <tr>
+        <th style={{ ...styles.th, width:'30%' }}>Name of Model Tested:</th>
+        <td style={{ ...styles.td, width:'70%' }}>{props.properties?.modelName}</td>
+      </tr>
+      <tr>
+        <th style={styles.th}>Model Type:</th>
+        <td style={styles.td}>{props.modelAndDatasets.model?.modelType}</td>
+      </tr>
+      <tr>
+        <th style={styles.th}>Model Filename:</th>
+        <td style={styles.td}>{props.modelAndDatasets.model?.filename}</td>
+      </tr>
+      <tr>
+        <th style={styles.th}>Test Dataset:</th>
+        <td style={styles.td}>{props.modelAndDatasets.testDataset?.filename}</td>
+      </tr>
+      <tr>
+        <th style={styles.th}>Report Completed:</th>
+        <td style={styles.td}>{props.report?getReportDateTime(props):""}</td>
+      </tr>
+    </tbody>
+  </table>
+)}

@@ -1,0 +1,21 @@
+{
+  "cid": "cover_page_section",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 36,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Section Cover Page",
+  "description": "For decorating the cover page of a section",
+  "properties": [
+    {
+      "key": "sectionTitle",
+      "helper": "Section Title"
+    },
+    {
+      "key": "sectionSubTitle",
+      "helper": "Section Subtitle"
+    }
+  ]
+}
