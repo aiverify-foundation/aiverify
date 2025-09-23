@@ -36,7 +36,7 @@ User guide is updated for v2.0, learn how you may utilise AI Verify effectively 
 
 ## Developer Guide
 
-The AIVT v2.0 developer guide is targeted for completion by July 2025.
+The AIVT v2.0 developer guide is available [here](http://aiverify-foundation.github.io/aiverify-developer-tools/).
 
 ## Contributing Guidelines
 
