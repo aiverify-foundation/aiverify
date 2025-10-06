@@ -1,0 +1,24 @@
+{
+  "cid": "accountability_UR_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Accountability - User Response",
+  "description": "This widget is used to display user responses for the Accountability (General good practice) process checklist.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "accountability"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "accountability",
+      "datapath": "accountability.sample.json"
+    }
+  ]
+}

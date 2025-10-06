@@ -1,0 +1,24 @@
+{
+  "cid": "diversity_UR_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Diversity - User Response",
+  "description": "This widget is used to display user responses for the Diversity (General good practice) process checklist.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "diversity"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "diversity",
+      "datapath": "diversity.sample.json"
+    }
+  ]
+}

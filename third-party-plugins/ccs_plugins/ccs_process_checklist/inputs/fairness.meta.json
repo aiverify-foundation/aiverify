@@ -1,0 +1,8 @@
+{
+  "cid": "fairness",
+  "name": "Fairness (Competition/Consumer Protection)",
+  "description": "This input block consists of 5 process checklist questions that the user has to complete. The 5 questions pertain to 2 testable criteria: 1) Discrimination against certain target groups 2) Favouring certain brands/products over others",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 4
+}

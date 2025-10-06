@@ -1,0 +1,11 @@
+{
+  "cid": "intro_explain",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 8,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Explainability testing introduction",
+  "description": "Explains what is the explainability testing"
+}

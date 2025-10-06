@@ -1,0 +1,8 @@
+{
+  "cid": "accessibility",
+  "name": "Accessibility (Competition)",
+  "description": "This input block consists of 5 process checklist questions that the user has to complete. The 5 questions pertain to 3 testable criteria: 1) Restricting access to essential inputs 2) Restricting access of AI products and services 3) Access to data.",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 2 
+}

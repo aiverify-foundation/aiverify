@@ -1,0 +1,63 @@
+export const ib_cid = "accountability"
+
+<div className="aiv-panel">
+  <h2>User Responses: Accountability (General good practice)</h2>
+</div>
+<br/>
+<h2 className="c-primary">Testable Criteria 7.1.0: Lack of adequate accountability by the business</h2>
+<h3>Outcome: There should be clear and proper allocation of accountability in the event that the model makes decisions that harms competition or consumers.</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">7.1.1\) Question</b><br/>
+      Are there mechanisms in place to determine the proper allocation of accountability and responsibility for any potential competition or consumer issues arising from the AI model (for eg. clear internal governance mechanisms to ensure clear roles and responsibilities by the organisation and/or clear responsibilities between different parties within the broader supply chain – partners, suppliers, customers, third parties)?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that the business has the accountability and incentive to improve consumers’ experience.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["7_1_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["7_1_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">7.1.2\) Question</b><br/>
+      Does the business provide clear and easily accessible information to consumers about the available routes for should issues or negative experiences with AI products or services arise?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that clear information about routes to redress are provided to consumers for issues that can occur.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["7_1_2"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["7_1_2_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<div style={{border:"1px solid black", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}}>
+  <b className="c-secondary">Summary Justification</b><br/>
+  {(props.getIBData(ib_cid)["7_summary"])}
+</div>

@@ -1,0 +1,18 @@
+export const cid = "into_explain";
+
+export const ExplainabilityIntro = ({ props }) => {
+  return (
+    <div style={{ padding: "10px"}}>
+      <p style={{ marginBottom: "10px" }}>
+        Explainability is about ensuring AI driven decisions can be explained and understood by those directly using the system to enable or carry out a decision, to the furthest extent possible. The degree to which explainability is needed also depends on the aims of the explanation, including the context, the needs of stakeholders, types of understanding sought, mode of explanation, as well as the the severity of the consequences of errorneous or inaccurate output on human beings. Explainability is an important component of a transparent AI system. 
+      </p>
+      <p style={{ marginBottom: "10px" }}>
+        In this technical test, the tool generates feature contribution - based explanations from the given input testing data and model. The results determine if explanations can be generated for a given model, which is an indicator of explainability. 
+     </p>
+    </div>
+  );
+};
+
+<div style={{ width: props.width, height:props.height }}>
+  <ExplainabilityIntro props={props} />
+</div>

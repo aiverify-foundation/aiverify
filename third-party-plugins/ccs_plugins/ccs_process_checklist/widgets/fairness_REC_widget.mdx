@@ -1,0 +1,131 @@
+import React, { useEffect, useState } from 'react';
+import { PieChart } from 'aiverify-shared-library/charts';
+
+
+export const ib_cid = "fairness";
+
+export const Recommendation = ({ data02 }) => {
+  const responses = data02.map(item => item.name);
+  const yesCount = data02.find(item => item.name === 'Yes')?.value || 0;
+  const noCount = data02.find(item => item.name === 'No')?.value || 0;
+  const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
+
+  let recommendation;
+  if (noCount >= 1) {
+    //Failed Test
+    recommendation = `Ensuring fairness in AI models’ predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model’s predictions would also prevent any unfair practices resulting from the AI model. 
+    The business’s AI model should not unfairly discriminate or show favouritism towards any specific groups, brands, or products. If the business sees itself as dominant, it could be abusing this dominant position in potential anti-competitive behaviour by giving itself (or other businesses) preferential treatment, which could harm competition in another market. The business should review the AI algorithm to avoid potentially infringing section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business. 
+    If the business’s AI model tends to show discrimination against certain consumers or demographics, the business could be engaging in an unfair practice as defined under the Consumer Protection (Fair Trading) Act, eg. taking advantage of a consumer who is known not to be in a position to protect his or her own interest. The business should review its AI algorithm to avoid any liability in this regard. `;
+  } else {
+    //Passed Test
+    recommendation = `Ensuring fairness in AI models’ predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model’s predictions, supported by representative training data, helps ensure equal treatment of consumers in AI-driven recommendations and that certain groups of consumers would not be taken advantage of.
+    The business has ensured that the AI model does not discriminate against or favour any target groups, brands, or products and that the AI model does not discriminate against or take advantage of consumers based on their capacity to engage in transactions.`;
+  }
+
+  return (
+    <div className="recommendation">
+      <h3 className="c-primary">Our Recommendation:</h3>
+      <div style={{paddingTop: "5px"}}>{recommendation}</div>
+    </div>
+  );
+};
+
+export const MissingCriteria = ({ data }) => {
+    const questionsDict = {
+        "4_1_1": "4.1.1 Ensure training data is diverse and representative in order to avoid biasness against certain groups, firms or individuals.",
+        "4_2_1": "4.2.1 Ensure that the AI model does not unduly favor specific brands or products, and the decision-making process should be based on inputs only.",
+        "4_2_2": "4.2.2 Ensure that the AI model does not self-preference.",
+        "4_2_3": "4.2.3 Ensure that the business conducts regular bias testing and impact assessments to prevent favouring of certain brands/products.",
+        "4_2_4": "4.2.4 Ensure that the business has a clear mechanism for addressing and rectifying instances of favoritism or discrimination."
+    };
+
+    const noResponses = data
+        .filter(response => response.response === 'No')
+        .map(response => response.id);
+
+    const missingCriteriaQuestions = noResponses.map(id => questionsDict[id] || "Question not found");
+
+    return (
+        <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px" }}>
+            <h3 className="c-primary">Business did not implement the following testable criteria fully:</h3>
+            <ul style={{ paddingLeft: "13px", paddingRight: "0px", marginTop: "5px" }}>
+                {missingCriteriaQuestions.map((question, index) => (
+                    <li key={index} style={{ paddingBottom: "9px" }}>
+                        {question}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export const MyComponent = (props) => {
+    const [data02, setData02] = useState([]);
+    const [dataWithIds, setDataWithIds] = useState([]);
+
+    useEffect(() => {
+        const responses = [
+            props.getIBData(ib_cid)["4_1_1"],
+            props.getIBData(ib_cid)["4_2_1"],
+            props.getIBData(ib_cid)["4_2_2"],
+            props.getIBData(ib_cid)["4_2_3"],
+            props.getIBData(ib_cid)["4_2_4"]
+        ];
+
+        const yesCount = responses.filter(response => response === 'Yes').length;
+        const noCount = responses.filter(response => response === 'No').length;
+        const naCount = responses.filter(response => response === 'NA').length;
+
+        setData02([
+            { name: "Not Applicable", value: naCount }, // Blue
+            { name: "No", value: noCount }, // Orange
+            { name: "Yes", value: yesCount } // Green
+        ]);
+
+        const ids = [
+            "4_1_1", "4_2_1", "4_2_2", "4_2_3", "4_2_4"
+        ];
+
+        const responseswithID = ids.map(id => ({
+            id: id,
+            response: props.getIBData(ib_cid)[id]
+        }));
+
+        setDataWithIds(responseswithID);
+
+    }, [props]);
+
+// for grid display - display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0px", padding: "0px" 
+// for donut chart - pies={[{ dataKey: "value", data: data02, innerRadius: 65, outerRadius: 120, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+
+    return (
+        <div style={{ width:"100%"}}>
+            <div className="aiv-panel">
+                <h2>CCS'S RECOMMENDATIONS</h2>
+            </div>
+            <div style={{ padding:"10px", textAlign: "center" }}>
+                <h2 className="c-primary">Principle: Fairness (Competition/Consumer Protection)</h2>
+            </div>
+            <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
+                Brief overview of principle: Prevents discrimination against specific groups and favouring of certain products or brands without objective reason. This includes ensuring that AI decision-making processes are free from bias, that recommendations and rankings are based on transparent and relevant criteria, and that all users and market participants are treated equally. Ensuring fairness in AI models’ predictions is crucial for building consumer confidence that the best products and services will win out as firms are perceived to be playing by the rules. Ensuring fairness in AI model’s predictions, supported by representative training data, also helps ensure equal treatment of consumers in AI-driven recommendations and that certain groups of consumers would not be taken advantage of.
+            </h4>
+            <div style={{ height:"400px", padding:"5px" }}>
+                <PieChart
+                    pies={[{ dataKey: "value", data: data02, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+                />
+            </div>
+            <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px"}}>
+                <Recommendation data02={data02} />
+            </div>
+            <div style={{paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px"}}>
+                <h3 className="c-primary">Summary Justification:</h3>
+                <div style={{paddingTop: "3px"}}>{props.getIBData(ib_cid)["4_summary"]}</div>
+            </div>
+            <div>
+                <MissingCriteria data={dataWithIds} />
+            </div>
+        </div>
+    );
+};
+
+export default MyComponent;

@@ -1,0 +1,24 @@
+{
+  "cid": "accuracy_REC_widget",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 1,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Accuracy - Recommendation",
+  "description": "This widget is used to show the results of the report.",
+  "dynamicHeight": true,
+  "dependencies": [
+    {
+      "cid": "accuracy"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "accuracy",
+      "datapath": "accuracy.sample.json"
+    }
+  ]
+}

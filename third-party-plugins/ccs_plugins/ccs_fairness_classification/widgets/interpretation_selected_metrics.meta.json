@@ -1,0 +1,33 @@
+{
+  "cid": "interpretation_selected_metrics",
+  "widgetSize": {
+    "minW": 6,
+    "minH": 4,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Interpretation (Selected)",
+  "description": "To provide interpretation for the selected fairness metric(s) from the fairness tree",
+  "dependencies": [
+    {
+      "cid": "fairness_tree",
+      "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification"
+    },
+    {
+      "cid": "fairness_metrics_toolbox_for_classification",
+      "gid": "aiverify.stock.fairness_metrics_toolbox_for_classification"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "InputBlock",
+      "cid": "fairness_tree",
+      "datapath": "fairness_tree.sample.json"
+    },
+    {
+      "type": "Algorithm",
+      "cid": "fairness_metrics_toolbox_for_classification",
+      "datapath": "fmt.output.sample.json" 
+    }
+  ]
+}

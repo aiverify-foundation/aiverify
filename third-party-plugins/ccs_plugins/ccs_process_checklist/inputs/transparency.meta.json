@@ -1,0 +1,8 @@
+{
+  "cid": "transparency",
+  "name": "Transparency (Consumer Protection)",
+  "description": "This input block consists of 8 process checklist questions that the user has to complete. The 5 questions pertain to 3 testable criteria: 1) False or misleading representation 2) Inadequate disclosure or omission of Information 3) Misleading user interface or recommendation design",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 5
+}

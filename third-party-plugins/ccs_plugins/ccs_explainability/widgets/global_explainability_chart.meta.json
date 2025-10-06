@@ -1,0 +1,31 @@
+{
+  "cid": "global_explainability_chart",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 16,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Bar Chart (Technical)",
+  "description": "To display the average SHAP values using a bar chart",
+  "dependencies": [
+    {
+      "cid": "aiverify_shap_toolbox",
+      "gid": "aiverify.stock.shap_toolbox"
+    }
+  ],
+  "mockdata": [
+    {
+      "type": "Algorithm",
+      "cid": "aiverify_shap_toolbox",
+      "datapath": "shap_toolbox.sample.json"
+    }
+  ],
+  "properties": [
+    {
+      "key": "topNFeatures",
+      "helper": "To show the top N features in the chart",
+      "default": "20"
+    }
+  ]
+}

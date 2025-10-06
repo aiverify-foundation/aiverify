@@ -1,0 +1,11 @@
+{
+  "cid": "intro_robustness",
+  "widgetSize": {
+    "minW": 12,
+    "minH": 7,
+    "maxW": 12,
+    "maxH": 36
+  },
+  "name": "Robustness testing introduction",
+  "description": "Explains what is the robustness testing"
+}

@@ -1,0 +1,192 @@
+{/* Input Block Page */}
+<div className="aiv-panel">
+  <h2>Process Checklist Principle 3.0.0: Flexibility (Competition)</h2>
+</div>
+<br/>
+<h3 className="c-secondary">Testable Criteria 3.1.0: Lack of interoperability</h3>
+<b>Outcome: A business’s AI model should be interoperable with other AI systems to prevent the restriction of customer choice</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.1.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI model support open and standardized input formats, ensuring that it can seamlessly interface with and process data from different AI systems without requiring proprietary inputs?</td>
+      <td style={{paddingBottom: "15px"}}>The business should consider for AI model to support open and standardized input formats such that it can be interoperable with other AI systems.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_1_1" value={props.data["3_1_1"]} onChange={(e)=>props.onChangeData("3_1_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_1_1_e" value={props.data["3_1_1_e"]} onChange={(e)=>props.onChangeData("3_1_1_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.1.2</td>
+      <td style={{paddingBottom: "15px"}}>Does the business adhere to data portability standards (eg. data portability obligation under the PDPA), ensuring that the AI model can effectively import and export data in commonly used formats, thereby enabling interoperability with diverse AI systems?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that AI model adheres to data portability standards and best practices.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_1_2" value={props.data["3_1_2"]} onChange={(e)=>props.onChangeData("3_1_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_1_2_e" value={props.data["3_1_2_e"]} onChange={(e)=>props.onChangeData("3_1_2_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.1.3</td>
+      <td style={{paddingBottom: "15px"}}>Does the business provide tools and resources, as much as technically feasible, to facilitate seamless model transition and interoperability? (eg. standardized model formats, API compatibility, or mechanisms that reduce the cost of switching between different AI models without requiring users to retrain from scratch.)?</td>
+      <td style={{paddingBottom: "15px"}}>The business should consider providing tools for seamless data migration of trained parameters, eliminating the need to retrain the AI model, promoting interoperability.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_1_3" value={props.data["3_1_3"]} onChange={(e)=>props.onChangeData("3_1_3",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_1_3_e" value={props.data["3_1_3_e"]} onChange={(e)=>props.onChangeData("3_1_3_e",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 className="c-secondary">Testable Criteria 3.2.0: High switching cost</h3>
+<b>Outcome: Consumers should not be locked into one ecosystem or provider with high switching cost or prohibitive terms and conditions</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.2.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the business provide transparent and easily understandable information about the potential costs and requirements associated with switching to or from its AI models, ensuring that consumers are fully informed about the switching process?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that the business provides transparent and easily understandable information about the costs and requirements associated with switching.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_2_1" value={props.data["3_2_1"]} onChange={(e)=>props.onChangeData("3_2_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_2_1_e" value={props.data["3_2_1_e"]} onChange={(e)=>props.onChangeData("3_2_1_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.2.2</td>
+      <td style={{paddingBottom: "15px"}}>Are there provisions in place to facilitate the portability of data and configurations when switching to or from the AI model, ensuring that consumers can transition with minimal data migration expenses?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure provisions are in place to facilitate the portability of data and configurations when switching to or from the AI model, minimizing data migration expenses.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_2_2" value={props.data["3_2_2"]} onChange={(e)=>props.onChangeData("3_2_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_2_2_e" value={props.data["3_2_2_e"]} onChange={(e)=>props.onChangeData("3_2_2_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.2.3</td>
+      <td style={{paddingBottom: "15px"}}>Are there measures in place to mitigate the risk of vendor lock-in, such as providing clear exit strategies and data portability options, to ensure that consumers can switch AI models without being unduly tied to a specific provider?</td>
+      <td style={{paddingBottom: "15px"}}>Having clear exit strategies that enable consumers to switch AI models without being unduly tied to a specific provider.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_2_3" value={props.data["3_2_3"]} onChange={(e)=>props.onChangeData("3_2_3",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_2_3_e" value={props.data["3_2_3_e"]} onChange={(e)=>props.onChangeData("3_2_3_e",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 className="c-secondary">Testable Criteria 3.3.0: Anticompetitive bundling or tying</h3>
+<b>Outcome: The business should not be tying or bundling its product offerings in the same market or other adjacent markets anticompetitively</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.3.1</td>
+      <td style={{paddingBottom: "15px"}}>If a business is vertically integrated (eg. owns or controls multiple stages of its supply chain), does it ensure that its licensing or usage agreements does not require the specific use of its cloud services for deployment or operation?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that the AI model's licensing or usage agreements does not mandate the use of the business’s cloud services for deployment or operation.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_3_1" value={props.data["3_3_1"]} onChange={(e)=>props.onChangeData("3_3_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_3_1_e" value={props.data["3_3_1_e"]} onChange={(e)=>props.onChangeData("3_3_1_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>3.3.2</td>
+      <td style={{paddingBottom: "15px"}}>If the business is dominant, does it offer its AI models as independent products, allowing consumers to select and utilize individual AI models without being required to purchase or use other bundled products?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that the dominant business offers its AI models as independent products, and consumers are able select and utilize individual AI models without being obligated to purchase or use other bundled products.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="3_3_2" value={props.data["3_3_2"]} onChange={(e)=>props.onChangeData("3_3_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="3_3_2_e" value={props.data["3_3_2_e"]} onChange={(e)=>props.onChangeData("3_3_2_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">
+        <h3 className="c-secondary">Summary Justification</h3>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={8} cols={153} type="" id="3_summary" value={props.data["3_summary"]} onChange={(e)=>props.onChangeData("3_summary",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,16 @@
+import logo from './logo_w.png';
+
+<div style={{ width:props.width, textAlign:'right', display:'relative' }}>
+  <div style={{ position:'absolute', top:'60px', width:'700px', right:'40px', zIndex:6000, display:'flex', flexFlow:'column wrap', alignItems:'right', textTransform:'uppercase' }}>
+    <div style={{ fontWeight:600, fontSize:"30pt", textAlign:'right', marginBottom:'20px' }}>
+      {props.properties.sectionSubTitle || ""}
+    </div>
+    <div style={{ fontWeight:600, fontSize:"20pt", textAlign:'right' }}>
+      {props.properties.sectionTitle || ""}
+    </div>
+  </div>
+  <div style={{ position:'absolute', top:'960px', right:'30px' }}>
+    <img src={logo} alt="AI Verify Logo" width="320px" style={{ padding:0, margin:0 }} />
+    <div style={{ fontWeight:800, fontSize:"8pt", textAlign:'center' }}></div>
+  </div>
+</div>

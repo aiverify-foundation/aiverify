@@ -1,0 +1,65 @@
+{/* Input Block Page */}
+<div className="aiv-panel">
+  <h2>Process Checklist Principle 7.0.0: Accountability (General good practice)</h2>
+</div>
+<br/>
+<h3 className="c-secondary">Testable Criteria 7.1.0: Lack of adequate accountability by the business</h3>
+<b>Outcome: There should be clear and proper allocation of accountability in the event that the model makes decisions that harms competition or consumers.</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>7.1.1</td>
+      <td style={{paddingBottom: "15px"}}>Are there mechanisms in place to determine the proper allocation of accountability and responsibility for any potential competition or consumer issues arising from the AI model (for eg. clear internal governance mechanisms to ensure clear roles and responsibilities by the organisation and/or clear responsibilities between different parties within the broader supply chain – partners, suppliers, customers, third parties)?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that the business has the accountability and incentive to improve consumers’ experience.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="7_1_1" value={props.data["7_1_1"]} onChange={(e)=>props.onChangeData("7_1_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="7_1_1_e" value={props.data["7_1_1_e"]} onChange={(e)=>props.onChangeData("7_1_1_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>7.1.2</td>
+      <td style={{paddingBottom: "15px"}}>Does the business provide clear and easily accessible information to consumers about the available routes for should issues or negative experiences with AI products or services arise?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that clear information about routes to redress are provided to consumers for issues that can occur.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="7_1_2" value={props.data["7_1_2"]} onChange={(e)=>props.onChangeData("7_1_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="7_1_2_e" value={props.data["7_1_2_e"]} onChange={(e)=>props.onChangeData("7_1_2_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">
+        <h3 className="c-secondary">Summary Justification</h3>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={8} cols={153} type="" id="7_summary" value={props.data["7_summary"]} onChange={(e)=>props.onChangeData("7_summary",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+

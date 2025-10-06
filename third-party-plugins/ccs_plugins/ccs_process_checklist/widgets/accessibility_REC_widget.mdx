@@ -1,0 +1,134 @@
+import React, { useEffect, useState } from 'react';
+import { PieChart } from 'aiverify-shared-library/charts';
+
+
+export const ib_cid = "accessibility";
+
+export const Recommendation = ({ data02 }) => {
+  const responses = data02.map(item => item.name);
+  const yesCount = data02.find(item => item.name === 'Yes')?.value || 0;
+  const noCount = data02.find(item => item.name === 'No')?.value || 0;
+  const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
+
+  let recommendation;
+  if (noCount >= 1) {
+    //Failed Test
+    recommendation = `For the market to be more competitive, developers should be able to gain access, on reasonable terms, to key inputs they need to develop and deploy AI models. In addition, a dominant business should avoid mandating data collection from users as a prerequisite for using the product or service where such collection is not necessary for provision of the product or service, particularly when the data collected is intended to improve the business’s AI models.
+    If the business has a dominant position in any market, the business should: 
+    -	Avoid restricting competitors' access to data or resources for the development of their AI models unjustifiably
+    -	Allow non-discriminatory access to its AI products and services
+    -	Ensure data collection practices include explicit user consent and clear opt-out mechanisms to prevent unfair data accumulation advantages that could artificially strengthen its market position. 
+    If the business is dominant, it should review its practices to avoid potentially infringing section 47 of the Competition Act, which prohibits the abuse of a dominant market position that is not based on fair competition and perpetuates the dominant position of the business.`;
+  } else {
+    //Passed Test
+    recommendation = `For the market to be more competitive, AI businesses should be able to gain access, on reasonable terms, to key inputs they need to develop and/or deploy AI models. In addition, a dominant business should not mandate data collection from users for the purposes of improving its AI models.
+    The business has taken steps to ensure unrestricted access to its products and services, and it does not withhold essential data or resources necessary for the development and/or deployment of AI models by its competitors. The business also avoids mandatory data collection practices for the training of its AI models that could unfairly strengthen its market position.`;
+  }
+
+  return (
+    <div className="recommendation">
+      <h3 className="c-primary">Our Recommendation:</h3>
+      <div style={{paddingTop: "5px"}}>{recommendation}</div>
+    </div>
+  );
+};
+
+export const MissingCriteria = ({ data }) => {
+    const questionsDict = {
+        "2_1_1": "2.1.1 Checks if the business has leveraged its dominance in one market to unfairly limit access to data or resources for competing AI model developers in other markets.",
+        "2_1_2": "2.1.2 Regular assessments of data access policies ensures that there are no unfair limitations to data or resources for developers in other markets.",
+        "2_1_3": "2.1.3 Checks whether a dominant AI developer has exclusive dealings with multiple deployers downstream that may deter entry of new AI developers.",
+        "2_2_1": "2.2.1 Ensure that a dominant business maintains non-discriminatory access to its AI products and services.",
+        "2_3_1": "2.3.1 Ensure that a dominant business does not make use of mandatory data collection practices to exclusively accumulate large amounts of user data to improve its AI models, potentially raising barriers to entry for competitors."
+    };
+
+    const noResponses = data
+        .filter(response => response.response === 'No')
+        .map(response => response.id);
+
+    const missingCriteriaQuestions = noResponses.map(id => questionsDict[id] || "Question not found");
+
+    return (
+        <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px" }}>
+            <h3 className="c-primary">Business did not implement the following testable criteria fully:</h3>
+            <ul style={{ paddingLeft: "13px", paddingRight: "0px", marginTop: "5px" }}>
+                {missingCriteriaQuestions.map((question, index) => (
+                    <li key={index} style={{ paddingBottom: "9px" }}>
+                        {question}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export const MyComponent = (props) => {
+    const [data02, setData02] = useState([]);
+    const [dataWithIds, setDataWithIds] = useState([]);
+
+    useEffect(() => {
+        const responses = [
+            props.getIBData(ib_cid)["2_1_1"],
+            props.getIBData(ib_cid)["2_1_2"],
+            props.getIBData(ib_cid)["2_1_3"],
+            props.getIBData(ib_cid)["2_2_1"],
+            props.getIBData(ib_cid)["2_3_1"]
+        ];
+
+        const yesCount = responses.filter(response => response === 'Yes').length;
+        const noCount = responses.filter(response => response === 'No').length;
+        const naCount = responses.filter(response => response === 'NA').length;
+
+        setData02([
+            { name: "Not Applicable", value: naCount }, // Blue
+            { name: "No", value: noCount }, // Orange
+            { name: "Yes", value: yesCount } // Green
+        ]);
+
+        const ids = [
+            "2_1_1", "2_1_2", "2_1_3", "2_2_1", "2_3_1"
+        ];
+
+        const responseswithID = ids.map(id => ({
+            id: id,
+            response: props.getIBData(ib_cid)[id]
+        }));
+
+        setDataWithIds(responseswithID);
+
+    }, [props]);
+
+// for grid display - display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0px", padding: "0px" 
+// for donut chart - pies={[{ dataKey: "value", data: data02, innerRadius: 65, outerRadius: 120, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+
+    return (
+        <div style={{ width:"100%"}}>
+            <div className="aiv-panel">
+                <h2>CCS'S RECOMMENDATIONS</h2>
+            </div>
+            <div style={{ padding:"10px", textAlign: "center" }}>
+                <h2 className="c-primary">Principle: Accessibility (Competition)</h2>
+            </div>
+            <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
+                Brief overview of principle: Prevents the unfair restriction of essential resources and mandatory data collection practices, while ensuring fair market access to AI products and services. To facilitate competitive markets, businesses should be able to gain access, on reasonable terms, to key inputs they need to develop and/or deploy AI models. In addition, a dominant business should avoid mandating data collection from users as a prerequisite for using the product or service where such collection is not necessary for provision of the product or service, particularly when the data collected is intended to improve the business’s AI models.
+            </h4>
+            <div style={{ height:"400px", padding:"5px" }}>
+                <PieChart
+                    pies={[{ dataKey: "value", data: data02, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+                />
+            </div>
+            <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px"}}>
+                <Recommendation data02={data02} />
+            </div>
+            <div style={{paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px"}}>
+                <h3 className="c-primary">Summary Justification:</h3>
+                <div style={{paddingTop: "3px"}}>{props.getIBData(ib_cid)["2_summary"]}</div>
+            </div>
+            <div>
+                <MissingCriteria data={dataWithIds} />
+            </div>
+        </div>
+    );
+};
+
+export default MyComponent;

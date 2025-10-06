@@ -1,0 +1,89 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart } from 'aiverify-shared-library/charts'
+
+export const algo_cid = "aiverify_shap_toolbox"
+export const gid = "aiverify.stock.shap_toolbox"
+
+export const MyChart = ({ results, featureNames, properties }) => {
+  const [ data, setData ] = useState([]);
+  const [ bars, setBars ] = useState([]);
+
+  useEffect(() => {
+    const data = featureNames.map((name, index) => {
+      let obj = {
+        name,
+      }
+      let total = 0;
+      for (let j=0; j<results.num_global_classes; j++) {
+        obj[`class${j}`] = results.global[j][index];
+        total += results.global[j][index];
+      }
+      obj['total'] = total;
+      return obj;
+    })
+    data.sort((a, b) => {
+      return b.total - a.total;
+    })
+    let bars = [];
+    for (let i=0; i<results.num_global_classes; i++) {
+      bars.push({
+        dataKey: `class${i}`,
+        stackId: 'shap_value',
+      })
+    }
+    setBars(bars);
+    setData(data);
+  }, [results])
+
+  const getTopN = () => {
+    try {
+      return (properties && properties.topNFeatures)?parseInt(properties.topNFeatures):20;
+    } catch (e) {
+      return 0;
+    } 
+  }
+
+  const chartHeight = () => {
+    let n = getTopN();
+    if (n > data.length)
+      n = data.length;
+    return n * 50 + 20;
+  }
+
+  const topNData = () => {
+    const topN = getTopN();
+    return data.slice(0, topN);
+  }
+
+  return (
+    <>
+      <div style={{ width:'100%', textAlign: 'center' }}>
+        <b>Global Explainability Chart</b>
+      </div>
+      <div style={{ height:chartHeight(), width:'100%' }}>
+        <BarChart
+          data={topNData()}
+          chartProps={{ layout:"vertical" }}
+          hideLegend={true}
+          yAxisProps={{ width:180 }}
+          xAxisDataKey="name"
+          bars={bars}
+        />
+      </div>
+      {data && data.length > 0 &&
+        <p>From the results, <i>{data[0].name}</i> contributed to the overall predictions the most as it has the highest SHAP value. This is useful for explaining that it is the most important factor influencing the model’s predictions. A similar analysis can be done for the rest of the features.</p>
+      }
+    </>
+  )
+}
+
+{props.getResults(algo_cid, gid)?(
+  <>
+    <div style={{ width:props.width, height:"100%" }}>
+      <MyChart results={props.getResults(algo_cid, gid).results} featureNames={props.getResults(algo_cid, gid).feature_names} properties={props.properties} />
+    </div>
+  </>
+):(
+  <div>No data</div>
+)}
+

@@ -1,0 +1,97 @@
+{/* Input Block Page */}
+<div className="aiv-panel">
+  <h2>Process Checklist Principle 6.0.0: Diversity (General good practice)</h2>
+</div>
+<br/>
+<h3 className="c-secondary">Testable Criteria 6.1.0: Lack of diverse model offerings</h3>
+<b>Outcome: Diversity of business models will provide consumers with diverse product offerings and drive innovation</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>6.1.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the business offer a diverse range of business models for its AI models, including both open-source and closed-source options, to provide a wide array of choices for consumers, and to drive innovation across the market?</td>
+      <td style={{paddingBottom: "15px"}}>The business could consider providing both open and closed source models to drive innovation and provide more choices for consumers.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="6_1_1" value={props.data["6_1_1"]} onChange={(e)=>props.onChangeData("6_1_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="6_1_1_e" value={props.data["6_1_1_e"]} onChange={(e)=>props.onChangeData("6_1_1_e",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 className="c-secondary">Testable Criteria 6.2.0: Lack of open-source community engagements</h3>
+<b>Outcome: Open-source models help to reduce barriers to entry and expansion and facilitate collaboration</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>6.2.1</td>
+      <td style={{paddingBottom: "15px"}}>Does the business actively engage with the open-source community, seeking feedback and contributions to improve open-source AI models, and does it support collaborative development efforts to drive innovation and advancement in the field?</td>
+      <td style={{paddingBottom: "15px"}}>The business could consider actively engaging with the open-source community, seeking feedback and contributions to improve open-source AI models, supporting collaborative efforts.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="6_2_1" value={props.data["6_2_1"]} onChange={(e)=>props.onChangeData("6_2_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="6_2_1_e" value={props.data["6_2_1_e"]} onChange={(e)=>props.onChangeData("6_2_1_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>6.2.2</td>
+      <td style={{paddingBottom: "15px"}}>Does the business ensure that these open-source models are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion (eg. avoiding unjustified geographic or demographic restrictions)?</td>
+      <td style={{paddingBottom: "15px"}}>Ensure that open-source models by the business are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="6_2_2" value={props.data["6_2_2"]} onChange={(e)=>props.onChangeData("6_2_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="6_2_2_e" value={props.data["6_2_2_e"]} onChange={(e)=>props.onChangeData("6_2_2_e",e.target.value)} />
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">
+        <h3 className="c-secondary">Summary Justification</h3>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={8} cols={153} type="" id="6_summary" value={props.data["6_summary"]} onChange={(e)=>props.onChangeData("6_summary",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+

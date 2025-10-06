@@ -1,0 +1,243 @@
+{/* Input Block Page */}
+<div className="aiv-panel">
+  <h2>Process Checklist Principle 1.0.0: Pro-competitive algorithms (Competition)</h2>
+</div>
+<br/>
+<h3 className="c-secondary">Testable Criteria 1.1.0: Algorithmic Collusion</h3>
+<b>Outcome: AI Model should not be used or designed as a way to facilitate any anti-competitive agreements between competitors.</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.1</td>
+      <td style={{paddingBottom: "15px"}}>Has the business ensured that the AI model is not designed and used in a way that facilitates any anti-competitive agreements (eg. pricing strategies are not derived from the business models or decisions of other businesses, after explicit or implicit agreements between competing businesses)?</td>
+      <td style={{paddingBottom: "15px"}}>The business’s algorithm should not be designed to coordinate changes with other competitors and/or facilitating any anti-competitive agreements.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_1" value={props.data["1_1_1"]} onChange={(e)=>props.onChangeData("1_1_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_1_e" value={props.data["1_1_1_e"]} onChange={(e)=>props.onChangeData("1_1_1_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.2</td>
+      <td style={{paddingBottom: "15px"}}>Has the business ensured that non-public commercially sensitive data from other competitors are not used in generating the AI model’s output?</td>
+      <td style={{paddingBottom: "15px"}}>The business should ensure that the AI model does not access or process competitors’ non-public, commercially sensitive information in their output, which may facilitate algorithmic collusion.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_2" value={props.data["1_1_2"]} onChange={(e)=>props.onChangeData("1_1_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_2_e" value={props.data["1_1_2_e"]} onChange={(e)=>props.onChangeData("1_1_2_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.3</td>
+      <td style={{paddingBottom: "15px"}}>Does the business have a process for human review of AI outputs before the AI model is put into operation?</td>
+      <td style={{paddingBottom: "15px"}}>AI outputs should be reviewed by a human before the AI model is deployed to reduce any risk of unintended anti-competitive outcomes.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_3" value={props.data["1_1_3"]} onChange={(e)=>props.onChangeData("1_1_3",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_3_e" value={props.data["1_1_3_e"]} onChange={(e)=>props.onChangeData("1_1_3_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.4</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI model undergo regular audits and reviews to ensure it does not inadvertently facilitate any anti-competitive agreements or collusive behaviour between competitors?</td>
+      <td style={{paddingBottom: "15px"}}>Regular audits and reviews of the AI model help to detect and prevent instances where the AI model is facilitating coordination with other competitors. </td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_4" value={props.data["1_1_4"]} onChange={(e)=>props.onChangeData("1_1_4",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_4_e" value={props.data["1_1_4_e"]} onChange={(e)=>props.onChangeData("1_1_4_e",e.target.value)} />
+      </td>
+    </tr>
+        <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.5</td>
+      <td style={{paddingBottom: "15px"}}>Are there clear protocols in place for identifying, reporting, and addressing any instances where the AI model might be used to enable anti-competitive practices?</td>
+      <td style={{paddingBottom: "15px"}}>Clear protocols to be put in place for addressing potential algorithmic collusion behaviour.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_5" value={props.data["1_1_5"]} onChange={(e)=>props.onChangeData("1_1_5",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_5_e" value={props.data["1_1_5_e"]} onChange={(e)=>props.onChangeData("1_1_5_e",e.target.value)} />
+      </td>
+    </tr>
+        <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.6</td>
+      <td style={{paddingBottom: "15px"}}>As far as the business is aware, is the same AI model being widely used by competitors?</td>
+      <td style={{paddingBottom: "15px"}}>Where the AI model is widely used by competitors, the business should ensure that its model operates independently and does not share data or outputs with competitors, as this may increase algorithmic collusion risks.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_6" value={props.data["1_1_6"]} onChange={(e)=>props.onChangeData("1_1_6",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_6_e" value={props.data["1_1_6_e"]} onChange={(e)=>props.onChangeData("1_1_6_e",e.target.value)} />
+      </td>
+    </tr>
+        <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.1.7</td>
+      <td style={{paddingBottom: "15px"}}>Are there safeguards in place to ensure that commercially sensitive AI model parameters (eg. trained weights, hyperparameters and proprietary optimization techniques) are not shared through channels (such as one-to-one interactions or industry association gatherings) between competitors? </td>
+      <td style={{paddingBottom: "15px"}}>Prevent the sharing of commercially sensitive model parameters with competitors through channels such as one-to-one interactions or industry association gatherings.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_1_7" value={props.data["1_1_7"]} onChange={(e)=>props.onChangeData("1_1_7",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_1_7_e" value={props.data["1_1_7_e"]} onChange={(e)=>props.onChangeData("1_1_7_e",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 className="c-secondary">Testable Criteria 1.2.0: Algorithmic exclusion and predation</h3>
+<b>Outcome: AI Model should not recommend pricing strategies that result in exclusionary or predatory practices if  the business is dominant.</b>
+
+<table>
+  <tbody>
+    <tr>
+      <th style={{padding: "10px"}}>No.</th>
+      <th>Question</th>
+      <th>Relation to Outcome</th>
+      <th>Response</th>
+      <th>Elaboration</th>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.2.1</td>
+      <td style={{paddingBottom: "15px"}}>Are the AI model's pricing algorithms transparent and traceable to identify instances of below-cost* pricing that could be considered predatory if the business is dominant?
+      <br />_*Price below average variable cost by a dominant business is likely to be predatory. Businesses that are not dominant, or pricing above average total cost, are unlikely to be engaging in predatory behaviour._</td>
+      <td style={{paddingBottom: "15px"}}>Below-cost pricing by a dominant business could be anti-competitive and harm competition. 
+      <br />Transparency and traceability in the AI model's pricing algorithms to identify instances of below-cost pricing can ensure that pricing strategies are not predatory.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_2_1" value={props.data["1_2_1"]} onChange={(e)=>props.onChangeData("1_2_1",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_2_1_e" value={props.data["1_2_1_e"]} onChange={(e)=>props.onChangeData("1_2_1_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.2.2</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI model undergo regular audits and reviews to detect and prevent instances of below-cost pricing that could be indicative of predatory behavior if the business is dominant?</td>
+      <td style={{paddingBottom: "15px"}}>Below-cost pricing by a dominant business could be anti-competitive and harm competition.
+      <br />Regular audits and reviews of the AI model help detect and prevent instances of below-cost pricing.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_2_2" value={props.data["1_2_2"]} onChange={(e)=>props.onChangeData("1_2_2",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_2_2_e" value={props.data["1_2_2_e"]} onChange={(e)=>props.onChangeData("1_2_2_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.2.3</td>
+      <td style={{paddingBottom: "15px"}}>Does the AI model's pricing algorithm consider relevant cost factors and market conditions to avoid setting prices below the business’s cost, which could be considered predatory if the business is dominant?</td>
+      <td style={{paddingBottom: "15px"}}>Below-cost pricing by a dominant business could be anti-competitive and harm competition.
+      <br />Considering relevant cost factors and market conditions in the AI model's pricing algorithm helps avoid setting prices below a reasonable cost threshold.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_2_3" value={props.data["1_2_3"]} onChange={(e)=>props.onChangeData("1_2_3",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_2_3_e" value={props.data["1_2_3_e"]} onChange={(e)=>props.onChangeData("1_2_3_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.2.4</td>
+      <td style={{paddingBottom: "15px"}}>If the business is dominant, are there processes in place to monitor and address any feedback or complaints related to predatory/below-cost pricing that may be linked to the AI model's algorithmic decisions?</td>
+      <td style={{paddingBottom: "15px"}}>Below-cost pricing by a dominant business could be anti-competitive and harm competition.
+      <br />Monitoring and addressing feedback ensure accountability and responsiveness to any predatory behavior.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_2_4" value={props.data["1_2_4"]} onChange={(e)=>props.onChangeData("1_2_4",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_2_4_e" value={props.data["1_2_4_e"]} onChange={(e)=>props.onChangeData("1_2_4_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td style={{padding: "10px 10px 15px 10px"}}>1.2.5</td>
+      <td style={{paddingBottom: "15px"}}>If the business is dominant, does it ensures that the AI model does not have loyalty-inducing algorithms* that could have potential exclusionary effects, limiting choices of downstream deployers and users, and discouraging market entry for new developers?
+      <br />_*Examples of loyalty-inducing algorithms could include price discounts based on volume of purchase or years of subscription._</td>
+      <td style={{paddingBottom: "15px"}}>Checks whether a dominant business has deployed a model with loyalty inducing algorithms that may have exclusionary effects, deterring entry of new AI developers and harming competition if the business has a dominant market position.</td>
+      <td style={{padding: "10px 10px 15px 10px"}}>
+        <select style={{ backgroundColor: 'white', color: 'black' }} id="1_2_5" value={props.data["1_2_5"]} onChange={(e)=>props.onChangeData("1_2_5",e.target.value)}>
+          <option value="" disabled selected>Select an option</option>
+          <option value="NA">Not Applicable</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={10} cols={24} type="" id="1_2_5_e" value={props.data["1_2_5_e"]} onChange={(e)=>props.onChangeData("1_2_5_e",e.target.value)} />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <h3 className="c-secondary">Summary Justification</h3>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea style={{resize: "none"}} className="aiv-textarea" rows={8} cols={153} type="" id="1_summary" value={props.data["1_summary"]} onChange={(e)=>props.onChangeData("1_summary",e.target.value)} />
+      </td>
+    </tr>
+  </tbody>
+</table>
+

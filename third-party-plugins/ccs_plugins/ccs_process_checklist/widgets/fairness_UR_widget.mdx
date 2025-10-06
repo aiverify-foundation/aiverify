@@ -1,0 +1,144 @@
+export const ib_cid = "fairness"
+
+<div className="aiv-panel">
+  <h2>User Responses: Fairness (Competition/Consumer Protection)</h2>
+</div>
+<br/>
+<h2 className="c-primary">Testable Criteria 4.1.0: Discrimination against certain target groups</h2>
+<h3>Outcome: Ensure training data is diverse and representative to prevent potential AI-driven exclusionary practices by firms and discriminatory treatment of consumers.</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">4.1.1\) Question</b><br/>
+      Has the business established a strategy or a set of procedures to check that the data used in the training of the AI model, is representative of the population who make up the end-users of the AI model? This could include, for example, ensuring:
+      - Diverse demographic representation to avoid bias
+      - Adequate sample sizes for all relevant user segments
+      - Regular data drifts and representation audits to maintain fairness over time
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure training data is diverse and representative in order to avoid biasness against certain groups, firms or individuals.  
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["4_1_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["4_1_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<h2 className="c-primary">Testable Criteria 4.2.0: Favouring certain brands/products over others</h2>
+<h3>Outcome: If the business is dominant, its AI model should not unfairly prioritize or favour certain brands/products (including own products) over others without objective justifications.</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">4.2.1\) Question</b><br/>
+      Is the dominant business’s AI model decision-making process purely based on input data and does not unduly favour specific brands or products?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that the AI model does not unduly favor specific brands or products, and the decision-making process should be based on inputs only.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["4_2_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["4_2_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">4.2.2\) Question</b><br/>
+      Does the dominant business’s AI model decision-making process prioritise the business's own product as compared to other competitors?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that the AI model does not self-preference.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["4_2_2"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["4_2_2_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">4.2.3\) Question</b><br/>
+      Does the dominant business’s AI model undergo regular bias testing and impact assessments to mitigate potential bias outcomes?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that the business conducts regular bias testing and impact assessments to prevent favouring of certain brands/products.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["4_2_3"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["4_2_3_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">4.2.4\) Question</b><br/>
+      Is there a mechanism in place to address and rectify any instances of favouritism or discrimination identified in the dominant business’s AI model's outputs?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that the business has a clear mechanism for addressing and rectifying instances of favoritism or discrimination.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["4_2_4"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["4_2_4_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<div style={{border:"1px solid black", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}}>
+  <b className="c-secondary">Summary Justification</b><br/>
+  {(props.getIBData(ib_cid)["4_summary"])}
+</div>

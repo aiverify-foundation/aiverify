@@ -1,0 +1,60 @@
+export const cid = "fairness_metrics_toolbox_for_classification"
+export const ib_cid = "fairness_tree"
+export const gid = "aiverify.stock.fairness_metrics_toolbox_for_classification"
+import { InterpretationChart } from './interpretationtype1.mdx';
+import { InterpretationChart2 } from './interpretationtype2.mdx';
+
+
+export const GetInterpretation = ({ data, container, results }) => {
+  let metrics_map = {
+    'False Negative Rate Parity': "False Negative Rate",
+    "False Positive Rate Parity": "False Positive Rate",
+    "False Discovery Rate Parity": "False Discovery Rate",
+    "False Omission Rate Parity": "False Omission Rate",
+    "True Positive Rate Parity / Equal Opportunity": "True Positive Rate",
+    "True Negative Rate Parity": "True Negative Rate",
+    "Positive Predictive Value Parity": "Positive Predictive Value Parity",
+    "Negative Predictive Value Parity": "Negative Predictive Value Parity",
+    "Equal Parity": "Equal Selection Parity",
+    "Disparate Impact": "Disparate Impact",
+  };
+  let content = [];
+  let metrics = data.metrics;
+  
+  for (var i = 0; i < metrics.length; i++) {
+    // Special graph as they have more than 2 subgroups
+    if (metrics[i] == "Equal Parity" || metrics[i] == "Disparate Impact"){
+      content.push(<InterpretationChart2
+        key={`chart-${i}`}
+        metric={metrics_map[metrics[0]]}
+        container={container}
+        data={results}
+      />)
+    }
+    else{
+      content.push(<InterpretationChart
+        key={`chart-${i}`}
+        metric={metrics_map[metrics[i]]}
+        container={container}
+        data={results}
+      />)
+    }
+  }
+
+  return (
+    <div>{content}</div>
+  )
+}
+
+<>
+  <div>
+    <b>What it means:</b>
+    <br/>
+    The test results enable the business to understand if the model is able to predict the outcomes fairly among the target groups. 
+    <GetInterpretation
+      data={props.getIBData(ib_cid, gid)}
+      container={props.container}
+      results={props.getResults(cid, gid)}
+    />
+  </div>
+</>

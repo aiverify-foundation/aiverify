@@ -1,0 +1,8 @@
+{
+  "cid": "pro_competitive_algo",
+  "name": "Pro-Competitive Algorithms (Competition)",
+  "description": "This input block consists of 12 process checklist questions that the user has to complete. The 12 questions pertain to 2 testable criteria: 1) Algorithmic Collusion. 2) Algorithmic exclusion and predation.",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 1
+}

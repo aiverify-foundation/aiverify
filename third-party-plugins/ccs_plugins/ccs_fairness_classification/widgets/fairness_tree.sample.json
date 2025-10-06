@@ -1,0 +1,7 @@
+{
+    "metrics": [
+        "Disparate Impact",
+        "False Positive Rate Parity",
+        "True Positive Rate Parity / Equal Opportunity"
+    ]
+}

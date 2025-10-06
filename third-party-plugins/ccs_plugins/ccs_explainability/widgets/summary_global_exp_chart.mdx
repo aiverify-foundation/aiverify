@@ -1,0 +1,138 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart } from 'aiverify-shared-library/charts'
+
+export const algo_cid = "aiverify_shap_toolbox"
+export const gid = "aiverify.stock.shap_toolbox"
+
+export const MyChart = ({ results, featureNames, properties }) => {
+  const [ data, setData ] = useState([]);
+  const [ bars, setBars ] = useState([]);
+
+  useEffect(() => {
+    const data = featureNames.map((name, index) => {
+      let obj = {
+        name,
+      }
+      let total = 0;
+      for (let j=0; j<results.num_global_classes; j++) {
+        obj[`class${j}`] = results.global[j][index];
+        total += results.global[j][index];
+      }
+      obj['total'] = total;
+      return obj;
+    })
+    data.sort((a, b) => {
+      return b.total - a.total;
+    })
+    let bars = [];
+    for (let i=0; i<results.num_global_classes; i++) {
+      bars.push({
+        dataKey: `class${i}`,
+        stackId: 'shap_value',
+      })
+    }
+    setBars(bars);
+    setData(data);
+  }, [results])
+
+  const getTopN = () => {
+    try {
+      if(properties && properties.topNFeatures && featureNames.length < parseInt(properties.topNFeatures)){
+        return featureNames.length
+      }
+      else{
+        // return this if the property is not available
+        return (properties && properties.topNFeatures)?parseInt(properties.topNFeatures):20;
+      }
+
+    } catch (e) {
+      return 0;
+    } 
+  }
+
+  // Compute the contributions made by the top N features
+  // Return the percentage of the contribution
+  const getTopNContribution = () => {
+    try {
+      let topN = getTopN()
+
+      if(topN == 0 || topN > featureNames.length){
+        return 100
+      }
+      else{
+        let total = 0
+        let numerator = 0
+
+        for(let d = 0; d < data.length; d++){
+          total += data[d].total
+        }
+
+        for(let d = 0; d < topN; d++){
+          numerator += data[d].total
+        }
+
+        return ((numerator / total)*100).toFixed(2)
+      }
+    } catch (e) {
+      console.log(e)
+      return "<error>";
+    } 
+  }
+
+  const chartHeight = () => {
+    let n = getTopN();
+    if (n > data.length)
+      n = data.length;
+    return n * 50 + 20;
+  }
+
+  const topNData = () => {
+    const topN = getTopN();
+    return data.slice(0, topN);
+  }
+
+  return (
+    <>
+      <div style={{ width:'100%', textAlign: 'center' }}>
+        <b>Global Explainability Chart</b>
+      </div>
+      <div style={{ height:chartHeight(), width:'100%' }}>
+        <BarChart
+          data={topNData()}
+          chartProps={{ layout:"vertical" }}
+          hideLegend={true}
+          yAxisProps={{ width:180 }}
+          xAxisDataKey="name"
+          bars={bars}
+        />
+      </div>
+      {data && data.length > 0 &&
+        <span>
+          <b>The global explainability test shows the top {getTopN()} features affecting the AI model's prediction.</b>
+          <br/>
+          Each bar represents a feature. They are ranked from the highest to the lowest contribution to the predictions. The length of the bar represents the absolute SHAP value across all predictions. A higher value means the feature had more importance on the predictions, and vice-versa.
+          <br/><br/>
+
+          <b>What it means:</b>
+          <br/>
+          The test results enable the business to help its stakeholders understand key factors affecting the AI model's recommendation.
+          <ul>
+            <li>These features contribute {getTopNContribution()}% towards the final predictions of the AI model.</li>
+            <li>The business needs to consider the extent of which these features could be shared with stakeholders. If the business assess that these features should not be made public, the business can consider aggregating them.</li>
+          </ul>
+        </span>
+      }
+    </>
+  )
+}
+
+{props.getResults(algo_cid, gid)?(
+  <>
+    <div style={{ width:props.width, height:"100%" }}>
+      <MyChart results={props.getResults(algo_cid, gid).results} featureNames={props.getResults(algo_cid, gid).feature_names} properties={props.properties} />
+    </div>
+  </>
+):(
+  <div>No data</div>
+)}
+

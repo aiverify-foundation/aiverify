@@ -1,0 +1,91 @@
+export const ib_cid = "diversity"
+
+<div className="aiv-panel">
+  <h2>User Responses: Diversity (General good practice)</h2>
+</div>
+<br/>
+<h2 className="c-primary">Testable Criteria 6.1.0: Lack of diverse model offerings</h2>
+<h3>Outcome: Diversity of business models will provide consumers with diverse product offerings and drive innovation</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">6.1.1\) Question</b><br/>
+      Does the business offer a diverse range of business models for its AI models, including both open-source and closed-source options, to provide a wide array of choices for consumers, and to drive innovation across the market?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      The business could consider providing both open and closed source models to drive innovation and provide more choices for consumers. 
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["6_1_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style={{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["6_1_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<h2 className="c-primary">Testable Criteria 6.2.0: Lack of open-source community engagements</h2>
+<h3>Outcome: Open-source models help to reduce barriers to entry and expansion and facilitate collaboration</h3><br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">6.2.1\) Question</b><br/>
+      Does the business actively engage with the open-source community, seeking feedback and contributions to improve open-source AI models, and does it support collaborative development efforts to drive innovation and advancement in the field?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      The business could consider actively engaging with the open-source community, seeking feedback and contributions to improve open-source AI models, supporting collaborative efforts.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["6_2_1"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["6_2_1_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<table style={{border:"1px solid black", borderCollapse:"collapse"}}>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">6.2.2\) Question</b><br/>
+      Does the business ensure that these open-source models are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion (eg. avoiding unjustified geographic or demographic restrictions)?
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Relation to Outcome</b><br/>
+      Ensure that open-source models by the business are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion.
+    </td>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px"}}>
+      <b className="c-secondary">Response</b><br/>
+      {(props.getIBData(ib_cid)["6_2_2"])}
+    </td>
+  </tr>
+  <tr>
+    <td style= {{border:"1px solid black", borderCollapse:"collapse", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}} colspan="3">
+      <b className="c-secondary">Elaboration</b><br/>
+      {(props.getIBData(ib_cid)["6_2_2_e"])}
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<div style={{border:"1px solid black", padding: "0px 15px 0px", paddingTop: "10px", paddingBottom: "10px"}}>
+  <b className="c-secondary">Summary Justification</b><br/>
+  {(props.getIBData(ib_cid)["6_summary"])}
+</div>

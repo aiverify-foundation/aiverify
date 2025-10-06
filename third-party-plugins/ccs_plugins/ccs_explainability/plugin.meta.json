@@ -1,0 +1,8 @@
+{
+    "gid": "ccs_explainability",
+    "version": "2.0.0a1",
+    "name": "CCS Explainability Technical Test",
+    "author": "AI Verify",
+    "description": "SHAP (SHapley Additive exPlanations) is a game theoretic approach to explain the output of any machine learning model."
+}
+

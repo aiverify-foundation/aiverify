@@ -1,0 +1,8 @@
+{
+  "cid": "accuracy",
+  "name": "Accuracy (General Good Practice)",
+  "description": "This input block consists of 6 process checklist questions that the user has to complete. The 6 questions pertain to 2 testable criterion: 1) Model Reliability 2) Model Reproducibility",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 8
+}
