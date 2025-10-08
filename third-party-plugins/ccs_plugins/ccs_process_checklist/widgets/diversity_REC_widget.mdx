@@ -1,0 +1,127 @@
+import React, { useEffect, useState } from 'react';
+import { PieChart } from 'aiverify-shared-library/charts';
+
+
+export const ib_cid = "diversity";
+
+export const Recommendation = ({ data02 }) => {
+  const responses = data02.map(item => item.name);
+  const yesCount = data02.find(item => item.name === 'Yes')?.value || 0;
+  const noCount = data02.find(item => item.name === 'No')?.value || 0;
+  const naCount = data02.find(item => item.name === 'Not Applicable')?.value || 0; 
+
+  let recommendation;
+  if (noCount >= 1) {
+    //Failed Test
+    recommendation = `Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ can help to increase innovation and competition in the market to the benefit of consumers.
+    If the business does not offer a diverse range of business models, the business can consider offering a both open-source and closed-source options to provide consumers with diverse product offerings and drive innovation. 
+    If the business already offers open-source options, it should consider increasing engagement efforts with the open-source community to bolster development efforts and ensure that the open-source models are made accessible in a non-discriminatory manner.`;
+  } else {
+    //Passed Test
+    recommendation = `Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ will help to increase innovation and competition in the market to the benefit of consumers.
+    The business has a wide array of models (both open and closed source) to provide consumers with diverse product offerings and drive innovation. The business also actively engages with the open-source community and made sure that the open-source models are accessible in a non-discriminatory manner.`;
+  }
+
+  return (
+    <div className="recommendation">
+      <h3 className="c-primary">Our Recommendation:</h3>
+      <div style={{paddingTop: "5px"}}>{recommendation}</div>
+    </div>
+  );
+};
+
+export const MissingCriteria = ({ data }) => {
+    const questionsDict = {
+        "6_1_1": "6.1.1 The business could consider providing both open and closed source models to drive innovation and provide more choices for consumers. ",
+        "6_2_1": "6.2.1 The business could consider actively engaging with the open-source community, seeking feedback and contributions to improve open-source AI models, supporting collaborative efforts.",
+        "6_2_2": "6.2.2 Ensure that open-source models by the business are made accessible in a non-discriminatory manner that reduces barriers to entry and expansion."
+    };
+
+    const noResponses = data
+        .filter(response => response.response === 'No')
+        .map(response => response.id);
+
+    const missingCriteriaQuestions = noResponses.map(id => questionsDict[id] || "Question not found");
+
+    return (
+        <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px" }}>
+            <h3 className="c-primary">Business did not implement the following testable criteria fully:</h3>
+            <ul style={{ paddingLeft: "13px", paddingRight: "0px", marginTop: "5px" }}>
+                {missingCriteriaQuestions.map((question, index) => (
+                    <li key={index} style={{ paddingBottom: "9px" }}>
+                        {question}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+export const MyComponent = (props) => {
+    const [data02, setData02] = useState([]);
+    const [dataWithIds, setDataWithIds] = useState([]);
+
+    useEffect(() => {
+        const responses = [
+            props.getIBData(ib_cid)["6_1_1"],
+            props.getIBData(ib_cid)["6_2_1"],
+            props.getIBData(ib_cid)["6_2_2"]
+        ];
+
+        const yesCount = responses.filter(response => response === 'Yes').length;
+        const noCount = responses.filter(response => response === 'No').length;
+        const naCount = responses.filter(response => response === 'NA').length;
+
+        setData02([
+            { name: "Not Applicable", value: naCount }, // Blue
+            { name: "No", value: noCount }, // Orange
+            { name: "Yes", value: yesCount } // Green
+        ]);
+
+        const ids = [
+            "6_1_1", "6_2_1", "6_2_2"
+        ];
+
+        const responseswithID = ids.map(id => ({
+            id: id,
+            response: props.getIBData(ib_cid)[id]
+        }));
+
+        setDataWithIds(responseswithID);
+
+    }, [props]);
+
+// for grid display - display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0px", padding: "0px" 
+// for donut chart - pies={[{ dataKey: "value", data: data02, innerRadius: 65, outerRadius: 120, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+
+    return (
+        <div style={{ width:"100%"}}>
+            <div className="aiv-panel">
+                <h2>CCS'S RECOMMENDATIONS</h2>
+            </div>
+            <div style={{ padding:"10px", textAlign: "center" }}>
+                <h2 className="c-primary">Principle: Diversity (General good practice)</h2>
+            </div>
+            <h4 style={{paddingLeft: "10px", paddingRight: "10px"}}>
+                Brief overview of principle: Promotes variety in AI model offerings and encourages open-source engagement to drive innovation. Having sufficient diversity in the market in relation to AI models being developed, how they are released to consumers and businesses, and the business models that businesses employ can help to increase competition in the market to the benefit of consumers.
+            </h4>
+            <div style={{ height:"400px", padding:"5px" }}>
+                <PieChart
+                    pies={[{ dataKey: "value", data: data02, labelLine: false, label: "renderCustomizedPieLabel" }]} 
+                />
+            </div>
+            <div style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px"}}>
+                <Recommendation data02={data02} />
+            </div>
+            <div style={{paddingLeft: "10px", paddingRight: "10px", paddingTop: "15px"}}>
+                <h3 className="c-primary">Summary Justification:</h3>
+                <div style={{paddingTop: "3px"}}>{props.getIBData(ib_cid)["6_summary"]}</div>
+            </div>
+            <div>
+                <MissingCriteria data={dataWithIds} />
+            </div>
+        </div>
+    );
+};
+
+export default MyComponent;

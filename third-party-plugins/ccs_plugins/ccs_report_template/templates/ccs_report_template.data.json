@@ -1,0 +1,2261 @@
+{
+  "pages": [
+    {
+      "layouts": [
+        {
+          "i": "1724148448722",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_main",
+          "key": "1724148448722",
+          "properties": {
+            "reportTitle": "CCS AIM Toolkit",
+            "reportSubtitle1": "Summary Report",
+            "reportSubtitle2": ""
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724148484428",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724148505409",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148512860",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 11,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 8,
+          "static": false
+        },
+        {
+          "i": "1729153025163",
+          "x": 0,
+          "y": 14,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729153049687",
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729153081604",
+          "x": 0,
+          "y": 17,
+          "w": 12,
+          "h": 19,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724148484428",
+          "properties": {
+            "title": "Introduction to AI Markets Toolkit"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724148505409",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1724148512860",
+          "properties": {
+            "text": "The AIM toolkit is developed by CCS in collaboration with IMDA and builds upon IMDA’s AI Verify toolkit, relying on a set of principles that are more applicable to the competition and consumer protection framework in Singapore. The AIM toolkit allows both AI model developers and AI model deployers (“AI businesses”) to self-assess whether their AI models and business practices are in compliance with the Competition Act and the Consumer Protection (Fair Trading) Act (“CPFTA”). The toolkit also serves to highlight beneficial General Good Practices for businesses adopting AI. The AIM toolkit can be utilised either before deployment or after the development of an AI model."
+        }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1729153025163",
+          "properties": {
+            "title": "Disclaimer"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1729153049687",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729153081604",
+          "properties": {
+            "text": "The results generated by the AIM toolkit are intended solely for informational purposes and to assist organizations in self-assessing their AI systems against a range of principles. These results do not constitute legal advice or an official endorsement by the Competition and Consumer Commission of Singapore (CCS).  Regardless of the outcome of the AIM toolkit assessment, CCS does not certify or guarantee that your AI systems are in full compliance with Singapore's Competition Act, Consumer Protection (Fair Trading) Act, or any other applicable laws and regulations. It remains the responsibility of each organization to ensure that their AI systems comply with all relevant legal obligations.  For formal advice or confirmation of compliance, organizations should seek independent legal counsel."
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724148531529",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724148557961",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 13,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 8,
+          "static": false
+        },
+        {
+          "i": "1724148567385",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148580179",
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724148595580",
+          "x": 0,
+          "y": 18,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148603687",
+          "x": 0,
+          "y": 19,
+          "w": 12,
+          "h": 17,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 5,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724148531529",
+          "properties": {
+            "title": "Report Summary"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:report_summary",
+          "key": "1724148557961",
+          "properties": {
+            "modelName": ""
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724148567385",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724148580179",
+          "properties": {
+            "title": "Technical Test Summary"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724148595580",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:technical_tests_summary",
+          "key": "1724148603687",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729153712977",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1729153759162",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 3,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729153930871",
+          "x": 0,
+          "y": 5,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729153967011",
+          "x": 0,
+          "y": 6,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729153994058",
+          "x": 0,
+          "y": 8,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154001559",
+          "x": 0,
+          "y": 10,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154005789",
+          "x": 0,
+          "y": 12,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154009849",
+          "x": 0,
+          "y": 14,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154016431",
+          "x": 0,
+          "y": 16,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154021847",
+          "x": 0,
+          "y": 18,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154026116",
+          "x": 0,
+          "y": 20,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154157574",
+          "x": 0,
+          "y": 22,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154236167",
+          "x": 0,
+          "y": 25,
+          "w": 12,
+          "h": 11,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1729154776731",
+          "x": 0,
+          "y": 23,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1729153712977",
+          "properties": {
+            "title": "CCS Process Checks"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1729153759162",
+          "properties": {
+            "title": "This CCS Checklist assesses your AI practices against 8 principles."
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1729153930871",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729153967011",
+          "properties": {
+            "text": "1. Pro-competitive algorithms (Competition)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729153994058",
+          "properties": {
+            "text": "2. Accessibility (Competition)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154001559",
+          "properties": {
+            "text": "3. Flexibility (Competition)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154005789",
+          "properties": {
+            "text": "4. Fairness (Competition/Consumer Protection)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154009849",
+          "properties": {
+            "text": "5. Transparency (Consumer Protection)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154016431",
+          "properties": {
+            "text": "6. Diversity (General Good Practice)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154021847",
+          "properties": {
+            "text": "7. Accountability (General Good Practice)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154026116",
+          "properties": {
+            "text": "8. Accuracy (General Good Practice)"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1729154157574",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.decorators:text1",
+          "key": "1729154236167",
+          "properties": {
+            "text": "For each principle, the report is structured as follows: You will first see the responses you provided during the self-assessment. This is followed by a summary report that includes a chart showing the distribution of your responses, along with a list of questions where you selected \"No\"—indicating that your response does not align with CCS's preferred or positive outcome. Finally, CCS provides recommendations on steps you can take to improve alignment with our principles based on your responses."
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1729154776731",
+          "properties": {
+            "title": "Report Structure"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724148448722",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1724148448722",
+          "layoutItemProperties": null,
+          "properties": {
+            "sectionTitle": "(COMPETITION)",
+            "sectionSubTitle": "1. PRO-COMPETITIVE ALGORITHMS"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1739265415566",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:pro_competitive_algo_UR_widget",
+          "key": "1739265415566",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724148785566",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:pro_competitive_algo_REC_widget",
+          "key": "1724148785566",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729154923487",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729154923487",
+          "properties": {
+            "sectionTitle": "(Competition)",
+            "sectionSubTitle": "2. Accessibility"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729154970506",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accessibility_UR_widget",
+          "key": "1729154970506",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729154988188",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accessibility_REC_widget",
+          "key": "1729154988188",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155015974",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155015974",
+          "properties": {
+            "sectionTitle": "(Competition)",
+            "sectionSubTitle": "3. Flexibility"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155054251",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:flexibility_UR_widget",
+          "key": "1729155054251",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155149275",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:flexibility_REC_widget",
+          "key": "1729155149275",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155277556",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155277556",
+          "properties": {
+            "sectionTitle": "(Competition/Consumer Protection)",
+            "sectionSubTitle": "4. Fairness"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155305188",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:fairness_UR_widget",
+          "key": "1729155305188",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155313450",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:fairness_REC_widget",
+          "key": "1729155313450",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155340549",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155340549",
+          "properties": {
+            "sectionTitle": "(Consumer Protection)",
+            "sectionSubTitle": "5. Transparency"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155401442",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:transparency_UR_widget",
+          "key": "1729155401442",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155411033",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:transparency_REC_widget",
+          "key": "1729155411033",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155428955",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155428955",
+          "properties": {
+            "sectionTitle": "(General Good Practice)",
+            "sectionSubTitle": "6. Diversity"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155448619",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:diversity_UR_widget",
+          "key": "1729155448619",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155460425",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:diversity_REC_widget",
+          "key": "1729155460425",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155481001",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155481001",
+          "properties": {
+            "sectionTitle": "(General Good Practice)",
+            "sectionSubTitle": "7. Accountability"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155506455",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accountability_UR_widget",
+          "key": "1729155506455",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155515959",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accountability_REC_widget",
+          "key": "1729155515959",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155659675",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false,
+          "isDraggable": true,
+          "isResizable": true,
+          "resizeHandles": [
+            "se"
+          ],
+          "isBounded": true
+        }
+      ],
+      "reportWidgets": [
+        {
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729155659675",
+          "properties": {
+            "sectionTitle": "(General Good Practice)",
+            "sectionSubTitle": "8. Accuracy"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729155967425",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accuracy_UR_widget",
+          "key": "1729155967425",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729156001732",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "my_plugin:accuracy_REC_widget",
+          "key": "1729156001732",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729156040165",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729156040165",
+          "properties": {
+            "sectionTitle": "CCS Technical Tests",
+            "sectionSubTitle": ""
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724148826595",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724148839318",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148860931",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 12,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 12,
+          "static": false
+        },
+        {
+          "i": "1724148884482",
+          "x": 0,
+          "y": 15,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148900391",
+          "x": 0,
+          "y": 17,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724148911971",
+          "x": 0,
+          "y": 18,
+          "w": 12,
+          "h": 3,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 4,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724148923465",
+          "x": 0,
+          "y": 21,
+          "w": 12,
+          "h": 15,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 2,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1739501826558",
+          "x": 3,
+          "y": 36,
+          "w": 4,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 4,
+          "minH": 2,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724148826595",
+          "properties": {
+            "title": "Explainability Technical Test"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724148839318",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:intro_explain",
+          "key": "1724148860931",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1724148884482",
+          "properties": {
+            "title": "Testing Explainability Using SHAP"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724148900391",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.shap_toolbox:introduction",
+          "key": "1724148911971",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.shap_toolbox:how_to_read",
+          "key": "1724148923465",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724149101083",
+          "x": 0,
+          "y": 4,
+          "w": 12,
+          "h": 32,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 12,
+          "static": false
+        },
+        {
+          "i": "1724836684346",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724836706424",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_explainability:summary_global_exp_chart",
+          "key": "1724149101083",
+          "properties": {
+            "topNFeatures": "20"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724836684346",
+          "properties": {
+            "title": "Explainability test results"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724836706424",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1724836563833",
+          "x": 0,
+          "y": 5,
+          "w": 12,
+          "h": 31,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 2,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724836585648",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1724836614259",
+          "x": 0,
+          "y": 4,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1724836737567",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_explainability:recommendations",
+          "key": "1724836563833",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1724836585648",
+          "properties": {
+            "title": "CCS'S RECOMMENDATIONS"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1724836614259",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1724836737567",
+          "properties": {
+            "title": "for explainability test"
+          }
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1739501923243",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 7,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 7,
+          "static": false
+        },
+        {
+          "i": "1739501965079",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1739502004588",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1739502095726",
+          "x": 0,
+          "y": 10,
+          "w": 12,
+          "h": 25,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 6,
+          "minH": 3,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:intro_fairness",
+          "key": "1739501923243",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1739501965079",
+          "properties": {
+            "title": "fairness technical test"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1739502004588",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_fairness:technical_fairness_metrics_desc",
+          "key": "1739502095726",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1739502612431",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 15,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_fairness:technical_metrics",
+          "key": "1739502612431",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1738737393676",
+          "x": 0,
+          "y": 9,
+          "w": 12,
+          "h": 15,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 15,
+          "static": false
+        },
+        {
+          "i": "1739502326854",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1739502394739",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1739502647666",
+          "x": 0,
+          "y": 3,
+          "w": 12,
+          "h": 6,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 6,
+          "minH": 3,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_fairness:chart_selected_metrics",
+          "key": "1738737393676",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1739502326854",
+          "properties": {
+            "title": "fairness test results"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1739502394739",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_fairness:summary_description",
+          "key": "1739502647666",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1738737541316",
+          "x": 0,
+          "y": 5,
+          "w": 12,
+          "h": 31,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 6,
+          "minH": 3,
+          "static": false
+        },
+        {
+          "i": "1739502716091",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 2,
+          "static": false
+        },
+        {
+          "i": "1739502813360",
+          "x": 0,
+          "y": 2,
+          "w": 12,
+          "h": 2,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 1,
+          "minH": 1,
+          "static": false
+        },
+        {
+          "i": "1739502848659",
+          "x": 0,
+          "y": 4,
+          "w": 12,
+          "h": 1,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 1,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "ccs_fairness:summary_recommendation",
+          "key": "1738737541316",
+          "properties": null
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title1",
+          "key": "1739502716091",
+          "properties": {
+            "title": "ccs's recommedations"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_title2",
+          "key": "1739502813360",
+          "properties": {
+            "title": "for fairness test"
+          }
+        },
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "aiverify.stock.reports:page_divider",
+          "key": "1739502848659",
+          "properties": null
+        }
+      ]
+    },
+    {
+      "layouts": [
+        {
+          "i": "1729157970639",
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 36,
+          "maxW": 12,
+          "maxH": 36,
+          "minW": 12,
+          "minH": 36,
+          "static": false
+        }
+      ],
+      "reportWidgets": [
+        {
+          "layoutItemProperties": {
+            "justifyContent": "left",
+            "alignItems": "top",
+            "textAlign": "left",
+            "color": null,
+            "bgcolor": null
+          },
+          "widgetGID": "d93b6531-3fd1-4bb1-9498-4b64cd7595b5:cover_page_section",
+          "key": "1729157970639",
+          "properties": {
+            "sectionTitle": "End of Report",
+            "sectionSubTitle": ""
+          }
+        }
+      ]
+    }
+  ],
+  "globalVars": [
+    {
+      "key": "name",
+      "value": "CCS AIM toolkit"
+    },
+    {
+      "key": "name",
+      "value": "template"
+    },
+    {
+      "key": "description",
+      "value": "CCS Template Version 0.0.2"
+    },
+    {
+      "key": "name",
+      "value": "CCS AIM toolkit"
+    }
+  ]
+}

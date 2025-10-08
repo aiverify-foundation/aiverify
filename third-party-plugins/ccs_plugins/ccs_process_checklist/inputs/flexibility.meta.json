@@ -1,0 +1,8 @@
+{
+  "cid": "flexibility",
+  "name": "Flexibility (Competition)",
+  "description": "This input block consists of 8 process checklist questions that the user has to complete. The 8 questions pertain to 3 testable criteria: 1) Lack of interoperability 2) High switching cost 3) Anticompetitive bundling or tying",
+  "group": "CCS Process Checklists",   
+  "width": "xl",   
+  "groupNumber": 3
+}
