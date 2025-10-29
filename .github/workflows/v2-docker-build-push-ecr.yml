@@ -54,9 +54,9 @@ on:
   #   branches:
   #     - 'ci/image-scan-ecr'
 
-# Allow one concurrent deployment
+# Allow concurrent runs of the same workflow (currently ubuntu-latest-m configured to allow 10 concurrent runs)
 concurrency:
-  group: self-hosted-runner
+  group: ${{ github.repository }}-${{ github.workflow }}
   cancel-in-progress: false
  
 jobs:
