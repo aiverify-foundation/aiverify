@@ -55,7 +55,7 @@ jobs:
   init-image-build-push:
     # Run only when triggered manually or on push event
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     outputs:
       branch_to_test: ${{ steps.prep_matrix.outputs.branch_to_test }}
       pr_num: ${{ steps.prep_matrix.outputs.pr_num }}
@@ -167,7 +167,7 @@ jobs:
   run-image-build-push:
     needs: init-image-build-push
     if: ${{ needs.init-image-build-push.outputs.matrix != '{"include":[]}' }}
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     timeout-minutes: 360
     strategy:
       matrix: ${{ fromJson(needs.init-image-build-push.outputs.matrix) }}

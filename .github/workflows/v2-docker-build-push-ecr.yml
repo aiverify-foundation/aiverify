@@ -11,8 +11,8 @@ env:
 
 on:
   # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
-  schedule:
-    - cron: '5 10 * * *'
+  # schedule:
+  #   - cron: '5 10 * * *'
 
   # Allow manual trigger with custom parameters
   workflow_dispatch:
@@ -61,7 +61,7 @@ concurrency:
  
 jobs:
   build-and-push:
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     timeout-minutes: 360
     permissions:
       id-token: write

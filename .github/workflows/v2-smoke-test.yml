@@ -30,7 +30,7 @@ jobs:
   smoke-test:
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     permissions:
       id-token: write
       contents: read
