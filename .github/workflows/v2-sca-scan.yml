@@ -16,6 +16,69 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  aiverify-apigw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    permissions:
+      contents: write
+      security-events: write
+
+    concurrency:
+      group: BlackDuckPolaris-SCA-SAST-Scan
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          repository: aiverify-foundation/aiverify
+          submodules: recursive
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install APIGW
+        run: |
+            cd aiverify-apigw
+            python3 -m venv .venv
+            source .venv/bin/activate
+            pip install .
+            pip freeze > requirements.txt
+
+      - name: Polaris SCA SAST Scan
+        id: polaris-sca-scan-apigw
+        if: ${{ ! cancelled() }}
+        uses: blackduck-inc/black-duck-security-scan@v2
+        with:
+          ### SCANNING: Required fields
+          polaris_server_url: ${{ vars.POLARIS_SERVER_URL }}
+          polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+          polaris_assessment_types: "SCA,SAST"
+          project_source_excludes: "tests/**"
+          
+          ### SCANNING: Optional fields
+          polaris_application_name: "AIVT"
+          polaris_project_name: "aiverify-apigw"
+          polaris_branch_name: "main"
+
+          ### SARIF report parameters
+          polaris_reports_sarif_create: true
+          polaris_upload_sarif_report: true
+
+          ### Signature scan
+          polaris_test_sca_type: "SCA-PACKAGE,SCA-SIGNATURE"
+
+          ### Mark build status if policy violating issues are found
+          mark_build_status: "success"
+
+      - name: Cleanup APIGW
+        run: |
+            rm -rf .venv
+            cd ${GITHUB_WORKSPACE}
+
   Software-Composition-Analysis:
 
     runs-on: ubuntu-latest
