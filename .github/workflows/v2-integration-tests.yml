@@ -8,8 +8,8 @@ env:
 
 on:
   # Run this workflow everyday at 11:05pm Singapore Time (15:05am UTC)
-  schedule:
-    - cron: "05 15 * * *"
+  # schedule:
+  #   - cron: "05 15 * * *"
 
   # Run this workflow manually from Actions tab
   workflow_dispatch:
@@ -20,16 +20,16 @@ on:
         default: "main"
         type: string
 
-# Allow one concurrent deployment
+# Allow concurrent runs of the same workflow (currently ubuntu-latest-m configured to allow 10 concurrent runs)
 concurrency:
-  group: self-hosted-runner
+  group: ${{ github.repository }}-${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
   Integration-Test:
     
     # Run only on Workflow Dispatch and Schedule
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     timeout-minutes: 300
     permissions:
       id-token: write
@@ -100,7 +100,7 @@ jobs:
           cd ../
 
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
           
@@ -177,7 +177,7 @@ jobs:
       - name: Build and Launch Docker Containers
         run: |
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
 

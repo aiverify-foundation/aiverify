@@ -21,16 +21,16 @@ on:
         default: "main"
         type: string
 
-# Allow one concurrent deployment
+# Allow concurrent runs of the same workflow (currently ubuntu-latest-m configured to allow 10 concurrent runs)
 concurrency:
-  group: self-hosted-runner
+  group: ${{ github.repository }}-${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
   smoke-test:
     #  Run only when PR is approved
     if: (github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     permissions:
       id-token: write
       contents: read
@@ -101,7 +101,7 @@ jobs:
           cd ../
 
           cd deployment/docker-compose-dev
-          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+          COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose --profile automated-tests-venv --profile portal up -d
           echo "Initialising AI Verify Plugins"
           sleep 5m
 

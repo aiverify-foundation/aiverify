@@ -11,8 +11,8 @@ env:
 
 on:
   # Run this workflow everyday at 6:05pm Singapore Time (10:05am UTC)
-  schedule:
-    - cron: '5 10 * * *'
+  # schedule:
+  #   - cron: '5 10 * * *'
 
   # Allow manual trigger with custom parameters
   workflow_dispatch:
@@ -54,14 +54,14 @@ on:
   #   branches:
   #     - 'ci/image-scan-ecr'
 
-# Allow one concurrent deployment
+# Allow concurrent runs of the same workflow (currently ubuntu-latest-m configured to allow 10 concurrent runs)
 concurrency:
-  group: self-hosted-runner
+  group: ${{ github.repository }}-${{ github.workflow }}
   cancel-in-progress: false
  
 jobs:
   build-and-push:
-    runs-on: self-hosted-aiverify
+    runs-on: ubuntu-latest-m
     timeout-minutes: 360
     permissions:
       id-token: write
