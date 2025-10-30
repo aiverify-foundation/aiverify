@@ -74,6 +74,12 @@ To run the Test Engine Workers using the `automated-tests-venv` profile, which u
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv up -d
 ```
 
+To run the Test Engine Workers using the `automated-tests-venv` profile with `portal` profile, which utilizes a Python virtual environment for build and execution, use the following command:
+
+```sh
+COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose --profile automated-tests-venv --profile portal up -d
+```
+
 ### Running Test Engine Workers with Docker in DOOD Mode
 
 To run the Test Engine Workers using the `automated-tests-docker` profile, which utilizes Docker build and run in Docker Out of Docker (DOOD) mode, use the following command:
