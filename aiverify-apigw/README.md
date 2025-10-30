@@ -80,6 +80,7 @@ Update the `.env` file to configure the environment variables. Below is a table 
 | `APIGW_DB_URI` | The database URI for the API Gateway. | `sqlite:///{APIGW_DATA_DIR}/database.db` |
 | `APIGW_HOST_ADDRESS` | Bind socket to this host. | `127.0.0.1` |
 | `APIGW_PORT`      | Bind socket to this port. | `4000` |
+| `APIGW_MAX_PART_SIZE_MB`      | The maximum size of the test result form in MB | `20` |
 
 `APIGW_LOG_LEVEL`
 * Can be set to `debug`, `info`, `warning`, `error`, `critical` to set the level of logging in the apigw. 

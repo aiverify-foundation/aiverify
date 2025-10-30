@@ -10,6 +10,15 @@ import json
 
 client = TestClient(app)
 
+# CONSTANTS
+BOUNDARY = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
+            
+HEADERS = {
+    "Content-Type": f"multipart/form-data; boundary={BOUNDARY}"
+}
+
+def create_multipart_form_data_body(test_result_json):
+    return f"""--{BOUNDARY}\r\nContent-Disposition: form-data; name="test_result"\r\n\r\n{test_result_json}\r\n--{BOUNDARY}--\r\n"""
 
 @pytest.fixture
 def mock_test_result_data():
@@ -80,9 +89,9 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         mock_test_result_data["output"] = {"fake": 100}
-        form_data = {"test_result": json.dumps(mock_test_result_data)}
-        print("form data: ", form_data)
-        response = test_client.post("/test_results/upload", data=form_data)
+        test_result_json = json.dumps(mock_test_result_data)
+        print("test_result_json: ", test_result_json)
+        response = test_client.post("/test_results/upload", content=create_multipart_form_data_body(test_result_json), headers=HEADERS)
         assert response.status_code == 422
 
         assert db_session.query(TestResultModel).count() == 0
@@ -98,8 +107,9 @@ class TestUploadTestResult:
 
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
-        form_data = {"test_result": json.dumps(mock_test_result_data)}
-        response = test_client.post("/test_results/upload", data=form_data)
+        test_result_json = json.dumps(mock_test_result_data)
+        print("test_result_json: ", test_result_json)
+        response = test_client.post("/test_results/upload", content=create_multipart_form_data_body(test_result_json), headers=HEADERS)
         assert response.status_code == 200
 
         assert db_session.query(TestResultModel).count() == 1
@@ -162,13 +172,88 @@ class TestUploadTestResult:
         mock_test_result_data["gid"] = plugin.gid
         mock_test_result_data["cid"] = algo.cid
         mock_test_result_data["testArguments"]["groundTruthDataset"] = "file:///examples/data/sample_ground_truth.sav"
-        form_data = {"test_result": json.dumps(mock_test_result_data)}
-        response = test_client.post("/test_results/upload", data=form_data)
+        test_result_json = json.dumps(mock_test_result_data)
+        print("test_result_json: ", test_result_json)
+        response = test_client.post("/test_results/upload", content=create_multipart_form_data_body(test_result_json), headers=HEADERS)
         assert response.status_code == 200
 
         assert db_session.query(TestResultModel).count() == 4
         assert db_session.query(TestModelModel).count() == 1
         assert db_session.query(TestDatasetModel).count() == 2
+
+    def test_upload_test_result_over_mb_no_files_success(self, mock_test_result_data, test_client, db_session, mock_plugins):
+        """Test the POST /test_results/upload route for successful upload with no files uploaded."""
+
+        # files = {'artifacts': (None, None)}  # No files uploaded
+        plugin = mock_plugins[0]
+        algo = plugin.algorithms[0]
+
+        mock_test_result_data["gid"] = plugin.gid
+        mock_test_result_data["cid"] = algo.cid
+
+        # Add large data to make JSON over 2MB
+        large_data = "x" * (2 * 1024 * 1024)  # 2MB of 'x' characters
+        mock_test_result_data["largeData"] = large_data
+     
+        test_result_json = json.dumps(mock_test_result_data)
+        # Not printing the test_result_json to avoid large output
+        response = test_client.post("/test_results/upload", content=create_multipart_form_data_body(test_result_json), headers=HEADERS)
+        assert response.status_code == 200
+
+        assert db_session.query(TestResultModel).count() == 5
+        assert db_session.query(TestModelModel).count() == 1
+        assert db_session.query(TestDatasetModel).count() == 2
+
+    @patch("aiverify_apigw.routers.test_result_router.save_artifact")
+    def test_upload_test_result_over_mb_with_files_success(
+        self, mock_save_artifact, mock_test_result_data, test_client, db_session, mock_plugins, mock_upload_file
+    ):
+        """Test the POST /test_results/upload route for successful upload with file upload."""
+
+        # files = {'artifacts': (None, None)}  # No files uploaded
+        plugin = mock_plugins[0]
+        algo = plugin.algorithms[0]
+
+        mock_test_result_data["gid"] = plugin.gid
+        mock_test_result_data["cid"] = algo.cid
+
+        # Add large data to make JSON over 2MB
+        large_data = "x" * (2 * 1024 * 1024)  # 2MB of 'x' characters
+        mock_test_result_data["largeData"] = large_data
+     
+        # mock_test_result_data["artifacts"] = [mock_upload_file.filename]
+        files = {"artifacts": (mock_upload_file.filename, mock_upload_file.file.read(), mock_upload_file.content_type)}
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
+        response = test_client.post(
+            "/test_results/upload",
+            # headers={"Content-Type": "multipart/form-data"},
+            data=form_data,
+            files=files,
+        )
+
+        assert response.status_code == 200
+        mock_save_artifact.assert_not_called()  # not called because artifact not listed
+        assert db_session.query(TestResultModel).count() == 6  # add 1 from previous run
+        assert db_session.query(TestArtifactModel).count() == 1
+        assert db_session.query(TestModelModel).count() == 1
+        assert db_session.query(TestDatasetModel).count() == 2
+
+        # call again with aritifacts set
+        mock_test_result_data["artifacts"] = [mock_upload_file.filename]
+        form_data = {"test_result": json.dumps(mock_test_result_data)}
+        response = test_client.post(
+            "/test_results/upload",
+            # headers={"Content-Type": "multipart/form-data"},
+            data=form_data,
+            files=files,
+        )
+
+        assert response.status_code == 200
+        mock_save_artifact.assert_called_once()
+        assert db_session.query(TestResultModel).count() == 7  # add 1 from previous run
+        assert db_session.query(TestArtifactModel).count() == 2
+        assert db_session.query(TestModelModel).count() == 1
+        assert db_session.query(TestDatasetModel).count() == 2    
 
 
 # Test class for POST /test_results/upload_zip
