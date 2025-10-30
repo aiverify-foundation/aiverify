@@ -218,7 +218,7 @@ async def upload_test_result(
     if not test_result_data:
         raise HTTPException(status_code=400, detail="test_result field is required")
     
-  
+    # Example of test_result_data can be found in aiverify-apigw/aiverify_apigw/schemas/examples/test_result_examples.json
     try:
         obj = json.loads(test_result_data)
         if isinstance(obj, dict):
