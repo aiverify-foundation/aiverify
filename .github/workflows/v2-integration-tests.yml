@@ -121,12 +121,12 @@ jobs:
           cp -r integration-testing/test-data/test_results stock-plugins/user_defined_files/test_results
 
           cp -r third-party-plugins stock-plugins/user_defined_files/third-party-plugins
-          cp -r integration-testing/test-data/plugins/corrupted.zip stock-plugins/user_defined_files/third-party-plugins/ccs_plugins/
-          cd stock-plugins/user_defined_files/third-party-plugins/ccs_plugins/
-          zip -r ccs_explainability.zip ccs_explainability
-          zip -r ccs_fairness_classification.zip ccs_fairness_classification
-          zip -r ccs_process_checklist.zip ccs_process_checklist
-          zip -r ccs_report_template.zip ccs_report_template
+          cp -r integration-testing/test-data/plugins/corrupted.zip stock-plugins/user_defined_files/third-party-plugins/cccs_plugins
+          cd stock-plugins/user_defined_files/third-party-plugins/cccs_plugins/
+          zip -r cccs_explainability_2.0.zip cccs_explainability_2.0
+          zip -r cccs_fairness_classification_2.0.zip cccs_fairness_classification_2.0
+          zip -r cccs_process_checklist.zip cccs_process_checklist
+          zip -r cccs_report_template.zip cccs_report_template
 
           cd ../../veritas_data
           mkdir cs_model test_files
