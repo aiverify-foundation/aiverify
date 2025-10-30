@@ -123,24 +123,48 @@ export default function ClientSelectData({
     InvalidInputBlock[]
   >([]);
 
-  // Effect to log the initial state and changes for debugging
-  useEffect(() => {
-    console.log(
-      'ClientSelectData - selectedTestResults updated:',
-      selectedTestResults
-    );
-  }, [selectedTestResults]);
-
   // State for input blocks selection
   const [selectedInputBlocks, setSelectedInputBlocks] = useState<
     SelectedInputBlock[]
-  >(
-    initialInputBlocks.map((block) => ({
-      gid: block.gid,
-      cid: block.cid,
-      id: block.id,
-    }))
-  );
+  >(() => {
+    
+    // Initialize with group detection logic
+    return initialInputBlocks.map((block) => {
+
+      // Check if this block belongs to a group by looking through allInputBlockGroups
+      const matchingGroup = allInputBlockGroups.find(group => {
+        return group.gid === block.gid && 
+               group.input_blocks.some(ib => ib.id === block.id);
+      });
+
+      if (matchingGroup) {
+        // Check if all blocks in this group are present in initialInputBlocks
+        const groupBlockIds = matchingGroup.input_blocks.map(ib => ib.id);
+        const allGroupBlocksPresent = groupBlockIds.every(groupBlockId =>
+          initialInputBlocks.some(initBlock => initBlock.id === groupBlockId)
+        );
+
+        if (allGroupBlocksPresent) {
+          // This is a group selection
+          return {
+            gid: block.gid,
+            cid: block.cid,
+            id: block.id,
+            isGroupSelection: true,
+            groupId: matchingGroup.id,
+            group: matchingGroup.group,
+          };
+        }
+      }
+
+      // Individual selection
+      return {
+        gid: block.gid,
+        cid: block.cid,
+        id: block.id,
+      };
+    });
+  });
 
   // Add useEffect hooks to sync state with props when they change
   useEffect(() => {
@@ -160,13 +184,42 @@ export default function ClientSelectData({
 
   useEffect(() => {
     console.log('initialInputBlocks prop changed:', initialInputBlocks);
-    const newInputBlocks = initialInputBlocks.map((block) => ({
-      gid: block.gid,
-      cid: block.cid,
-      id: block.id,
-    }));
+    const newInputBlocks = initialInputBlocks.map((block) => {
+      // Check if this block belongs to a group by looking through allInputBlockGroups
+      const matchingGroup = allInputBlockGroups.find(group => {
+        return group.gid === block.gid && 
+               group.input_blocks.some(ib => ib.id === block.id);
+      });
+
+      if (matchingGroup) {
+        // Check if all blocks in this group are present in initialInputBlocks
+        const groupBlockIds = matchingGroup.input_blocks.map(ib => ib.id);
+        const allGroupBlocksPresent = groupBlockIds.every(groupBlockId =>
+          initialInputBlocks.some(initBlock => initBlock.id === groupBlockId)
+        );
+
+        if (allGroupBlocksPresent) {
+          // This is a group selection
+          return {
+            gid: block.gid,
+            cid: block.cid,
+            id: block.id,
+            isGroupSelection: true,
+            groupId: matchingGroup.id,
+            group: matchingGroup.group,
+          };
+        }
+      }
+
+      // Individual selection
+      return {
+        gid: block.gid,
+        cid: block.cid,
+        id: block.id,
+      };
+    });
     setSelectedInputBlocks(newInputBlocks);
-  }, [initialInputBlocks]);
+  }, [initialInputBlocks, allInputBlockGroups]);
 
   // Add effect to refresh data when component mounts or when user navigates back
   useEffect(() => {

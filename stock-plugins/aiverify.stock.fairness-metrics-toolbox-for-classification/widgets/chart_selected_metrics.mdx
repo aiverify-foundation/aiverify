@@ -20,6 +20,11 @@ export const MetricsChart = ({ id, data, results, width, height }) => {
     "Disparate Impact": "Disparate Impact",
   };
 
+  // Defensive check to ensure data and data.metrics exist
+  if (!data || !data.metrics || !Array.isArray(data.metrics)) {
+    return <div>No metrics data available</div>;
+  }
+
   return (
       data.metrics.map(metric => 
         metric == "Equal Parity" || metric == "Disparate Impact" ?
@@ -40,7 +45,7 @@ export const MetricsChart = ({ id, data, results, width, height }) => {
   )
 }
 
-{props.getResults(cid) ? (
+{props.getResults(cid) && props.getIBData(ib_cid) ? (
 <MetricsChart
   id={props.id}
   data={props.getIBData(ib_cid)}
@@ -66,8 +71,8 @@ export const MetricsChart = ({ id, data, results, width, height }) => {
       Report is incomplete
     </div>
     <div style={{ color: '#6c757d' }}>
-      No Test Result is selected for Fairness Metrics Toolbox for Classification algorithm. 
-      Please select appropriate test results in the Data Selection page.
+      No Test Result or User Input is selected for Fairness Metrics Toolbox for Classification. 
+      Please select appropriate test results or user inputs in the Data Selection page.
     </div>
   </div>
 )}
