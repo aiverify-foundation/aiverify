@@ -3,7 +3,7 @@
   "gid": "aiverify.stock.image_corruption_toolbox",
   "name": "Blur Corruptions",
   "modelType": ["classification"],
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "AI Verify",
   "description": "Algorithm that adds blur corruptions (defocus, gaussian, glass, horizontal motion, vertical motion and zoom blur)",
   "tags": ["Blur Corruptions", "classification"],

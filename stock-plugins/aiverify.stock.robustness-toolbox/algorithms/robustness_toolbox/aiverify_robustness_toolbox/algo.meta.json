@@ -3,7 +3,7 @@
   "gid": "aiverify.stock.robustness_toolbox",
   "name": "Robustness Toolbox",
   "modelType": ["classification", "regression"],
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "AI Verify",
   "description": "This plugin generates a perturbed dataset using boundary attack algorithm on the test dataset.",
   "tags": ["Robustness Toolbox", "classification", "regression"],
