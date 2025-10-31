@@ -7,7 +7,7 @@ dependencies = [
     "numpy==1.26.4",
     "pandas==2.2.2",
     "pillow==10.4.0",
-    "aiverify-test-engine[all]>=2.1.0",
+    "aiverify-test-engine[all]>=2.2.0",
     "albumentations>=2.0.4",
 ]
 requires-python = ">=3.10,<3.13"

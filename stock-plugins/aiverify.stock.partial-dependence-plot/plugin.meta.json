@@ -1,6 +1,6 @@
 {
   "gid": "aiverify.stock.partial_dependence_plot",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "name": "Partial Dependence Plot",
   "author": "AI Verify",
   "description": "A Partial Dependence Plot (PDP) explains how each feature and its feature value contribute to the predictions."

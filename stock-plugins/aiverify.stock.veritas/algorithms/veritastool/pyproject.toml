@@ -22,7 +22,7 @@ dependencies = [
     "matplotlib-inline==0.1.6",
     "tqdm>=4.67.1",
     "Jinja2>=3.1.5",
-    "aiverify-test-engine>=2.1.0",
+    "aiverify-test-engine>=2.2.0",
 ]
 requires-python = ">=3.10,<3.13"
 dynamic = ["version"]
