@@ -12,6 +12,9 @@ dependencies = [
     "scipy==1.14.1",
     "shap==0.46.0",
     "aiverify-test-engine>=2.2.0",
+    
+    # Constraints for sub-dependencies
+    "coverage==7.6.1",
 ]
 requires-python = ">=3.10,<3.13"
 dynamic = ["version"]
