@@ -38,8 +38,8 @@ The toolbox generates corrupted images based on the uploaded test data at 5 diff
 
 ### Data Preparation
 
-- Image dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-image/#1-dataset-preparation))
-- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-image/#2-annotated-ground-truth-dataset))
+- Image dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/detailed-guide/input-preparation/prepare-image/#1-dataset-preparation))
+- Annotated Ground Truth Dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/detailed-guide/input-preparation/prepare-image/#2-annotated-ground-truth-dataset))
 
 ### Algorithm User Input(s)
 
@@ -47,4 +47,4 @@ Please refer to the READMEs of the individual algorithms for more information on
 
 ### Sample use of the widgets
 
-![ICT sample](images/image_corruption_v2_sample.png)
+![ICT sample](images/image_corruption_toolbox_sample.png)
