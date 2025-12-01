@@ -36,7 +36,7 @@ Use the generated result to create a report.
 
 ## Fairness Metrics Toolbox for Regression
 
-The [Fairness Metrics Toolbox (FMT)](https://pypi.org/project/aiverify-fairness-metrics-toolbox-for-regression/) for Regression computes and displays a list of fairness metrics to measure how correctly your regression model predicts among the given set of sensitive features. This plugin is developed for regression models.
+The [Fairness Metrics Toolbox (FMT) for Regression](https://pypi.org/project/aiverify-fairness-metrics-toolbox-for-regression/) computes and displays a list of fairness metrics to measure how correctly your regression model predicts among the given set of sensitive features. This plugin is developed for regression models.
 
 ### Run using Command Line Interface (CLI)
 
@@ -61,7 +61,8 @@ python -m aiverify_fairness_metrics_toolbox_for_regression \
   --run_pipeline \
   --sensitive_features_list gender
 ```
-Once the algorithm runs successfully, the results will be saved in an output folder. Use the generated result to create a report.
+Once the algorithm runs successfully, the results will be saved in an `output` folder. 
+Use the generated result to create a report.
 
 
 ## Generate report
