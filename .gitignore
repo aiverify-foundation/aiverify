@@ -7,3 +7,12 @@ docs/.DS_Store
 
 #deployment
 site/
+
+# Project output files
+stock-plugins/user_defined_files/output/
+
+# Runtime/compile files
+**/venv/
+**/.venv/
+**/node_modules/
+*.pyc
