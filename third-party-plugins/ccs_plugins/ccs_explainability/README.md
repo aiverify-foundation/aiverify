@@ -21,7 +21,7 @@ This plugin explains how your features affect your overall predictions by using 
 | Recommendations         | To provide a recommendation for explainability testing                                 |
 
 ### Data Preparation
-- Tabular dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-tabular/))
+- Tabular dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/detailed-guide/input-preparation/prepare-tabular/))
 
 ### Algorithm User Input(s)
 
