@@ -24,7 +24,7 @@ The Fairness Metrics Toolbox (FMT) for Classification contains a list of fairnes
 | Fairness Metrics (All)    | To generate all fairness metrics                                                     |
 
 ### Data Preparation
-- Tabular dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/getting-started/prepare-tabular/))
+- Tabular dataset ([Tutorial for Preparation](https://aiverify-foundation.github.io/aiverify/detailed-guide/input-preparation/prepare-tabular/))
 
 ### Algorithm User Input(s)
 
