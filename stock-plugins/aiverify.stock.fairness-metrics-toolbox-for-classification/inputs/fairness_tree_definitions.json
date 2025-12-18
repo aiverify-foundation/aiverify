@@ -2,21 +2,21 @@
   {
     "key": "sensitiveFeature",
     "name": "Sensitive Feature Name(s)",
-    "description": "Use commas to separate the features (e.g., gender, race)"
+    "description": "This is the sensitive feature name(s) in your dataset (e.g. gender, race). Please use commas to separate."
   },
   {
     "key": "favourableOutcomeName",
-    "name": "Favourable Allocated Resource / Opportunity",
-    "description": "The resource/opportunity that is favourable in this use case (e.g., bail, loan, low interest rate, low insurance premium)"
+    "name": "Favourable Resource / Opportunity Allocated",
+    "description": "This resource/opportunity that is favourable in this use case (e.g., loan, bail)"
   },
   {
     "key": "qualified",
     "name": "Qualified Group",
-    "description": "The name of the group that is supposed to receive the resource / opportunity. (e.g. non-reoffenders, qualified applicants, licensed companies)"
+    "description": "This is the name of the group that should receive the benefit or opportunity, based on fairness – not actual data. (e.g. qualified candidates, defendant who will not bail out when given a bail)"
   },
   {
     "key": "unqualified",
     "name": "Unqualified Group",
-    "description": "The name of the group that is NOT supposed to receive the resource / opportunity. (e.g. reoffenders, unqualified applicants, unlicensed companies)"
+    "description": "This is the name of the group that should NOT receive the benefit or opportunity, based on fairness – not actual data. (e.g. unqualified candidates, defendant who will bail out when given a bail)"
   }
 ]

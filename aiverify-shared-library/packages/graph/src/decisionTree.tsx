@@ -436,9 +436,9 @@ function Step0({ data, definitions, onChangeData, setCanNext, isEditing }) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <h2 style={{ margin: 0, padding: 0 }}>Definitions</h2>
-      <div>
-        The following definitions will be used to contextualise the fairness
-        tree to the use case.
+      <div style={{ fontSize: "12px" }}>
+        The following definition inputs will be used to contextualise the fairness tree to your use case, which is then used to select the most relevant fairness metric(s) that are shown in the summary report.
+        (Please note: these definitions themselves will NOT show up in the final report.)
       </div>
       {definitions &&
         definitions.map((item) => (
