@@ -181,6 +181,17 @@ Once you have installed the dependencies and configured the environment variable
 python -m aiverify_apigw
 ```
 
+## Debug Local Installation
+
+# Plugins not loading properly
+If you have loaded the portal without a proper installation of apigw you may not have all the plugins loaded properly because they have already been loaded before. To reload the plugins :
+
+Stop apigw
+Delete aiverify-apigw/data/database.db
+Restart apigw
+
+The plugins should be checked again and reloaded properly now.
+
 ## Running Tests
 
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip.
