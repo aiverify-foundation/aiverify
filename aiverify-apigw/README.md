@@ -184,7 +184,9 @@ python -m aiverify_apigw
 ## Debug Local Installation
 
 # Plugins not loading properly
-If you have loaded the portal without a proper installation of apigw you may not have all the plugins loaded properly because they have already been loaded before. To reload the plugins :
+Upon first startup of apigw, it will scan the plugins from source and cache it into a database. Subsequent startup of apigw will not repeat the plugin scan, therefore clearing of the cache is required if there is any changes to plugins after first startup or plugins are not loaded correctly on first startup.
+
+To reload the plugins :
 
 Stop apigw
 Delete aiverify-apigw/data/database.db
