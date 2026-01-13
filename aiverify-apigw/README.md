@@ -181,6 +181,19 @@ Once you have installed the dependencies and configured the environment variable
 python -m aiverify_apigw
 ```
 
+## Debug Local Installation
+
+# Plugins not loading properly
+Upon first startup of apigw, it will scan the plugins from source and cache it into a database. Subsequent startup of apigw will not repeat the plugin scan, therefore clearing of the cache is required if there is any changes to plugins after first startup or plugins are not loaded correctly on first startup.
+
+To reload the plugins :
+
+Stop apigw
+Delete aiverify-apigw/data/database.db
+Restart apigw
+
+The plugins should be checked again and reloaded properly now.
+
 ## Running Tests
 
 To run the tests for the application, you can use `pytest`. Make sure you have `pytest` and `faker` installed. If not, you can install it using pip.
